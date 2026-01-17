@@ -11,8 +11,8 @@ themeChuckJS.type = 'text/javascript';
 themeChuckJS.charset = 'utf-8';
 document.head.appendChild(themeChuckJS);
 
-function newChuckEditor(divId, code = "", readonly = false) {
-    const editor = ace.edit('editor');
+function newChuckEditor(divId = 'editor', code = "", readonly = false) {
+    const editor = ace.edit(divId);
     editor.setTheme('ace/theme/chuck');
     editor.session.setMode('ace/mode/chuck');
     editor.setOptions({
