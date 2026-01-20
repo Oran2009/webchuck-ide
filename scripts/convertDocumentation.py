@@ -3,12 +3,13 @@
 # Steps TODO:
 #   1. Get the latest CKDOC gen-all.ck script and generate json documentation
 #       Link: https://github.com/ccrma/chuck/blob/main/src/scripts/ckdoc/gen-all.ck
-#       - Uncomment line 166 to generate json format
-#       - Change line 169 to put everything in `./json` folder
+#       - Uncomment line 177 to generate json format
+#       - Make a ./json folder
+#       - Change line 180 to put everything in `./json` folder
 #   2. Run the ckdoc generator with `chuck gen-all.ck`
 #   3. Run this script `python convertDocumentation.py`
 #
-# written 7/17/2024 
+# written 7/17/2024 - updated January 2026
 # terry feng - tzfeng@ccrma.stanford.edu
 
 import json
@@ -96,6 +97,7 @@ for file in files:
         for group in groups:
             name = group["name"]
             group["link"] = CKDOC_URL + file.split(".")[0] + ".html#" + name
+            print("Processing: " + name, title_data[name])
             group["title"] = title_data[name]
             data[name] = group
 
