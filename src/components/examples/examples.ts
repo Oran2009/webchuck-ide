@@ -134,7 +134,7 @@ export default class Examples {
             "Mouse PWM HID",
             () => {
                 loadChuckFileFromURL("examples/mouseHID.ck"),
-                InputPanelHeader.setNotificationPing(1, true);
+                    InputPanelHeader.setNotificationPing(1, true);
             },
             hidNested
         );
