@@ -1,9 +1,20 @@
 # Script to convert Chuck examples directory to JSON of paths
+#
+# Steps TODO:
+#   1. Set CHUCK_EXAMPLES_PATH to your local Chuck examples path
+#   2. Run this script `python examplesToJSON.py`
+#
+# NOTE: some files need by hand corrections (terry)
+#       - dyno-limit.ck - adjust snd buf path
+#       - dyno-duck.ck - adjust snd buf path
+#       - Sigmund.ck - lower npts from 4096 to 1024
+#
+# Updated January 2026
 import os
 import json
 import re
 
-# TODO: Mini Audicle examples path here
+# TODO: Chuck repository examples path here
 CHUCK_EXAMPLES_PATH = "YOUR/PATH/HERE"
 OUTPUT_JSON_FILE = "../public/examples/moreExamples.json"
 
@@ -13,11 +24,13 @@ EXAMPLES_WEB_URL = 'https://raw.githubusercontent.com/ccrma/chuck/main/examples'
 # Exclude directories
 excludeDirs = ["book", "kbhit", "word2vec"]
 
-# IMPORTANT: Exclude examples containing the words, features not compatible with WebChucK
+# IMPORTANT: Exclude examples containing these words, features not compatible with WebChucK
 excludeFileWords = ["OscIn", "OscOut", "Hid", "HidMsg", "MidiIn", "MidiOut", "MidiMsg", "MidiFileIn", "ConsoleInput", "WvOut"]
+
 # Exclude Chugins
 #chugins_list = [ "ABSaturator", "Bitcrusher", "Elliptic", "Faust", "FIR", "FoldbackSaturator", "GVerb", "KasFilter", "MagicSine", "Pan4", "Pan8", "Pan16", "PitchTrack", "Mesh2D", "MIAP", "PowerADSR", "Spectacle", "WarpBuf", "WinFuncEnv" ]
 #excludeFileWords += chugins_list
+
 # add a space to the end of each word to match Object classes
 excludeFileWords = [word + " " for word in excludeFileWords]
 # add words that aren't UGens
@@ -25,12 +38,8 @@ excludeFileWords += ["SerialIO", "Serial", "gtzan"]
 
 # Exclude files
 excludeFilenames = ["feature-extract.ck", "write.ck", "otf_01.ck", "otf_02.ck", 
-                    "otf_03.ck", "otf_04.ck", "otf_05.ck", "otf_06.ck", "otf_07.ck"]
-
-# NOTE: some files need by hand corrections (terry)
-#       - dyno-limit.ck - adjust snd buf path
-#       - dyno-duck.ck - adjust snd buf path
-#       - Sigmund.ck - lower npeak from 4096 to 1024
+                    "otf_03.ck", "otf_04.ck", "otf_05.ck", "otf_06.ck",
+                    "otf_07.ck", "model-save.ck"]
 
 # Examples Dictionary
 examplesDict = {}
@@ -73,6 +82,11 @@ def convertedToURL(relativeRoot, file_paths):
         # make sure path starts with "/"
         if (newPath[0] != "/"):
             newPath = "/" + newPath
+        
+        # skip if path still contains "../", it's probably bad
+        if ("../" in newPath or "./" in newPath):
+            # print("Skipping bad path:", newPath)
+            continue
         
         url_paths.append(EXAMPLES_WEB_URL + newPath)
     
@@ -155,8 +169,6 @@ if __name__ == "__main__":
             if (d in examplesDict):
                 examplesDict[parentDir].append(d)
                 dirCount += 1
-
-
 
     print("Chuck examples converted:", fileCount)
     print("Chuck subfolders added:", dirCount)
