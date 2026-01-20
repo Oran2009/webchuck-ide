@@ -58,6 +58,7 @@ export default class Editor {
             scrollBeyondLastLine: false,
             fontSize: 14,
             cursorBlinking: "smooth",
+            stickyScroll: { enabled: false },
         });
 
         // Editor autosave config
