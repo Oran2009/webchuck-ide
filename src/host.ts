@@ -26,6 +26,7 @@ import NavBar from "./components/navbar/navbar";
 // WebChucK source
 const DEV_CHUCK_SRC = "https://chuck.stanford.edu/webchuck/dev/"; // dev webchuck src
 const PROD_CHUCK_SRC = "https://chuck.stanford.edu/webchuck/src/"; // prod webchuck src
+const BACKUP_CHUCK_SRC = "./wc/"; // backup webchuck src
 let whereIsChuck: string =
     localStorage.getItem("chuckVersion") === "dev"
         ? DEV_CHUCK_SRC
@@ -68,12 +69,55 @@ export async function initChuck() {
     chugins.forEach((chuginPath) => Chuck.loadChugin(chuginPath));
 
     // Create theChuck
-    theChuck = await Chuck.init(
-        [],
-        audioContext,
-        audioContext.destination.maxChannelCount,
-        whereIsChuck
-    );
+    let targetSrc = whereIsChuck;
+
+    // 1. Skip if explicitly offline
+    if (!navigator.onLine) {
+        targetSrc = BACKUP_CHUCK_SRC;
+    } else {
+        // 2. Quick pre-flight check to see if Stanford is up
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second ping timeout
+
+        try {
+            // Check headers of an essential file to test uptime
+            await fetch(whereIsChuck + "webchuck.js", {
+                method: "HEAD",
+                signal: controller.signal,
+            });
+            clearTimeout(timeoutId);
+        } catch (e) {
+            console.warn(
+                "Stanford CCRMA server unreachable or slow, using backup src."
+            );
+            targetSrc = BACKUP_CHUCK_SRC;
+        }
+    }
+
+    try {
+        if (targetSrc === BACKUP_CHUCK_SRC) {
+            Chuck.chuginsToLoad = [];
+        }
+        theChuck = await Chuck.init(
+            [],
+            audioContext,
+            audioContext.destination.maxChannelCount,
+            targetSrc
+        );
+    } catch (error) {
+        console.error("Failed to initialize WebChucK", error);
+        // Additional backup
+        if (targetSrc !== BACKUP_CHUCK_SRC) {
+            console.error("Falling to backup WebChucK WASM + JS");
+            Chuck.chuginsToLoad = [];
+            theChuck = await Chuck.init(
+                [],
+                audioContext,
+                audioContext.destination.maxChannelCount,
+                BACKUP_CHUCK_SRC
+            );
+        }
+    }
     theChuck.connect(audioContext.destination);
     Console.print("WebChucK is ready!");
 
