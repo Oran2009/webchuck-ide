@@ -104,6 +104,7 @@ export default class VmMonitor {
         removeButton.setAttribute("src", "img/remove.svg");
         removeButton.classList.add("removeButton");
         removeButton.setAttribute("alt", "remove button");
+        removeButton.setAttribute("aria-label", "Remove Shred");
         remove.appendChild(removeButton);
 
         remove.addEventListener("click", () => {

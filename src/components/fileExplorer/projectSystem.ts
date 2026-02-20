@@ -200,6 +200,7 @@ export default class ProjectSystem {
         ProjectSystem.projectFiles.forEach((projectFile) => {
             const fileEntry = document.createElement("div");
             fileEntry.className = "fileExplorerEntry";
+            fileEntry.setAttribute("tabindex", "0");
 
             // File Info (icon + name)
             const fileItem = document.createElement("div");
@@ -211,6 +212,7 @@ export default class ProjectSystem {
             // File Options
             const fileOptions = document.createElement("div");
             const deleteButton = document.createElement("button");
+            deleteButton.setAttribute("aria-label", "Delete file");
             fileOptions.className = "fileExplorerOptions hide";
             deleteButton.className = "fileEntryDelete";
             deleteButton.innerHTML = `<svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"> <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/> </svg>`;
@@ -218,6 +220,13 @@ export default class ProjectSystem {
             fileOptions.addEventListener("click", (e) => {
                 e?.stopPropagation();
                 ProjectSystem.removeFileFromExplorer(filename);
+            });
+            deleteButton.addEventListener("keydown", (e: KeyboardEvent) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    ProjectSystem.removeFileFromExplorer(filename);
+                }
             });
 
             // Arm File Entry
@@ -229,11 +238,25 @@ export default class ProjectSystem {
             fileEntry.addEventListener("click", () => {
                 ProjectSystem.setActiveFile(projectFile);
             });
+            fileEntry.addEventListener("keydown", (e: KeyboardEvent) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    ProjectSystem.setActiveFile(projectFile);
+                }
+            });
             fileEntry.addEventListener("mouseover", () => {
                 fileOptions.classList.remove("hide");
             });
             fileEntry.addEventListener("mouseout", () => {
                 fileOptions.classList.add("hide");
+            });
+            fileEntry.addEventListener("focusin", () => {
+                fileOptions.classList.remove("hide");
+            });
+            fileEntry.addEventListener("focusout", (e: FocusEvent) => {
+                if (!fileEntry.contains(e.relatedTarget as Node)) {
+                    fileOptions.classList.add("hide");
+                }
             });
             ProjectSystem.fileExplorer.appendChild(fileEntry);
         });

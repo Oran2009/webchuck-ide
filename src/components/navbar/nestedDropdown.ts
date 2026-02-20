@@ -52,6 +52,25 @@ export default class NestedDropdown {
             }
         });
 
+        // Close dropdown when focus leaves the container
+        this.container.addEventListener("focusout", (event: FocusEvent) => {
+            if (!this.container.contains(event.relatedTarget as Node)) {
+                this.close();
+            }
+        });
+
+        // Close on Escape
+        this.container.addEventListener("keydown", (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                this.close();
+                this.button.focus();
+            }
+        });
+
+        // Initial accessibility state
+        this.button.setAttribute("aria-expanded", "false");
+        this.button.setAttribute("aria-haspopup", "true");
+
         // Hover interactions for dropdown
         // if is touch device, don't add hover event
         if ("ontouchstart" in window) return;
@@ -119,17 +138,20 @@ export default class NestedDropdown {
         if (this.open) {
             this.close();
             this.open = false;
+            this.open = false;
             return;
         }
         // set focus to file button
         this.button.focus();
         this.open = true;
+        this.button.setAttribute("aria-expanded", "true");
         this.dropdown.classList.remove("hidden");
     }
 
     close() {
         if (!this.open) return;
         this.open = false;
+        this.button.setAttribute("aria-expanded", "false");
         this.dropdown.classList.add("hidden");
     }
 }
