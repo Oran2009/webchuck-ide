@@ -158,6 +158,10 @@
     @apply text-sm font-mono;
 }
 
+#autocomplete-list li.selected {
+    @apply bg-sky-blue-100 dark:bg-dark-5;
+}
+
 .highlight {
     @apply bg-orange-light;
 }
@@ -241,7 +245,7 @@
     @apply opacity-0;
 }
 
-.fileExplorerOptions > .fileEntryDelete {
+.fileExplorerOptions>.fileEntryDelete {
     @apply text-red-600 dark:text-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-600 dark:focus-visible:ring-red-200 rounded;
 }
 
@@ -272,18 +276,18 @@
     height: 100%;
 }
 
-.rendered-markdown > p > strong > span {
+.rendered-markdown>p>strong>span {
     margin-bottom: 0 !important;
 }
 
 /* for hover documentation syntax highlighting */
 .monaco-hover code,
-span > .monaco-tokenized-source {
+span>.monaco-tokenized-source {
     font-size: 0.95em !important;
     font-family: "Consolas", monospace;
 }
 
-.monaco-tokenized-source > span.mtk1 {
+.monaco-tokenized-source>span.mtk1 {
     @apply text-dark dark:text-light;
 }
 
@@ -292,7 +296,7 @@ span > .monaco-tokenized-source {
     overflow: hidden;
 }
 
-#vimStatus > span > span > input {
+#vimStatus>span>span>input {
     @apply outline-none bg-transparent border-none;
 }
 

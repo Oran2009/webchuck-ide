@@ -48,6 +48,7 @@ export default class MoreExamples {
     private static breadCrumbPath: string[] = [];
 
     private static autoCompleteVisible: boolean = false;
+    private static autoCompleteSelectedIndex: number = -1;
 
     constructor() {
         // Create more examples button in examples navbar dropdown
@@ -126,10 +127,12 @@ export default class MoreExamples {
         // More Examples Search
         MoreExamples.moreExamplesSearch.addEventListener("input", () => {
             MoreExamples.searchExamples(MoreExamples.moreExamplesSearch.value);
+            MoreExamples.autoCompleteSelectedIndex = -1;
             if (!MoreExamples.autoCompleteVisible) {
                 MoreExamples.moreExamplesAutoComplete.classList.remove(
                     "hidden"
                 );
+                MoreExamples.moreExamplesSearch.setAttribute("aria-expanded", "true");
                 MoreExamples.autoCompleteVisible = true;
             }
         });
@@ -141,7 +144,57 @@ export default class MoreExamples {
                     MoreExamples.moreExamplesAutoComplete.classList.remove(
                         "hidden"
                     );
+                    MoreExamples.moreExamplesSearch.setAttribute("aria-expanded", "true");
                     MoreExamples.autoCompleteVisible = true;
+                }
+            }
+        );
+        MoreExamples.moreExamplesSearch.addEventListener(
+            "keydown",
+            (e: KeyboardEvent) => {
+                const list = MoreExamples.moreExamplesAutoCompleteList.children;
+                if (!MoreExamples.autoCompleteVisible || list.length === 0) return;
+
+                if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                    e.preventDefault();
+                    if (e.key === "ArrowDown") {
+                        MoreExamples.autoCompleteSelectedIndex++;
+                        if (MoreExamples.autoCompleteSelectedIndex >= list.length) {
+                            MoreExamples.autoCompleteSelectedIndex = 0;
+                        }
+                    } else if (e.key === "ArrowUp") {
+                        MoreExamples.autoCompleteSelectedIndex--;
+                        if (MoreExamples.autoCompleteSelectedIndex < 0) {
+                            MoreExamples.autoCompleteSelectedIndex = list.length - 1;
+                        }
+                    }
+
+                    for (let i = 0; i < list.length; i++) {
+                        const item = list[i] as HTMLElement;
+                        if (i === MoreExamples.autoCompleteSelectedIndex) {
+                            item.classList.add("selected");
+                            item.setAttribute("aria-selected", "true");
+                            MoreExamples.moreExamplesSearch.setAttribute("aria-activedescendant", item.id);
+                        } else {
+                            item.classList.remove("selected");
+                            item.setAttribute("aria-selected", "false");
+                        }
+                    }
+                    if (MoreExamples.autoCompleteSelectedIndex === -1) {
+                        MoreExamples.moreExamplesSearch.setAttribute("aria-activedescendant", "");
+                    }
+                } else if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (
+                        MoreExamples.autoCompleteSelectedIndex >= 0 &&
+                        MoreExamples.autoCompleteSelectedIndex < list.length
+                    ) {
+                        (list[MoreExamples.autoCompleteSelectedIndex] as HTMLElement).click();
+                        // Also hide autocomplete upon selection via Enter
+                        MoreExamples.moreExamplesAutoComplete.classList.add("hidden");
+                        MoreExamples.moreExamplesSearch.setAttribute("aria-expanded", "false");
+                        MoreExamples.autoCompleteVisible = false;
+                    }
                 }
             }
         );
@@ -153,6 +206,7 @@ export default class MoreExamples {
                     MoreExamples.moreExamplesAutoComplete.classList.add(
                         "hidden"
                     );
+                    MoreExamples.moreExamplesSearch.setAttribute("aria-expanded", "false");
                     MoreExamples.autoCompleteVisible = false;
                 }
                 e.target === MoreExamples.moreExamplesModal &&
@@ -193,6 +247,9 @@ export default class MoreExamples {
         for (let i = 0; i < size; i++) {
             const result = results[i];
             const option = document.createElement("li");
+            option.role = "option";
+            option.id = "autocomplete-item-" + i;
+            option.setAttribute("aria-selected", "false");
             const name = document.createElement("b");
             const code = document.createElement("span");
             name.innerHTML = highlightText(result.name, query);
