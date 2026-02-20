@@ -138,6 +138,7 @@ export default class NestedDropdown {
         if (this.open) {
             this.close();
             this.open = false;
+            this.open = false;
             return;
         }
         // set focus to file button
