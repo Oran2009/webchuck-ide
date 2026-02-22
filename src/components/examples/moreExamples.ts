@@ -128,6 +128,7 @@ export default class MoreExamples {
         MoreExamples.moreExamplesSearch.addEventListener("input", () => {
             MoreExamples.searchExamples(MoreExamples.moreExamplesSearch.value);
             MoreExamples.autoCompleteSelectedIndex = -1;
+            MoreExamples.moreExamplesSearch.setAttribute("aria-activedescendant", "");
             if (!MoreExamples.autoCompleteVisible) {
                 MoreExamples.moreExamplesAutoComplete.classList.remove(
                     "hidden"
