@@ -281,6 +281,15 @@
 }
 
 /* for hover documentation syntax highlighting */
+.monaco-hover {
+    max-width: min(60vw, 600px) !important;
+}
+
+.monaco-hover-content {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+}
+
 .monaco-hover code,
 span>.monaco-tokenized-source {
     font-size: 0.95em !important;

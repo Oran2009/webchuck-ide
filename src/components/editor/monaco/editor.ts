@@ -59,6 +59,7 @@ export default class Editor {
             fontSize: 14,
             cursorBlinking: "smooth",
             stickyScroll: { enabled: false },
+            fixedOverflowWidgets: true,
         });
 
         // Editor autosave config
@@ -109,8 +110,7 @@ export default class Editor {
         }
         ProjectSystem.addNewFile(filename, code);
         Console.print(
-            `loaded autosave: \x1b[38;2;34;178;254m${
-                Editor.filename
+            `loaded autosave: \x1b[38;2;34;178;254m${Editor.filename
             }\x1b[0m (${localStorage.getItem("editorCodeTime")})`
         );
     }
