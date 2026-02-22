@@ -231,7 +231,7 @@
                 <path d="M 16 6 C 14.894531 6 14 6.894531 14 8 C 14 9.105469 14.894531 10 16 10 C 17.105469 10 18 9.105469 18 8 C 18 6.894531 17.105469 6 16 6 Z M 16 14 C 14.894531 14 14 14.894531 14 16 C 14 17.105469 14.894531 18 16 18 C 17.105469 18 18 17.105469 18 16 C 18 14.894531 17.105469 14 16 14 Z M 16 22 C 14.894531 22 14 22.894531 14 24 C 14 25.105469 14.894531 26 16 26 C 17.105469 26 18 25.105469 18 24 C 18 22.894531 17.105469 22 16 22 Z"></path>
               </svg>
             </button> -->
-            <button id="shareCode" class="button border-2 border-blue-600 dark:border-blue-200 px-3 py-1 rounded-lg font-medium mr-4">Share</button>
+            <button id="shareCode" class="button border-2 border-blue-600 dark:border-blue-200 px-3 py-1 rounded-lg font-medium mr-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 dark:focus-visible:ring-blue-200">Share</button>
             <b class="w-[122px] text-md">WebChucK IDE </b><b><em class="text-3xl">2</em></b>
           </div>
         </nav>
@@ -248,20 +248,20 @@
             <button id="webchuckButton" type="button" class="font-semibold bg-orange text-white mr-2 py-2 px-1 max-h-full w-40 md:w-48 2xl:w-64 rounded-md enabled:hover:bg-orange-400 transition-all overflow-hidden truncate disabled:opacity-50" disabled>Loading...</button>
             <!-- Chuck Buttons -->
             <div class="flex h-full justify-start items-center">
-              <button id="micButton"      type="button" class="chuck-button" title="Enable Microphone" disabled>
+              <button id="micButton"      type="button" class="chuck-button" title="Enable Microphone" aria-label="Enable Microphone" disabled>
                 <img src="img/mic.svg" alt="Microphone" class="h-11" draggable="false">
               </button>
-              <button id="playButton"     type="button" class="chuck-button" disabled>
+              <button id="playButton"     type="button" class="chuck-button" aria-label="Play" disabled>
                 <img src="img/play.svg" alt="Play" class="h-11" draggable="false">
               </button>
-              <button id="replaceButton"  type="button" class="chuck-button" disabled>
+              <button id="replaceButton"  type="button" class="chuck-button" aria-label="Replace" disabled>
                 <img src="img/replace.svg" alt="Replace" class="h-11" draggable="false">
               </button>
-              <button id="removeButton"   type="button" class="chuck-button" disabled>
+              <button id="removeButton"   type="button" class="chuck-button" aria-label="Remove" disabled>
                 <img src="img/remove.svg" alt="Remove" class="h-11" draggable="false">
               </button>
-              <button id="recordButton"   type="button" class="chuck-button" disabled>
-                <img id="recordImage" src="img/record-button.svg" alt="Remove" class="h-11" draggable="false">
+              <button id="recordButton"   type="button" class="chuck-button" aria-label="Record" disabled>
+                <img id="recordImage" src="img/record-button.svg" alt="Record" class="h-11" draggable="false">
               </button>
             </div>
 
@@ -312,8 +312,8 @@
           <div id="editorPanel" class="h-full flex flex-col justify-start">
             <!-- Monaco -->
             <div id="editorPanelHeader" class="header h-8 justify-start flex-none">
-              <button id="fileToggle" type="button" class="header-item icon px-1 mr-1">
-                <svg class="w-6 h-5" viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <button id="fileToggle" type="button" class="header-item icon px-1 mr-1" aria-label="Toggle File Explorer">
+                <svg class="w-6 h-5" aria-hidden="true" viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path stroke="currentColor" d="M3 0C1.35862 0 0 1.35862 0 3V21C0 22.6414 1.35862 24 3 24H27C28.6414 24 30 22.6414 30 21V6C30 4.35862 28.6414 3 27 3H15L12 0H3ZM3 3H10.7578L13.7578 6H27V21H3V3Z" fill="currentColor"/>
                 </svg>
               </button>
@@ -419,9 +419,12 @@
           </nav>
           <!-- Search -->
           <div class="justify-right w-full h-10 md:w-1/2 relative">
-            <input id="more-examples-search" type="text" class="w-full h-full py-2 pl-11 pr-3 border border-gray-300 rounded-md dark:bg-dark-4" placeholder="Search...">
+            <input id="more-examples-search" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false"
+              aria-controls="autocomplete-list" aria-activedescendant=""
+              class="w-full h-full py-2 pl-11 pr-3 border border-gray-300 rounded-md dark:bg-dark-4"
+              placeholder="Search..." aria-label="Search examples">
             <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-6 w-6 text-gray-500">
+              <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-6 w-6 text-gray-500">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
               </svg>
             </div>
@@ -459,8 +462,8 @@
         <h1 class="text-xl font-medium pb-2">Settings</h1>
         <!-- Setting Options-->
         <form class="flex flex-col gap-2 py-2 pr-7" method="dialog">
-          <label class="form-label">ChucK version</label>
-          <select id="chuck-version-select" class="border px-1 py-1 rounded-md focus:outline-none">
+          <label class="form-label" for="chuck-version-select">ChucK version</label>
+          <select id="chuck-version-select" class="form-select">
             <option value="stable">Stable</option>
             <option value="dev">Development</option>
           </select>
@@ -480,23 +483,23 @@
           <h1 class="text-xl font-medium pb-2">Export to WebChucK</h1>
 
           <div>
-            <label class="form-label">Title</label>
+            <label class="form-label" for="export-title">Title</label>
             <input id="export-title" class="form-input" type="text" placeholder="Hello Sine">
           </div>
 
           <div>
-            <label class="form-label">Author</label>
+            <label class="form-label" for="export-author">Author</label>
             <input id="export-author" class="form-input" type="text" placeholder="Terry Feng">
           </div>
 
           <div>
-            <label class="form-label">Description</label>
+            <label class="form-label" for="export-description">Description</label>
             <textarea id="export-description" class="form-input" placeholder="A very cool sine wave!"></textarea>
           </div>
 
           <div>
-            <label class="form-label pr-2">Main File</label>
-            <select id="export-wc-file-select" class="border px-1 py-1 rounded-md focus:outline-none disabled:opacity-50">
+            <label class="form-label pr-2" for="export-wc-file-select">Main File</label>
+            <select id="export-wc-file-select" class="form-select disabled:opacity-50">
             </select>
           </div>
 
@@ -511,7 +514,7 @@
       <dialog class="modal modal-sm" id="share-code-modal">
         <form class="flex flex-col gap-2 py-2" method="dialog">
           <!-- display url to copy -->
-          <label class="form-label">Shareable URL</label>
+          <label class="form-label" for="share-code-url">Shareable URL</label>
           <input type="text" id="share-code-url" class="border px-2 py-1 rounded-md" readonly>
         </form>
         <div class="flex gap-4 justify-end pt-4">

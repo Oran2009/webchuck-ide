@@ -72,7 +72,7 @@ export default class Settings {
     selectChucKVersion(version: string) {
         if (version === versionString.stable) {
             Settings.versionDescription.innerHTML =
-                "Latest stable version of ChucK.";
+                "Latest stable version of ChucK available via <a href='https://chuck.stanford.edu/webchuck' target='_blank' class='text-orange-light underline'>WebChucK</a>";
         } else {
             Settings.versionDescription.innerHTML =
                 "Bleeding edge version of ChucK. Built from the tip of <a href='https://github.com/ccrma/chuck' target='_blank' class='text-orange-light underline'>main</a>";
@@ -80,8 +80,8 @@ export default class Settings {
         Settings.versionSelect.value = version;
     }
 
+    // TODO: Set the audio context sink
     static setAudioContextSink(index: number) {
-        // TODO: Set the audio context sink
         // audioContext.setSinkId(index.toString());
         console.log("Setting audio context sink to", index);
     }

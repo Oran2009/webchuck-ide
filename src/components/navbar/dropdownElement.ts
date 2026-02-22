@@ -21,17 +21,7 @@ export default class DropdownElement {
         const buttonElement = document.createElement("button");
         dropdownElement.appendChild(buttonElement);
 
-        buttonElement.classList.add(
-            "block",
-            "w-full",
-            "text-left",
-            "font-medium",
-            "px-4",
-            "py-2",
-            "hover:bg-gray-50",
-            "dark:hover:bg-dark-5",
-            "disabled:opacity-50"
-        );
+        buttonElement.className = "dropdownItem";
         buttonElement.innerHTML = content;
 
         // add event listener

@@ -9,8 +9,8 @@
         "functions": [
             "**Methods:**",
             "```chuck\nint cap()\n```\n(deprecated) For historical/compatibilty reasons, .cap() is always equal to .size(); instead of using .cap(), it is recommended to explicitly use .size() or .capacity().",
-            "```chuck\nint capacity(int val)\n```\nEnsure capacity of the array (number of addressable elements).",
-            "```chuck\nint capacity()\n```\nGet current capacity of the array (number of addressable elements).",
+            "```chuck\nint capacity(int val)\n```\nEnsure mininum capacity of the array.",
+            "```chuck\nint capacity()\n```\nGet current capacity of the array.",
             "```chuck\nvoid clear()\n```\nClear the contents of the array.",
             "```chuck\nint erase(int position)\n```\nRemove element at 'position' from the array (same as popOut(int)).",
             "```chuck\nint erase(int begin, int end)\n```\nRemove element(s) in the range [begin,end).",
@@ -153,7 +153,9 @@
         "description": "A bandpass filter (2nd order Butterworth).",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nBPF()\n```\nDefault constructor for BPF."
+            "```chuck\nBPF()\n```\nDefault constructor for BPF.",
+            "```chuck\nBPF(float freq)\n```\nConstruct a BPF with specified frequency.",
+            "```chuck\nBPF(float freq, float Q)\n```\nConstruct a BPF with specified frequency and Q."
         ],
         "examples": [
             "Examples: \t [bpf.ck](https://chuck.stanford.edu/doc/examples/filter/bpf.ck)"
@@ -173,7 +175,9 @@
         "description": "A band-reject filter (2nd order Butterworth).",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nBRF()\n```\nDefault constructor for BRF."
+            "```chuck\nBRF()\n```\nDefault constructor for BRF.",
+            "```chuck\nBRF(float freq)\n```\nConstruct a BRF with specified frequency.",
+            "```chuck\nBRF(float freq, float Q)\n```\nConstruct a BRF with specified frequency and Q."
         ],
         "examples": [
             "Examples: \t [brf.ck](https://chuck.stanford.edu/doc/examples/filter/brf.ck)"
@@ -468,7 +472,8 @@
             "```chuck\nint outputFormat()\n```\nSet which output format is selected; see CKDoc.HTML, CKDoc.TEXT, CKDoc.MARKDOWN, CKDoc.JSON.",
             "```chuck\nint outputToDir(string path, string indexTitle)\n```\nGenerate everything as files into the output directory.",
             "```chuck\nint sort(int toggle)\n```\nEnable or disable alphabetical sorting of functions and variables.",
-            "```chuck\nint sort()\n```\nGet the current status of alphabetical sorting."
+            "```chuck\nint sort()\n```\nGet the current status of alphabetical sorting.",
+            "```chuck\nstring describe(Object target)\n```\nReturns the description associated with `target`, which must be either a Type (i.e., a class) or a function."
         ],
         "link": "[More...](https://chuck.stanford.edu/doc/reference/utils.html#CKDoc)"
     },
@@ -509,7 +514,10 @@
         "description": "A chorus effect. by Perry R. Cook and Gary P. Scavone, 1995 - 2002.",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nChorus()\n```\nDefault constructor for Chorus."
+            "```chuck\nChorus()\n```\nDefault constructor for Chorus.",
+            "```chuck\nChorus(float modFreq)\n```\nConstruct a Chorus with specified modulation frequency.",
+            "```chuck\nChorus(float modFreq, float modDepth)\n```\nConstruct a Chorus with specified modulation frequency and modulation depth.",
+            "```chuck\nChorus(float modFreq, float modDepth, float mix)\n```\nConstruct a Chorus with specified modulation frequency, modulation depth, and effect mix."
         ],
         "examples": [
             "Examples: \t [chorus.ck](https://chuck.stanford.edu/doc/examples/effects/chorus.ck)"
@@ -1259,7 +1267,7 @@
             "```chuck\nGain(float gain)\n```\nConstruct a Gain with default value."
         ],
         "examples": [
-            "Examples: \t [i-robot.ck](https://chuck.stanford.edu/doc/examples/basic/i-robot.ck)"
+            "Examples: \t [gain.ck](https://chuck.stanford.edu/doc/examples/basic/gain.ck), [i-robot.ck](https://chuck.stanford.edu/doc/examples/basic/i-robot.ck)"
         ],
         "functions": [
             "**Methods:**",
@@ -1276,6 +1284,20 @@
             "```chuck\nint op()\n```\nGet the unit generator's operation mode."
         ],
         "link": "[More...](https://chuck.stanford.edu/doc/reference/ugens-basic.html#Gain)"
+    },
+    "GainDB": {
+        "title": "**Gain in Decibels**",
+        "description": "The same as the Gain UGen, but the constructor sets the gain in deciBels rather than linear scaling.",
+        "constructors": [
+            "**Constructors:**",
+            "```chuck\nGainDB()\n```\nDefault constructor for GainDB.",
+            "```chuck\nGainDB(float db)\n```\nConstruct a GainDB with default value (in deciBels)."
+        ],
+        "examples": [
+            "Examples: \t [gain.ck](https://chuck.stanford.edu/doc/examples/basic/gain.ck)"
+        ],
+        "functions": [],
+        "link": "[More...](https://chuck.stanford.edu/doc/reference/ugens-basic.html#GainDB)"
     },
     "Gen10": {
         "title": "**Makegen Sinusoidal Lookup Table**",
@@ -1397,7 +1419,9 @@
         "description": "A resonant high-pass filter (2nd order Butterworth).",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nHPF()\n```\nDefault constructor for HPF."
+            "```chuck\nHPF()\n```\nDefault constructor for HPF.",
+            "```chuck\nHPF(float freq)\n```\nConstruct a HPF with specified frequency.",
+            "```chuck\nHPF(float freq, float Q)\n```\nConstruct a HPF with specified frequency and Q."
         ],
         "examples": [
             "Examples: \t [hpf.ck](https://chuck.stanford.edu/doc/examples/filter/hpf.ck), [rhpf.ck](https://chuck.stanford.edu/doc/examples/filter/rhpf.ck)"
@@ -1599,7 +1623,8 @@
         "description": "John Chowning's reverberator class. This class is derived from the CLM NRev function, which is based on the use of networks of simple allpass and comb delay filters. This particular arrangement consists of 6 comb filters in parallel, followed by 3 allpass filters, a lowpass filter, and another allpass in series, followed by two allpass filters in parallel with corresponding right and left outputs. by Perry R. Cook and Gary P. Scavone, 1995 - 2002.",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nJCRev()\n```\nDefault constructor for JCRev."
+            "```chuck\nJCRev()\n```\nDefault constructor for JCRev.",
+            "```chuck\nJCRev(float mix)\n```\nConstruct a JCRev with specified mix level."
         ],
         "examples": [
             "Examples: \t [reverb.ck](https://chuck.stanford.edu/doc/examples/effects/reverb.ck), [otf_06.ck](https://chuck.stanford.edu/doc/examples/otf_06.ck), [otf_07.ck](https://chuck.stanford.edu/doc/examples/otf_07.ck)"
@@ -1728,7 +1753,9 @@
         "description": "A resonant low-pass filter (2nd order Butterworth).",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nLPF()\n```\nDefault constructor for LPF."
+            "```chuck\nLPF()\n```\nDefault constructor for LPF.",
+            "```chuck\nLPF(float freq)\n```\nConstruct a LPF with specified frequency.",
+            "```chuck\nLPF(float freq, float Q)\n```\nConstruct a LPF with specified frequency and Q."
         ],
         "examples": [
             "Examples: \t [lpf.ck](https://chuck.stanford.edu/doc/examples/filter/lpf.ck), [rlpf.ck](https://chuck.stanford.edu/doc/examples/filter/rlpf.ck), [smb.ck](https://chuck.stanford.edu/doc/examples/deep/smb.ck)"
@@ -1748,7 +1775,8 @@
         "description": "LiSa provides basic live sampling functionality,  and is also often used for granular synthesis.  An internal buffer stores samples chucked to LiSa's input.  Segments of this buffer can be played back, with ramping and  speed/direction control.  Multiple voice facility is built in, allowing for a single  LiSa object to serve as a source for sample layering and  granular textures.  by Dan Trueman (2007)   See also: a slowly growing <a target=\"_blank\" href=\"../program/lisa/tutorial-1.html\">tutorial</a>  | <a target=\"_blank\" href=\"../examples/#lisa\">LiSa examples</a> in the ChucK distribution | <a target=\"_blank\" href=\"https://www.youtube.com/watch?v=7F75v_73pF4\">video tutorial</a> by Clint Hoagland.",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nLiSa()\n```\nDefault constructor for LiSa."
+            "```chuck\nLiSa()\n```\nDefault constructor for LiSa.",
+            "```chuck\nLiSa(string path)\n```\nConstruct a LiSa with the 'path' to an audio file to read."
         ],
         "examples": [
             "Examples: \t [LiSa-munger1.ck](https://chuck.stanford.edu/doc/examples/special/LiSa-munger1.ck), [LiSa-munger2.ck](https://chuck.stanford.edu/doc/examples/special/LiSa-munger2.ck), [LiSa-munger3.ck](https://chuck.stanford.edu/doc/examples/special/LiSa-munger3.ck), [LiSa-load.ck](https://chuck.stanford.edu/doc/examples/special/LiSa-load.ck), [LiSa-simplelooping.ck](https://chuck.stanford.edu/doc/examples/special/LiSa-simplelooping.ck), [LiSa-trigger.ck](https://chuck.stanford.edu/doc/examples/special/LiSa-trigger.ck), [LiSa-track1.ck](https://chuck.stanford.edu/doc/examples/special/LiSa-track1.ck), [LiSa-track2.ck](https://chuck.stanford.edu/doc/examples/special/LiSa-track2.ck), [LiSa-track3.ck](https://chuck.stanford.edu/doc/examples/special/LiSa-track3.ck), [LiSa-track4.ck](https://chuck.stanford.edu/doc/examples/special/LiSa-track4.ck), [LiSa-track5.ck](https://chuck.stanford.edu/doc/examples/special/LiSa-track5.ck), [LiSa-stereo.ck](https://chuck.stanford.edu/doc/examples/special/LiSa-stereo.ck), [scream-o-matic.ck](https://chuck.stanford.edu/doc/examples/special/scream-o-matic/scream-o-matic.ck), [twilight-granular-kb.ck](https://chuck.stanford.edu/doc/examples/special/twilight/twilight-granular-kb.ck), [twilight-granular-kb-interp.ck](https://chuck.stanford.edu/doc/examples/special/twilight/twilight-granular-kb-interp.ck)"
@@ -1802,6 +1830,7 @@
             "```chuck\nfloat rate(int voice)\n```\nFor particular voice (arg 1), get playback rate.",
             "```chuck\nfloat rate(float val)\n```\nSet playback rate (voice 0). Note that the int/float type for this method will determine whether the rate is being set (float, for voice 0) or read (int, for voice number).",
             "```chuck\nfloat rate()\n```\nGet playback rate (voice 0).",
+            "```chuck\nstring read(string path)\n```\nRead audio file at 'path' into LiSa.",
             "```chuck\ndur recPos(dur val)\n```\nSet record position.",
             "```chuck\ndur recPos()\n```\nGet record position.",
             "```chuck\ndur recRamp(dur val)\n```\nSet ramping when recording (from 0 to loopEndRec).",
@@ -1826,7 +1855,8 @@
         "description": "A (li)ve (sa)mpling unit generator (10-channel edition); also popularly used for granular synthesis.",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nLiSa10()\n```\nDefault constructor for LiSa10."
+            "```chuck\nLiSa10()\n```\nDefault constructor for LiSa10.",
+            "```chuck\nLiSa10(string path)\n```\nConstruct a LiSa10 with the 'path' to an audio file to read."
         ],
         "examples": [],
         "functions": [
@@ -1878,6 +1908,7 @@
             "```chuck\nfloat rate(int voice)\n```\nFor particular voice (arg 1), get playback rate.",
             "```chuck\nfloat rate(float val)\n```\nSet playback rate (voice 0). Note that the int/float type for this method will determine whether the rate is being set (float, for voice 0) or read (int, for voice number).",
             "```chuck\nfloat rate()\n```\nGet playback rate (voice 0).",
+            "```chuck\nstring read(string path)\n```\nRead audio file at 'path' into LiSa.",
             "```chuck\ndur recPos(dur val)\n```\nSet record position.",
             "```chuck\ndur recPos()\n```\nGet record position.",
             "```chuck\ndur recRamp(dur val)\n```\nSet ramping when recording (from 0 to loopEndRec).",
@@ -1902,7 +1933,8 @@
         "description": "A (li)ve (sa)mpling unit generator (16-channel edition); also popularly used for granular synthesis.",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nLiSa16()\n```\nDefault constructor for LiSa16."
+            "```chuck\nLiSa16()\n```\nDefault constructor for LiSa16.",
+            "```chuck\nLiSa16(string path)\n```\nConstruct a LiSa16 with the 'path' to an audio file to read."
         ],
         "examples": [],
         "functions": [
@@ -1954,6 +1986,7 @@
             "```chuck\nfloat rate(int voice)\n```\nFor particular voice (arg 1), get playback rate.",
             "```chuck\nfloat rate(float val)\n```\nSet playback rate (voice 0). Note that the int/float type for this method will determine whether the rate is being set (float, for voice 0) or read (int, for voice number).",
             "```chuck\nfloat rate()\n```\nGet playback rate (voice 0).",
+            "```chuck\nstring read(string path)\n```\nRead audio file at 'path' into LiSa.",
             "```chuck\ndur recPos(dur val)\n```\nSet record position.",
             "```chuck\ndur recPos()\n```\nGet record position.",
             "```chuck\ndur recRamp(dur val)\n```\nSet ramping when recording (from 0 to loopEndRec).",
@@ -1978,7 +2011,8 @@
         "description": "A (li)ve (sa)mpling unit generator (stereo edition); also popularly used for granular synthesis.",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nLiSa2()\n```\nDefault constructor for LiSa2."
+            "```chuck\nLiSa2()\n```\nDefault constructor for LiSa2.",
+            "```chuck\nLiSa2(string path)\n```\nConstruct a LiSa2 with the 'path' to an audio file to read."
         ],
         "examples": [
             "Examples: \t [LiSa-stereo.ck](https://chuck.stanford.edu/doc/examples/special/LiSa-stereo.ck)"
@@ -2032,6 +2066,7 @@
             "```chuck\nfloat rate(int voice)\n```\nFor particular voice (arg 1), get playback rate.",
             "```chuck\nfloat rate(float val)\n```\nSet playback rate (voice 0). Note that the int/float type for this method will determine whether the rate is being set (float, for voice 0) or read (int, for voice number).",
             "```chuck\nfloat rate()\n```\nGet playback rate (voice 0).",
+            "```chuck\nstring read(string path)\n```\nRead audio file at 'path' into LiSa.",
             "```chuck\ndur recPos(dur val)\n```\nSet record position.",
             "```chuck\ndur recPos()\n```\nGet record position.",
             "```chuck\ndur recRamp(dur val)\n```\nSet ramping when recording (from 0 to loopEndRec).",
@@ -2056,7 +2091,8 @@
         "description": "A (li)ve (sa)mpling unit generator (6-channel edition); also popularly used for granular synthesis.",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nLiSa6()\n```\nDefault constructor for LiSa6."
+            "```chuck\nLiSa6()\n```\nDefault constructor for LiSa6.",
+            "```chuck\nLiSa6(string path)\n```\nConstruct a LiSa6 with the 'path' to an audio file to read."
         ],
         "examples": [],
         "functions": [
@@ -2108,6 +2144,7 @@
             "```chuck\nfloat rate(int voice)\n```\nFor particular voice (arg 1), get playback rate.",
             "```chuck\nfloat rate(float val)\n```\nSet playback rate (voice 0). Note that the int/float type for this method will determine whether the rate is being set (float, for voice 0) or read (int, for voice number).",
             "```chuck\nfloat rate()\n```\nGet playback rate (voice 0).",
+            "```chuck\nstring read(string path)\n```\nRead audio file at 'path' into LiSa.",
             "```chuck\ndur recPos(dur val)\n```\nSet record position.",
             "```chuck\ndur recPos()\n```\nGet record position.",
             "```chuck\ndur recRamp(dur val)\n```\nSet ramping when recording (from 0 to loopEndRec).",
@@ -2132,7 +2169,8 @@
         "description": "A (li)ve (sa)mpling unit generator (8-channel edition); also popularly used for granular synthesis.",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nLiSa8()\n```\nDefault constructor for LiSa8."
+            "```chuck\nLiSa8()\n```\nDefault constructor for LiSa8.",
+            "```chuck\nLiSa8(string path)\n```\nConstruct a LiSa8 with the 'path' to an audio file to read."
         ],
         "examples": [],
         "functions": [
@@ -2184,6 +2222,7 @@
             "```chuck\nfloat rate(int voice)\n```\nFor particular voice (arg 1), get playback rate.",
             "```chuck\nfloat rate(float val)\n```\nSet playback rate (voice 0). Note that the int/float type for this method will determine whether the rate is being set (float, for voice 0) or read (int, for voice number).",
             "```chuck\nfloat rate()\n```\nGet playback rate (voice 0).",
+            "```chuck\nstring read(string path)\n```\nRead audio file at 'path' into LiSa.",
             "```chuck\ndur recPos(dur val)\n```\nSet record position.",
             "```chuck\ndur recPos()\n```\nGet record position.",
             "```chuck\ndur recRamp(dur val)\n```\nSet ramping when recording (from 0 to loopEndRec).",
@@ -2260,7 +2299,7 @@
         "description": "Machine is the runtime interface to the ChucK Virtual Machine (Ck.VM or simply VM). This interface can be used to manage shreds, evaluate code, set log levels, etc. Machine's shred commands (add, replace, remove, etc.) are similar to the on-the-fly programming commands, except these are invoked from within a ChucK program, and benefit from ChucK's strongly-timed mechanics.",
         "constructors": [],
         "examples": [
-            "Examples: \t [eval.ck](https://chuck.stanford.edu/doc/examples/machine/eval.ck), [eval-global.ck](https://chuck.stanford.edu/doc/examples/machine/eval-global.ck), [intsize.ck](https://chuck.stanford.edu/doc/examples/machine/intsize.ck), [is-realtime.ck](https://chuck.stanford.edu/doc/examples/machine/is-realtime.ck), [machine-help.ck](https://chuck.stanford.edu/doc/examples/machine/machine-help.ck), [machine-shred.ck](https://chuck.stanford.edu/doc/examples/machine/machine-shred.ck), [version.ck](https://chuck.stanford.edu/doc/examples/machine/version.ck), [DrumMachine](https://chuck.stanford.edu/doc/examples/book/digital-artists/chapter9/DrumMachine), [initialize.ck](https://chuck.stanford.edu/doc/examples/book/digital-artists/chapter9/SmartMandolin/initialize.ck)"
+            "Examples: \t [eval.ck](https://chuck.stanford.edu/doc/examples/machine/eval.ck), [eval-global.ck](https://chuck.stanford.edu/doc/examples/machine/eval-global.ck), [intsize.ck](https://chuck.stanford.edu/doc/examples/machine/intsize.ck), [is-realtime.ck](https://chuck.stanford.edu/doc/examples/machine/is-realtime.ck), [machine-help.ck](https://chuck.stanford.edu/doc/examples/machine/machine-help.ck), [machine-shred.ck](https://chuck.stanford.edu/doc/examples/machine/machine-shred.ck), [platform.ck](https://chuck.stanford.edu/doc/examples/machine/platform.ck), [version.ck](https://chuck.stanford.edu/doc/examples/machine/version.ck), [DrumMachine](https://chuck.stanford.edu/doc/examples/book/digital-artists/chapter9/DrumMachine), [initialize.ck](https://chuck.stanford.edu/doc/examples/book/digital-artists/chapter9/SmartMandolin/initialize.ck)"
         ],
         "functions": [
             "**Methods:**",
@@ -2274,6 +2313,7 @@
             "```chuck\nint loglevel(int level)\n```\nSet log level    |- 0: NONE    |- 1: CORE    |- 2: SYSTEM    |- 3: HERALD    |- 4: WARNING    |- 5: INFO    |- 6: DEBUG    |- 7: FINE    |- 8: FINER    |- 9: FINEST    |- 10: ALL.",
             "```chuck\nint loglevel()\n```\nGet log level.",
             "```chuck\nint numShreds()\n```\nGet the number of shreds currently in the VM.",
+            "```chuck\nstring os()\n```\nGet the underlying operating system name; possible values include \"mac\", \"linux\", \"windows\", \"web\", \"ios\", \"android\", \"unknown\"",
             "```chuck\nvoid printStatus()\n```\nPrint (to terminal or console) the current status of the VM.",
             "```chuck\nvoid printTimeCheck()\n```\nPrint (to terminal or console) the current time information in the VM.",
             "```chuck\nint realtime()\n```\nReturn true if the shred is in realtime mode, false if it's in silent mode (i.e. --silent is enabled)",
@@ -2289,6 +2329,8 @@
             "```chuck\nint sp_mem()\n```\nGet the calling shred's memory (aka \"mem\") stack pointer; intended for either debugging or curiosity.",
             "```chuck\nint sp_reg()\n```\nGet the calling shred's operand (aka \"reg\"/register) stack pointer; intended for either debugging or curiosity.",
             "```chuck\nint status()\n```\nPrint the current status of the VM; legacy version of printStatus().",
+            "```chuck\nvec2 timeOfDay2()\n```\nIdentical to Machine.timeOfDay(), only the return value is a vec2 where x is time in seconds, and y is fractional time in microseconds. y is guaranteed to be between 0 and 1,000,000. x + y yields the total time. Useful for situations needing less than 64-bit precision e.g., floats in OSC are 32-bit and one must send the x and y values separately -- otherwise a significant amount of timing resolution would be lost.",
+            "```chuck\nfloat timeOfDay()\n```\nReturns the time in seconds since the Epoch 1970-01-01 00:00:00 +0000 (UTC). The returned time has microsecond resolution and could be used for e.g. synchronizing events across machines without the use of networking.",
             "```chuck\nstring version()\n```\nReturn language and VM version string."
         ],
         "link": "[More...](https://chuck.stanford.edu/doc/reference/base.html#Machine)"
@@ -2360,7 +2402,8 @@
             "```chuck\nfloat dbtopow(float value)\n```\nConvert decibels (dB) to signal power ratio.",
             "```chuck\nfloat dbtorms(float value)\n```\nConvert decibles (dB) to linear amplitude.",
             "```chuck\nint ensurePow2(int x)\n```\nReturn the smallest power-of-2 greater than or equal to the value of x.",
-            "```chuck\nint equal(float x, float y)\n```\nReturn whether two floats are considered equal.",
+            "```chuck\nint equal(float lhs, float rhs)\n```\nReturn whether two floats are considered equal.",
+            "```chuck\nint equal(float lhs, float rhs, float epsilon)\n```\nReturn whether two floats are considered equal, with a third argument to specify the epsilon (the default in Math.equals(float,float) is 1e-8)",
             "```chuck\nfloat euclidean(float[] a, float[] b)\n```\nCompute the euclidean distance between arrays a and b.",
             "```chuck\nfloat euclidean(vec2 a, vec2 b)\n```\nCompute the euclidean distance between 2D vectors a and b.",
             "```chuck\nfloat euclidean(vec3 a, vec3 b)\n```\nCompute the euclidean distance between 3D vectors a and b.",
@@ -2403,11 +2446,19 @@
             "```chuck\nfloat rmstodb(float value)\n```\nConvert linear amplitude to decibels (dB).",
             "```chuck\nfloat round(float x)\n```\nReturn the integer value (returned as float) nearest to x (rounding halfway cases away from zero).",
             "```chuck\nint rtop(complex[] from, polar[] to)\n```\nConvert complex values to polar values; returns number of values converted.",
+            "```chuck\nfloat scos(float x)\n```\nSpeedy approximation of cosine (measured in radians). Uses a Padé approximant, and is recommended to only use inputs between -pi and +pi.",
+            "```chuck\nfloat scosh(float x)\n```\nSpeedy approximation of the hyperbolic cosine. Uses a Padé approximant, and is recommended to only use inputs between -5 and +5.",
+            "```chuck\nfloat sexp(float x)\n```\nSpeedy approximation of e^x, the base-e exponential. Uses a Padé approximant, and is recommended to only use inputs between -6 and +4.",
             "```chuck\nfloat sgn(float value)\n```\nReturn sign of 'value' as -1.0 (negative), 0.0, or 1.0 (positive).",
             "```chuck\nfloat sin(float x)\n```\nCompute sine of x (measured in radians).",
             "```chuck\nfloat sinh(float x)\n```\nCompute the hyperbolic sine of x.",
+            "```chuck\nfloat sinsqrt(float x)\n```\nA speedy (fast) approximation of the inverse square root. Popularized by Quake.",
             "```chuck\nfloat sqrt(float x)\n```\nCompute the non-negative square root of x.",
             "```chuck\nvoid srandom(int seed)\n```\nSeed the random number generator (RNG). Different seeds will generate very different sequences of random numbers even if the seeds are close together. Alternatively, a deterministic sequence of pseudo-random numbers can repeatably generated by setting the same seed.",
+            "```chuck\nfloat ssin(float x)\n```\nSpeedy approximation of sine (measured in radians). Uses a Padé approximant, and is recommended to only use inputs between -pi and +pi.",
+            "```chuck\nfloat ssinh(float x)\n```\nSpeedy approximation of hyperbolic sine. Uses a Padé approximant, and is recommended to only use inputs between -5 and +5.",
+            "```chuck\nfloat stan(float x)\n```\nSpeedy approximation of tangent (measured in radians). Uses a Padé approximant, and is recommended to only use inputs between -pi/2 and +pi/2.",
+            "```chuck\nfloat stanh(float x)\n```\nSpeedy approximation of the hyperbolic tangent. Uses a Padé approximant, and is recommended to only use inputs between -5 and +5.",
             "```chuck\nfloat tan(float x)\n```\nCompute tangent of x (measured in radians).",
             "```chuck\nfloat tanh(float x)\n```\nCompute the hyperbolic tangent of x.",
             "```chuck\nfloat trunc(float x)\n```\nReturn the integer value nearest to but no greater in magnitude than x."
@@ -2592,7 +2643,10 @@
         "description": "This class combines random and periodic modulations to give a nice, natural human modulation function. by Perry R. Cook and Gary P. Scavone, 1995 - 2002.",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nModulate()\n```\nDefault constructor for Modulate."
+            "```chuck\nModulate()\n```\nDefault constructor for Modulate.",
+            "```chuck\nModulate(float vibratoRate)\n```\nConstruct a Modulate with specified vibrato rate.",
+            "```chuck\nModulate(float vibratoRate, float vibratoGain)\n```\nConstruct a Modulate with specified vibrato rate and vibrato gain.",
+            "```chuck\nModulate(float vibratoRate, float vibratoGain, float randomGain)\n```\nConstruct a Modulate with specified vibrato rate, vibrato gain, and random contribution gain."
         ],
         "examples": [
             "Examples: \t [modulate.ck](https://chuck.stanford.edu/doc/examples/stk/modulate.ck)"
@@ -2673,7 +2727,8 @@
         "description": "CCRMA's NRev reverberator class. This class is derived from the CLM NRev function, which is based on the use of networks of simple allpass and comb delay filters. This particular arrangement consists of 6 comb filters in parallel, followed by 3 allpass filters, a lowpass filter, and another allpass in series, followed by two allpass filters in parallel with corresponding rightand left outputs. by Perry R. Cook and Gary P. Scavone, 1995 - 2002.",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nNRev()\n```\nDefault constructor for NRev."
+            "```chuck\nNRev()\n```\nDefault constructor for NRev.",
+            "```chuck\nNRev(float mix)\n```\nConstruct an NRev with specified mix level."
         ],
         "examples": [
             "Examples: \t [reverb.ck](https://chuck.stanford.edu/doc/examples/effects/reverb.ck), [krstlchr-algo7.ck](https://chuck.stanford.edu/doc/examples/stk/krstlchr-algo7.ck), [thx.ck](https://chuck.stanford.edu/doc/examples/deep/thx.ck)"
@@ -2706,6 +2761,7 @@
         "functions": [
             "**Methods:**",
             "```chuck\nstring toString()\n```\nGet a textual description of this object.",
+            "```chuck\nType typeOfInstance()\n```\nGet the instanced type of this object.",
             "```chuck\nvoid help()\n```\nOutput helpful information about a class or an instance thereof.",
             "```chuck\nType typeOf()\n```\nGet the type of this object (or class)."
         ],
@@ -2921,7 +2977,8 @@
         "description": "Perry's simple reverberator class. This class is based on some of the famous Stanford/CCRMA reverbs (NRev, KipRev), which were based on the Chowning/Moorer/Schroeder reverberators using networks of simple allpass and comb delay filters. This class implements two series allpass units and two parallel comb filters. by Perry R. Cook and Gary P. Scavone, 1995 - 2002.",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nPRCRev()\n```\nDefault constructor for PRCRev."
+            "```chuck\nPRCRev()\n```\nDefault constructor for PRCRev.",
+            "```chuck\nPRCRev(float mix)\n```\nConstruct a PRCRev with specified mix level."
         ],
         "examples": [
             "Examples: \t [reverb.ck](https://chuck.stanford.edu/doc/examples/effects/reverb.ck)"
@@ -3028,7 +3085,9 @@
         "description": "This class implements a simple pitch shifter using delay lines. by Perry R. Cook and Gary P. Scavone, 1995 - 2002.",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nPitShift()\n```\nDefault constructor for PitShift."
+            "```chuck\nPitShift()\n```\nDefault constructor for PitShift.",
+            "```chuck\nPitShift(float shift)\n```\nConstruct a PitShift with specified degree of pitch shifting.",
+            "```chuck\nPitShift(float shift, float mix)\n```\nConstruct a PitShift with specified degree of pitch shifting and effect mix."
         ],
         "examples": [
             "Examples: \t [pitch-shift.ck](https://chuck.stanford.edu/doc/examples/effects/pitch-shift.ck)"
@@ -3209,7 +3268,9 @@
         "description": "A resonance filter with equal-gain zeros; keeps gain under control independent of frequency.",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nResonZ()\n```\nDefault constructor for ResonZ."
+            "```chuck\nResonZ()\n```\nDefault constructor for ResonZ.",
+            "```chuck\nResonZ(float freq)\n```\nConstruct a ResonZ with specified frequency.",
+            "```chuck\nResonZ(float freq, float Q)\n```\nConstruct a ResonZ with specified frequency and Q."
         ],
         "examples": [
             "Examples: \t [resonz.ck](https://chuck.stanford.edu/doc/examples/filter/resonz.ck)"
@@ -3438,6 +3499,7 @@
         ],
         "functions": [
             "**Methods:**",
+            "```chuck\nShred ancestor()\n```\nGet the calling shred's \"ancestor\" shred (i.e., the top-level shred). Returns itself if the calling shred is the top-level shred. (Related: see Shred.parent())",
             "```chuck\nstring arg(int index)\n```\nGet the Shred argument at the specified index.",
             "```chuck\nint args()\n```\nGet the number of arguments provided to the Shred.",
             "```chuck\nint childMemSize(int sizeInBytes)\n```\nSet size hint of per-shred call stack (\"mem\") for children shreds subsequently sporked from the calling shred (NOTE this size hint does not affect the calling shred--only its descendants); if sizeInBytes <= 0, the size hint is set to the VM default. (FYI This is an arcane functionality that most programmers never need to worry about. Advanced usage: set size hint to small values (e.g., 1K) to support A LOT (e.g., >10000) of simultaneous shreds; set size hint to large values (e.g., >65K) to spork functions with extremely deep recursion, or to support A LOT (>10000) of declared local variables. Use with care.)",
@@ -3449,14 +3511,16 @@
             "```chuck\nint done()\n```\nHas the Shred reached the end of its execution?",
             "```chuck\nvoid exit()\n```\nHalt the shred's operation and remove it from the virtual machine.",
             "```chuck\nint id()\n```\nGet the unique numeric id of the Shred.",
+            "```chuck\nint memSP()\n```\nGet the calling shred's current memory/call stack pointer; useful for debugging, general information, or amusement.",
+            "```chuck\nShred parent()\n```\nGet the calling shred's parent shred (i.e., the shred that sporked the calling shred). Returns null if there is no parent Shred. (Related: see Shred.ancestor())",
             "```chuck\nstring path()\n```\nGet the path of the source file from which this Shred's code is derived (same as .sourcePath()).",
+            "```chuck\nint pc()\n```\nGet the calling shred's current program counter (CP); useful for debugging, general information, or amusement.",
+            "```chuck\nint regSP()\n```\nGet the calling shred's current register/operand stack pointer; useful for debugging, general information, or amusement.",
             "```chuck\nint running()\n```\nIs the Shred currently actively running in the VM?",
             "```chuck\nstring sourceDir()\n```\nGet the enclosing directory of the source file from which this Shred's code is derived (same as .dir()).",
             "```chuck\nstring sourcePath()\n```\nGet the path of the source file from which this Shred's code is derived (same as .path()).",
             "```chuck\nvoid yield()\n```\nCause the current Shred to temporarily suspend without advancing time, allowing other simultaneously schreduled shreds to run as needed. NOTE: yield() is equivalent to '0::second +=> now;'",
-            "```chuck\nShred ancestor()\n```\nGet the calling shred's \"ancestor\" shred (i.e., the top-level shred). Returns itself if the calling shred is the top-level shred. (Related: see Shred.parent())",
-            "```chuck\nShred fromId(int id)\n```\nGet Shred corresponding to a Shred ID.",
-            "```chuck\nShred parent()\n```\nGet the calling shred's parent shred (i.e., the shred that sporked the calling shred). Returns null if there is no parent Shred. (Related: see Shred.ancestor())"
+            "```chuck\nShred fromId(int id)\n```\nGet Shred corresponding to a Shred ID."
         ],
         "link": "[More...](https://chuck.stanford.edu/doc/reference/base.html#Shred)"
     },
@@ -3582,6 +3646,7 @@
             "```chuck\nfloat rate()\n```\nGet playback rate (relative to file's natural speed). For example, 1.0 is 'normal', 0.5 is half speed, and 2 is twice as fast.",
             "```chuck\nstring read(string read)\n```\nRead file for reading.",
             "```chuck\nint ready()\n```\nQuery whether the SndBuf is ready for use (e.g., sound file successfully loaded).",
+            "```chuck\nint sampleRate()\n```\nGet sample rate of the source audio.",
             "```chuck\nint samples()\n```\nGet total number of sample frames in the file; same as .frames().",
             "```chuck\nfloat valueAt(int pos)\n```\nGet sample value at given position (in samples).",
             "```chuck\nstring write(string read)\n```\nSet file for writing (currently unsupported)."
@@ -3593,7 +3658,10 @@
         "description": "An interpolating sound buffer with two-channel output. Reads from a variety of uncompressed formats.",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nSndBuf2()\n```\nDefault constructor for SndBuf2."
+            "```chuck\nSndBuf2()\n```\nDefault constructor for SndBuf2.",
+            "```chuck\nSndBuf2(string path)\n```\nConstruct a SndBuf2 with the 'path' to a sound file to read.",
+            "```chuck\nSndBuf2(string path, float rate)\n```\nConstruct a SndBuf2 with the 'path' to a sound file to read, and a default playback 'rate' (1.0 is normal rate)",
+            "```chuck\nSndBuf2(string path, float rate, int pos)\n```\nConstruct a SndBuf2 with the 'path' to a sound file to read, a default playback 'rate' (1.0 is normal rate), and starting at sample position 'pos'"
         ],
         "examples": [],
         "functions": [
@@ -3622,6 +3690,7 @@
             "```chuck\nfloat rate()\n```\nGet playback rate (relative to file's natural speed). For example, 1.0 is 'normal', 0.5 is half speed, and 2 is twice as fast.",
             "```chuck\nstring read(string read)\n```\nRead file for reading.",
             "```chuck\nint ready()\n```\nQuery whether the SndBuf is ready for use (e.g., sound file successfully loaded).",
+            "```chuck\nint sampleRate()\n```\nGet sample rate of the source audio.",
             "```chuck\nint samples()\n```\nGet total number of sample frames in the file; same as .frames().",
             "```chuck\nfloat valueAt(int pos)\n```\nGet sample value at given position (in samples).",
             "```chuck\nstring write(string read)\n```\nSet file for writing (currently unsupported)."
@@ -3811,16 +3880,20 @@
     },
     "StringTokenizer": {
         "title": "**String Tokenizer**",
-        "description": "Break a string into tokens. This uses whitespace as the delimiter.",
+        "description": "Break a string into tokens, using (by default) whitespace characters as delimiters. Use the overloaded constructors StringTokenizer(string line) or StringTokenizer( string line, string delims ) to initialize with specific line and delimiters.",
         "constructors": [
             "**Constructors:**",
-            "```chuck\nStringTokenizer()\n```\nDefault constructor for StringTokenizer."
+            "```chuck\nStringTokenizer()\n```\nDefault constructor for StringTokenizer.",
+            "```chuck\nStringTokenizer(string line)\n```\nConstruct a StringTokenizer with a string to tokenize; this will use the default whitespace delimiters.",
+            "```chuck\nStringTokenizer(string line, string delimiters)\n```\nConstruct a StringTokenizer with a string to tokenize, as well as custom delimiters; if the latter is empty string, default whitespace characters will be used."
         ],
         "examples": [
             "Examples: \t [token.ck](https://chuck.stanford.edu/doc/examples/string/token.ck), [readline.ck](https://chuck.stanford.edu/doc/examples/string/readline.ck), [read-tokens.ck](https://chuck.stanford.edu/doc/examples/io/read-tokens.ck), [jabberwocky.txt](https://chuck.stanford.edu/doc/examples/io/jabberwocky.txt), [word2vec-prompt.ck](https://chuck.stanford.edu/doc/examples/ai/word2vec/word2vec-prompt.ck)"
         ],
         "functions": [
             "**Methods:**",
+            "```chuck\nstring delims()\n```\nReturns the string delimination characters.",
+            "```chuck\nstring delims(string delimiters)\n```\nSets the delimination characters as a string. If the argument is an empty string, default whitespace characters \" \\f\\n\\r\\t\\v\" will be used. Also, calling this method resets the state for the token retrieval loop (e.g., .more() and .next())",
             "```chuck\nstring get(int index)\n```\nReturn the i-th token in the set string.",
             "```chuck\nstring get(int index, string out)\n```\nReturn the i-th token in the set string. Additionally, write the token string to the `out` string variable.",
             "```chuck\nint more()\n```\nReturn true (1) if there are still more tokens, false (0) if no more tokens.",
@@ -3895,7 +3968,9 @@
             "**Constructors:**",
             "```chuck\nTubeBell()\n```\nDefault constructor for TubeBell."
         ],
-        "examples": [],
+        "examples": [
+            "Examples: \t [tubebell-algo5.ck](https://chuck.stanford.edu/doc/examples/stk/tubebell-algo5.ck)"
+        ],
         "functions": [],
         "link": "[More...](https://chuck.stanford.edu/doc/reference/ugens-stk.html#TubeBell)"
     },
@@ -3984,6 +4059,7 @@
             "```chuck\nType of(dur val)\n```\nReturn the Type associated with 'dur'.",
             "```chuck\nType of(complex val)\n```\nReturn the Type associated with 'complex'.",
             "```chuck\nType of(polar val)\n```\nReturn the Type associated with 'polar'.",
+            "```chuck\nType of(vec2 val)\n```\nReturn the Type associated with 'vec2'.",
             "```chuck\nType of(vec3 val)\n```\nReturn the Type associated with 'vec3'.",
             "```chuck\nType of(vec4 val)\n```\nReturn the Type associated with 'vec4'."
         ],
@@ -4497,7 +4573,9 @@
         ],
         "functions": [
             "**Methods:**",
-            "```chuck\nint charAt(int index)\n```\nGet a character at the specified index.",
+            "```chuck\nstring appendChar(int theChar)\n```\nAppend a character by its ASCII code and return a reference to itself; same as using the << operator `STR << INT`.",
+            "```chuck\nstring charAt2(int index)\n```\nGet the character at the specified index, and return it as a string.",
+            "```chuck\nint charAt(int index)\n```\nGet the character at the specified index.",
             "```chuck\nvoid erase(int start, int length)\n```\nErase length characters of the string from start position.",
             "```chuck\nint find(int theChar)\n```\nGet the index of the first occurrence of theChar, or -1 if theChar is not found.",
             "```chuck\nint find(int theChar, int start)\n```\nGet the index of the first occurrence of theChar at or after the start position, or -1 if theChar is not found.",
@@ -4515,6 +4593,7 @@
             "```chuck\nint rfind(string str)\n```\nGet the index of the last occurrence of str, or -1 if str is not found.",
             "```chuck\nint rfind(string str, int start)\n```\nGet the index of the last occurrence of str at or before the start position, or -1 if str is not found.",
             "```chuck\nstring rtrim()\n```\nGet a new string in which trailing whitespace has been removed.",
+            "```chuck\nstring setCharAt2(int index, string theChar)\n```\nSet the character (as a string) at the specified index; if `theChar` is an empty string, the character in question is erased from the string; if `theChar` is longer than 1 character, only its first character will be used.",
             "```chuck\nint setCharAt(int index, int theChar)\n```\nSet the character at the specified index.",
             "```chuck\nstring substring(int start)\n```\nGet a new string containing the substring from the start index to the end of the string.",
             "```chuck\nstring substring(int start, int length)\n```\nGet a new string containing the substring from the start index of the specified length.",

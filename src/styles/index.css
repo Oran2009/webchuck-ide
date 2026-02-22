@@ -33,7 +33,8 @@
     display: grid;
     height: 100%;
     grid-template-areas: "app-left splitV1 app-middle splitV2 app-right";
-    grid-template-columns: 2fr 2px 6fr 2px 4fr; /* app column widths */
+    /* app column widths */
+    grid-template-columns: 2fr 2px 6fr 2px 4fr;
     grid-template-rows: 100%;
 }
 
@@ -42,6 +43,7 @@
     #webchuck-ide {
         height: 160vh;
     }
+
     #app {
         @apply px-2 pb-2;
         grid-template-areas:
@@ -51,9 +53,11 @@
         grid-template-rows: 5fr 2px 5fr;
         grid-template-columns: 100%;
     }
+
     #chuck-bar {
         width: 100%;
     }
+
     #chuckBarLeft {
         /* 
             @tzfeng
@@ -62,9 +66,11 @@
         */
         width: calc(100% + 4rem);
     }
+
     #chuckBarRight {
         display: none;
     }
+
     #fileToggle {
         pointer-events: none;
     }
@@ -74,12 +80,15 @@
 #splitV1 {
     grid-area: splitV1;
 }
+
 #splitV2 {
     grid-area: splitV2;
 }
+
 #splitH1 {
     grid-area: splitH1;
 }
+
 #splitH2 {
     grid-area: splitH2;
 }
@@ -90,6 +99,7 @@
     height: 100%;
     width: 100%;
 }
+
 #app-middle {
     grid-area: app-middle;
     min-width: 4rem;
@@ -101,6 +111,7 @@
     grid-template-columns: 100%;
     grid-template-rows: 1fr 2px 28px;
 }
+
 #app-right {
     grid-area: app-right;
     min-width: 1rem;
@@ -117,19 +128,22 @@
 
 /* NAVBAR */
 .dropdownButton {
-    @apply relative px-2 py-2 mr-1 inline-flex items-center font-semibold rounded hover:text-sky-blue-800 transition focus:outline-none;
+    @apply relative px-2 py-2 mr-1 inline-flex items-center font-semibold rounded hover:text-sky-blue-800 focus-visible:text-sky-blue-800 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-blue-800;
 }
+
 .dropdownItem {
-    @apply block w-full text-left font-medium px-4 py-2 hover:bg-gray-50 dark:hover:bg-dark-5 dark:hover:text-light;
+    @apply block w-full text-left font-medium px-4 py-2 hover:bg-gray-100 focus-visible:bg-gray-100 dark:hover:bg-dark-5 dark:focus-visible:bg-dark-5 dark:hover:text-light dark:focus-visible:text-light focus:outline-none;
 }
 
 .dropdown {
     @apply absolute z-40 bg-white divide-y divide-gray-100 max-h-96 rounded-lg shadow-md dark:bg-dark dark:divide-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none origin-top-left;
     animation: enter-transition 0.1s ease-in-out forwards;
 }
+
 .nestedDropdownButton {
     @apply flex items-center justify-between w-full;
 }
+
 .nestedDropdown {
     @apply absolute z-50 bg-white divide-y divide-gray-100 max-h-96 overflow-y-auto rounded-lg shadow-md dark:bg-dark dark:divide-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none origin-top-left left-full top-0 -mt-2;
     animation: enter-transition 0.1s ease-in-out forwards;
@@ -137,11 +151,17 @@
 
 /* EXAMPLES */
 #autocomplete-list li {
-    @apply px-3 py-2 cursor-pointer hover:bg-opacity-50 hover:bg-sky-blue-100 dark:hover:bg-dark-5;
+    @apply px-3 py-2 cursor-pointer hover:bg-opacity-50 focus-visible:bg-opacity-50 hover:bg-sky-blue-100 focus-visible:bg-sky-blue-100 focus:outline-none dark:hover:bg-dark-5 dark:focus-visible:bg-dark-5;
 }
+
 #autocomplete-list pre {
     @apply text-sm font-mono;
 }
+
+#autocomplete-list li.selected {
+    @apply bg-sky-blue-100 dark:bg-dark-5;
+}
+
 .highlight {
     @apply bg-orange-light;
 }
@@ -149,69 +169,84 @@
 .breadcrumb-item {
     @apply inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-400;
 }
+
 .breadcrumb-item.hover {
     @apply hover:text-orange;
 }
 
 .explorer-item {
-    @apply px-3 py-2 cursor-pointer text-lg rounded-lg text-orange hover:bg-opacity-50 hover:bg-sky-blue-100 dark:hover:bg-dark-5;
+    @apply px-3 py-2 cursor-pointer text-lg rounded-lg text-orange hover:bg-opacity-50 focus-visible:bg-opacity-50 hover:bg-sky-blue-100 focus-visible:bg-sky-blue-100 focus:outline-none dark:hover:bg-dark-5 dark:focus-visible:bg-dark-5;
 }
+
 .explorer-item.folder {
     @apply font-semibold;
 }
+
 /* CHUCK BAR */
 #chuck-bar .chuck-button {
-    @apply px-1 mr-2 disabled:opacity-50 focus:outline-none enabled:hover:filter enabled:hover:invert-20 transition duration-300;
-    min-width: 2.75rem; /* same height as chuck button */
+    @apply px-1 mr-2 disabled:opacity-50 focus:outline-none enabled:hover:filter enabled:hover:invert-20 transition duration-300 focus-visible:ring-2 focus-visible:ring-blue-600 dark:focus-visible:ring-blue-200 rounded-lg focus-visible:ring-offset-2 dark:focus-visible:ring-offset-dark;
+    min-width: 2.75rem;
+    /* same height as chuck button */
 }
 
 /* FILE EXPLORER */
 #fileExplorerContainer {
     @apply relative h-full w-full;
 }
+
 #fileExplorerUploadPrompt {
     @apply absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 dark:bg-opacity-20 transition;
     user-select: none;
     pointer-events: none;
 }
+
 .fileExplorerEntry {
-    @apply flex items-center w-full relative hover:bg-[#ebeae8] dark:hover:bg-dark-5 hover:cursor-pointer whitespace-nowrap;
+    @apply flex items-center w-full relative hover:bg-[#ebeae8] focus-visible:bg-[#ebeae8] dark:hover:bg-dark-5 dark:focus-visible:bg-dark-5 hover:cursor-pointer whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600 dark:focus-visible:ring-blue-200;
 }
+
 .fileExplorerEntry.active {
     @apply bg-orange-peach dark:bg-dark-8;
 }
+
 .fileExplorerItem {
     @apply px-2 m-1 flex items-center w-full overflow-clip;
 }
+
 .fileExplorerItem::before {
     content: url(/img/file.svg);
     @apply dark:filter dark:invert inline-block box-border pr-1 h-7;
 }
+
 .fileExplorerItem[type="ck"]::before {
     content: url(/img/ck-color.svg);
     @apply dark:filter-none;
 }
+
 .fileExplorerItem[type="wav"]::before {
     content: url(/img/audio.svg);
     @apply dark:filter dark:invert;
 }
+
 .fileExplorerItem[type="txt"]::before {
     content: url(/img/txt.svg);
     @apply dark:filter dark:invert;
 }
+
 .fileExplorerItem[type="csv"]::before {
     content: url(/img/csv.svg);
     @apply dark:filter dark:invert;
 }
+
 .fileExplorerOptions {
     @apply px-1 py-1 mr-1 flex absolute right-0 items-center opacity-100 transition-all bg-inherit;
-}
-.fileExplorerOptions > .fileEntryDelete {
-    @apply text-red-600 dark:text-red-200;
 }
 
 .fileExplorerOptions.hide {
     @apply opacity-0;
+}
+
+.fileExplorerOptions>.fileEntryDelete {
+    @apply text-red-600 dark:text-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-600 dark:focus-visible:ring-red-200 rounded;
 }
 
 #editorPanel {
@@ -241,17 +276,27 @@
     height: 100%;
 }
 
-.rendered-markdown > p > strong > span {
+.rendered-markdown>p>strong>span {
     margin-bottom: 0 !important;
 }
 
 /* for hover documentation syntax highlighting */
+.monaco-hover {
+    max-width: min(60vw, 600px) !important;
+}
+
+.monaco-hover-content {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+}
+
 .monaco-hover code,
-span > .monaco-tokenized-source {
+span>.monaco-tokenized-source {
     font-size: 0.95em !important;
     font-family: "Consolas", monospace;
 }
-.monaco-tokenized-source > span.mtk1 {
+
+.monaco-tokenized-source>span.mtk1 {
     @apply text-dark dark:text-light;
 }
 
@@ -260,7 +305,7 @@ span > .monaco-tokenized-source {
     overflow: hidden;
 }
 
-#vimStatus > span > span > input {
+#vimStatus>span>span>input {
     @apply outline-none bg-transparent border-none;
 }
 
@@ -281,6 +326,7 @@ table tbody tr td {
 td:nth-child(3) {
     @apply min-w-fit;
 }
+
 td:nth-child(4) {
     @apply block text-center align-middle;
 }
@@ -293,6 +339,7 @@ td:nth-child(4) {
 .toggle-button {
     @apply mr-2 mb-2 p-1 bg-transparent text-orange enabled:hover:text-white enabled:hover:bg-orange border border-orange rounded transition-all disabled:opacity-50;
 }
+
 .toggle-button.active {
     @apply bg-orange text-white enabled:hover:bg-orange-400 enabled:dark:hover:bg-orange-400;
 }
@@ -319,11 +366,13 @@ td:nth-child(4) {
 .log-container {
     @apply px-2 py-1 mb-1 overflow-hidden border border-dark-d rounded-lg bg-white dark:bg-dark dark:border-dark-4;
 }
+
 .logMsg {
     margin-bottom: 5px;
     opacity: 1;
     transition: opacity 1s;
 }
+
 .fade-out {
     opacity: 0;
 }
@@ -340,29 +389,40 @@ td:nth-child(4) {
 dialog {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15), 0 7px 10px rgba(0, 0, 0, 0.05);
 }
+
 dialog::backdrop {
     @apply bg-white bg-opacity-50;
 }
+
 .modal {
     @apply w-full px-8 py-6 rounded-lg dark:bg-dark dark:text-white;
     max-height: 75vh;
     max-width: 640px;
     animation: enter-transition 0.1s ease-in-out forwards;
 }
+
 .modal form input,
 .modal form textarea,
 .modal form select {
     @apply dark:bg-dark-4;
 }
+
 .form-label {
     @apply block leading-5 py-2;
 }
+
 .form-input {
-    @apply w-full border px-2 py-1 rounded-md;
+    @apply w-full border px-2 py-1 rounded-md focus-visible:outline-none focus-visible:border-blue-500 focus-visible:ring-1 focus-visible:ring-blue-600 dark:focus-visible:ring-blue-200;
 }
+
+.form-select {
+    @apply w-full border px-2 py-1 rounded-md focus-visible:outline-none focus-visible:border-blue-500 focus-visible:ring-1 focus-visible:ring-blue-600 dark:focus-visible:ring-blue-200;
+}
+
 .modal.modal-sm {
     max-width: 320px;
 }
+
 .modal.modal-lg {
     max-width: 960px;
 }
@@ -401,6 +461,7 @@ dialog::backdrop {
     @apply relative hover:bg-orange hover:transition hover:opacity-100 hover:h-2 hover:-top-1;
     cursor: row-resize;
 }
+
 .hSplit::after {
     @apply block w-full h-2 -top-[4px] absolute z-30;
     content: "";

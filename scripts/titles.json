@@ -9,6 +9,7 @@
     "@array": "Array Class",
     "UGen": "Unit Generator Base Class",
     "Gain": "Gain",
+    "GainDB": "Gain in Decibels",
     "Impulse": "Impulse Generator",
     "Step": "Step Generator",
     "SndBuf": "Sound Buffer",

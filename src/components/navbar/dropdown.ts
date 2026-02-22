@@ -65,6 +65,25 @@ export default class Dropdown {
             }
         });
 
+        // Close dropdown when focus leaves the container
+        this.container.addEventListener("focusout", (event: FocusEvent) => {
+            if (!this.container.contains(event.relatedTarget as Node)) {
+                this.close();
+            }
+        });
+
+        // Close on Escape
+        this.container.addEventListener("keydown", (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                this.close();
+                this.button.focus();
+            }
+        });
+
+        // Initial accessibility state
+        this.button.setAttribute("aria-expanded", "false");
+        this.button.setAttribute("aria-haspopup", "true");
+
         // Move the dropdown when navbar scrolls
         NavBar.navbar.addEventListener("scroll", () => {
             const pos = this.button.getBoundingClientRect();
@@ -82,12 +101,14 @@ export default class Dropdown {
         // set focus to file button
         this.button.focus();
         this.open = true;
+        this.button.setAttribute("aria-expanded", "true");
         this.dropdown.classList.remove("hidden");
     }
 
     close() {
         if (!this.open) return;
         this.open = false;
+        this.button.setAttribute("aria-expanded", "false");
         this.dropdown.classList.add("hidden");
         if (currentDropdown === this) {
             currentDropdown = null;
