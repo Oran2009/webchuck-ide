@@ -172,6 +172,12 @@
                         System: On
                       </button>
                     </li>
+                    <li class="divider dark:border-t-gray-400" data-content="FULLSCREEN"></li>
+                    <li>
+                      <button id="toolbarToggle" type="button" class="dropdownItem">
+                        Toolbar: On
+                      </button>
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -408,7 +414,15 @@
                 <button id="vmMonitorTab"  type="button" class="header-item text-dark-5" role="tab" aria-selected="false" aria-controls="vmMonitorContainer">VM MONITOR</button>
                 <button id="consoleTab"    type="button" class="header-item text-dark-5" role="tab" aria-selected="false" aria-controls="consoleContainer">CONSOLE</button>
                 <button id="visualizerTab" type="button" class="header-item text-dark-5" role="tab" aria-selected="false" aria-controls="visualizerContainer">VISUALIZER</button>
+                <button id="canvasTab"     type="button" class="header-item text-dark-5 hidden" role="tab" aria-selected="false" aria-controls="canvasContainer">CANVAS</button>
               </div>
+              <button id="fullscreenBtn" type="button" class="header-item ml-auto text-dark-5 dark:text-dark-a hover:text-dark-8 dark:hover:text-dark-c hidden" title="Fullscreen" aria-label="Fullscreen">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                  <path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2 2h6"></path>
+                </svg>
+              </button>
               <div id="consoleFontSize" class="ml-auto flex items-center gap-0.5 text-xs hidden" style="color: var(--ide-text-muted, #888)">
                 <button id="consoleFontDown" type="button" class="px-1 hover:text-dark dark:hover:text-light focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 rounded" title="Decrease font size" aria-label="Decrease console font size">A-</button>
                 <button id="consoleFontUp" type="button" class="px-1 hover:text-dark dark:hover:text-light focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 rounded" title="Increase font size" aria-label="Increase console font size">A+</button>
@@ -442,6 +456,9 @@
                 <b>Start WebChucK for visualizer</b>
               </div>
               <canvas id="visualizer" class="absolute inset-0 w-full h-full" aria-label="Audio visualizer"></canvas>
+            </div>
+            <div id="canvasContainer" class="flex-1 bg-white dark:bg-dark-2 hidden">
+              <canvas id="canvas" class="w-full h-full"></canvas>
             </div>
           </div>
         </div>
@@ -503,12 +520,21 @@
         <h2 id="settings-heading" class="text-xl font-medium pb-2">Settings</h2>
         <!-- Setting Options-->
         <form class="flex flex-col gap-2 py-2 pr-7" method="dialog">
-          <label class="form-label" for="chuck-version-select">ChucK version</label>
-          <select id="chuck-version-select" class="form-select">
-            <option value="stable">Stable</option>
-            <option value="dev">Development</option>
+          <label class="form-label" for="engine-select">Engine</label>
+          <select id="engine-select" class="form-select">
+            <option value="webchuck">WebChucK (Audio only)</option>
+            <option value="webchugl">WebChuGL (Audio + Graphics)</option>
           </select>
-          <p id="chuck-version-desc" class="text-sm text-dark-8 dark:text-gray-400 mt-1"></p>
+          <p id="engine-desc" class="text-sm text-dark-8 dark:text-gray-400 mt-1"></p>
+
+          <div id="chuck-version-group">
+            <label class="form-label" for="chuck-version-select">ChucK version</label>
+            <select id="chuck-version-select" class="form-select">
+              <option value="stable">Stable</option>
+              <option value="dev">Development</option>
+            </select>
+            <p id="chuck-version-desc" class="text-sm text-dark-8 dark:text-gray-400 mt-1"></p>
+          </div>
 
           <label class="form-label" for="sample-rate-select">Sample Rate</label>
           <select id="sample-rate-select" class="form-select">
@@ -658,6 +684,34 @@
           <button id="share-code-copy" type="button" class="button primary">Copy</button>
         </div>
       </dialog>
+    </div>
+
+    <!-- Fullscreen Overlay (outside #webchuck-ide grid to avoid layout interference) -->
+    <div id="fullscreenOverlay" class="fullscreen-overlay hidden">
+      <div id="fullscreenContent" class="fullscreen-content"></div>
+      <div id="fullscreenToolbar" class="fullscreen-toolbar toolbar-hidden">
+        <button id="fullscreenClose" type="button" class="fullscreen-btn" title="Exit fullscreen (Esc)" aria-label="Close fullscreen">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <div class="fullscreen-divider"></div>
+        <button id="fullscreenToggleBtn" type="button" class="fullscreen-btn" title="Toggle fullscreen" aria-label="Toggle fullscreen">
+          <svg id="fullscreenExpandIcon" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <polyline points="9 21 3 21 3 15"></polyline>
+            <line x1="21" y1="3" x2="14" y2="10"></line>
+            <line x1="3" y1="21" x2="10" y2="14"></line>
+          </svg>
+          <svg id="fullscreenShrinkIcon" class="w-5 h-5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="4 14 10 14 10 20"></polyline>
+            <polyline points="20 10 14 10 14 4"></polyline>
+            <line x1="14" y1="10" x2="21" y2="3"></line>
+            <line x1="3" y1="21" x2="10" y2="14"></line>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <script type="module" src="/src/main.ts"></script>

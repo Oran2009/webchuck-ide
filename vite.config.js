@@ -11,5 +11,11 @@ export default defineConfig({
       '@services': path.resolve(__dirname, './src/services'),
       '@styles': path.resolve(__dirname, './src/styles'),
     },
-  }
+  },
+  server: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'credentialless',
+    },
+  },
 });
