@@ -145,6 +145,8 @@ export default class FullscreenOverlay {
         // Trigger resize after reparent (next frame for layout reflow)
         requestAnimationFrame(() => {
             FullscreenOverlay.onResize();
+            // Focus the close button for keyboard accessibility
+            document.querySelector<HTMLButtonElement>("#fullscreenClose")?.focus();
         });
     }
 
@@ -233,6 +235,22 @@ export default class FullscreenOverlay {
                 document.exitFullscreen();
             } else {
                 FullscreenOverlay.close();
+            }
+        }
+        // Focus trap: keep Tab within the overlay
+        if (e.key === "Tab") {
+            const focusable = FullscreenOverlay.overlay.querySelectorAll<HTMLElement>(
+                "button:not([disabled]), [tabindex]:not([tabindex=\"-1\"])"
+            );
+            if (focusable.length === 0) return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
             }
         }
     }

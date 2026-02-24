@@ -49,6 +49,8 @@
 
   <body class="h-full w-full">
 
+    <!-- Skip Navigation -->
+    <a href="#monacoEditor" class="sr-only focus:not-sr-only focus:absolute focus:z-[99999] focus:bg-orange focus:text-white focus:px-4 focus:py-2 focus:rounded-md">Skip to editor</a>
 
     <!-- WEBCHUCK IDE -->
     <div id="webchuck-ide" class="grid w-full h-screen bg-sky-blue dark:bg-dark
@@ -82,23 +84,23 @@
                 </button>
                 <div id="fileDropdown" class="hidden dropdown w-40">
                   <ul class="py-2 text-base text-gray-700 dark:text-light" aria-labelledby="fileButton" role="menu">
-                    <li role="separator">
+                    <li role="none">
                       <button id="newFile" type="button" class="dropdownItem" role="menuitem">
                         New
                       </button>
                     </li>
-                    <li role="separator">
+                    <li role="none">
                       <input id="fileUploader" type="file" multiple hidden aria-label="Upload files" />
                       <button id="uploadFiles" type="button" class="dropdownItem disabled:opacity-50" role="menuitem" disabled>
                         Upload Files
                       </button>
                     </li>
-                    <li role="separator">
+                    <li role="none">
                       <button id="newProject" type="button" class="dropdownItem" role="menuitem">
                         New Project
                       </button>
                     </li>
-                    <li id="exportToContainer" class="relative" role="separator">
+                    <li id="exportToContainer" class="relative" role="none">
                       <button id="exportToButton" type="button" class="dropdownItem nestedDropdownButton" role="menuitem">
                         Export to
                         <svg class="w-2.5 h-2.5 ml-3 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
@@ -107,25 +109,25 @@
                       </button>
                       <div id="exportToDropdown" class="nestedDropdown w-36 hidden">
                         <ul class="py-2 text-base text-gray-700 dark:text-gray-200" role="menu" aria-labelledby="exportToButton">
-                          <li role="separator">
+                          <li role="none">
                             <button id="exportChuck" type="button" class="dropdownItem" role="menuitem">
                               ChucK
                             </button>
                           </li>
-                          <li role="separator">
+                          <li role="none">
                             <button id="exportWebchuck" type="button" class="dropdownItem" role="menuitem">
                               WebChucK
                             </button>
                           </li>
-                          <li>
-                            <button id="exportWebchugl" type="button" class="dropdownItem">
+                          <li role="none">
+                            <button id="exportWebchugl" type="button" class="dropdownItem" role="menuitem">
                               WebChuGL
                             </button>
                           </li>
                         </ul>
                       </div>
                     </li>
-                    <li role="separator">
+                    <li role="none">
                       <button id="openSettings" type="button" class="dropdownItem" role="menuitem">
                         Settings
                       </button>
@@ -143,7 +145,7 @@
                 </button>
                 <div id="editDropdown" class="hidden dropdown w-40">
                   <ul class="py-2 text-base text-gray-700 dark:text-gray-200" aria-labelledby="editButton" role="menu">
-                    <li role="separator">
+                    <li role="none">
                       <button id="vimToggle" type="button" class="dropdownItem" role="menuitem">
                         Vim Mode: Off
                       </button>
@@ -161,25 +163,25 @@
                 </button>
                 <div id="viewDropdown" class="hidden dropdown w-40">
                   <ul class="py-2 text-base text-gray-700 dark:text-gray-200" aria-labelledby="viewButton" role="menu">
-                    <li role="separator">
+                    <li role="none">
                       <button id="chuckNowToggle" type="button" class="dropdownItem" role="menuitem">
                         ChucK Time: Off
                       </button>
                     </li>
                     <li class="divider dark:border-t-gray-400" data-content="THEME" role="separator"></li>
-                    <li role="separator">
+                    <li role="none">
                       <button id="darkModeToggle" type="button" class="dropdownItem disabled:opacity-50" role="menuitem">
                         Mode: Light
                       </button>
                     </li>
-                    <li role="separator">
+                    <li role="none">
                       <button id="colorPreferenceToggle" type="button" class="dropdownItem" role="menuitem">
                         System: On
                       </button>
                     </li>
-                    <li class="divider dark:border-t-gray-400" data-content="FULLSCREEN"></li>
-                    <li>
-                      <button id="toolbarToggle" type="button" class="dropdownItem">
+                    <li class="divider dark:border-t-gray-400" data-content="FULLSCREEN" role="separator"></li>
+                    <li role="none">
+                      <button id="toolbarToggle" type="button" class="dropdownItem" role="menuitem">
                         Toolbar: On
                       </button>
                     </li>
@@ -209,29 +211,29 @@
                 </button>
                 <div id="helpDropdown" class="hidden dropdown w-52">
                   <ul class="py-2 text-base text-gray-700 dark:text-gray-200" aria-labelledby="helpButton" role="menu">
-                    <li role="separator">
+                    <li role="none">
                       <a href="https://chuck.stanford.edu/doc/reference" target="_blank" rel="noopener noreferrer" class="dropdownItem" role="menuitem">ChucK API Reference</a>
                     </li>
-                    <li role="separator">
+                    <li role="none">
                       <a href="https://chuck.stanford.edu/webchuck/" target="_blank" rel="noopener noreferrer" class="dropdownItem" role="menuitem">Learn WebChucK</a>
                     </li>
-                    <li role="separator">
+                    <li role="none">
                       <a href="https://discord.gg/ENr3nurrx8" target="_blank" rel="noopener noreferrer" class="dropdownItem" role="menuitem">Discord Community</a>
                     </li>
-                    <li role="separator">
+                    <li role="none">
                       <button id="keyboard-shortcuts" type="button" class="dropdownItem" role="menuitem">Keyboard Shortcuts</button>
                     </li>
 
                     <li class="divider dark:border-t-gray-400" data-content="GITHUB" role="separator"></li>
-                    <li role="separator">
+                    <li role="none">
                       <a href="https://github.com/ccrma/webchuck-ide" target="_blank" rel="noopener noreferrer" class="dropdownItem" role="menuitem">GitHub Repo</a>
                     </li>
-                    <li role="separator">
+                    <li role="none">
                       <a href="https://github.com/ccrma/webchuck-ide/issues/new" target="_blank" rel="noopener noreferrer" class="dropdownItem" role="menuitem">Report an Issue</a>
                     </li>
 
                     <li class="divider dark:border-t-gray-400" data-content="ABOUT" role="separator"></li>
-                    <li role="separator">
+                    <li role="none">
                       <button id="about-ide" type="button" class="dropdownItem" role="menuitem">About IDE...</button>
                     </li>
 
@@ -345,6 +347,7 @@
         <div id="app-middle">
           <!-- Editor Panel -->
           <div id="editorPanel" class="h-full flex flex-col justify-start">
+            <h2 class="sr-only">Code Editor</h2>
             <!-- Monaco -->
             <h2 class="sr-only">Code Editor</h2>
             <div id="editorPanelHeader" class="header h-10 justify-start flex-none overflow-hidden">
@@ -462,8 +465,8 @@
               </div>
               <canvas id="visualizer" class="absolute inset-0 w-full h-full" aria-label="Audio visualizer"></canvas>
             </div>
-            <div id="canvasContainer" class="flex-1 bg-white dark:bg-dark-2 hidden">
-              <canvas id="canvas" class="w-full h-full"></canvas>
+            <div id="canvasContainer" class="flex-1 bg-white dark:bg-dark-2 hidden" role="tabpanel" aria-labelledby="canvasTab">
+              <canvas id="canvas" class="w-full h-full" aria-label="ChuGL graphics canvas"></canvas>
             </div>
           </div>
         </div>
@@ -530,7 +533,7 @@
             <option value="webchuck">WebChucK (Audio only)</option>
             <option value="webchugl">WebChuGL (Audio + Graphics)</option>
           </select>
-          <p id="engine-desc" class="text-sm text-dark-8 dark:text-gray-400 mt-1"></p>
+          <p id="engine-desc" class="text-sm text-dark-5 dark:text-gray-300 mt-1"></p>
 
           <div id="chuck-version-group">
             <label class="form-label" for="chuck-version-select">ChucK version</label>
@@ -538,7 +541,7 @@
               <option value="stable">Stable</option>
               <option value="dev">Development</option>
             </select>
-            <p id="chuck-version-desc" class="text-sm text-dark-8 dark:text-gray-400 mt-1"></p>
+            <p id="chuck-version-desc" class="text-sm text-dark-5 dark:text-gray-300 mt-1"></p>
           </div>
 
           <label class="form-label" for="sample-rate-select">Sample Rate</label>
@@ -677,9 +680,9 @@
       </dialog>
 
       <!-- Export to WebChuGL Modal -->
-      <dialog class="modal" id="export-webchugl-modal">
+      <dialog class="modal" id="export-webchugl-modal" aria-labelledby="export-chugl-heading">
         <form class="flex flex-col gap-2 py-2" method="dialog">
-          <h1 class="text-xl font-medium pb-2">Export to WebChuGL</h1>
+          <h2 id="export-chugl-heading" class="text-xl font-medium pb-2">Export to WebChuGL</h2>
 
           <div>
             <label class="form-label" for="export-chugl-title">Title</label>
@@ -702,6 +705,7 @@
       <!-- Share Code Modal -->
       <dialog class="modal modal-sm" id="share-code-modal" aria-labelledby="share-code-heading">
         <form class="flex flex-col gap-2 py-2" method="dialog">
+          <h2 id="share-code-heading" class="text-xl font-medium pb-2">Share Code</h2>
           <!-- display url to copy -->
           <h2 id="share-code-heading" class="sr-only">Share Code</h2>
           <label class="form-label" for="share-code-url">Shareable URL</label>
@@ -712,6 +716,9 @@
           <button id="share-code-copy" type="button" class="button primary">Copy</button>
         </div>
       </dialog>
+
+      <!-- Accessibility live region for status announcements -->
+      <div id="a11y-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
     </div>
 
     <!-- Fullscreen Overlay (outside #webchuck-ide grid to avoid layout interference) -->
