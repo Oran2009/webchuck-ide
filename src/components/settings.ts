@@ -1,6 +1,7 @@
 //---------------------------------------------------
 // title: Settings
 // desc:  IDE settings modal for ChucK versions
+//        and engine mode (WebChucK vs WebChuGL)
 //
 // author: terry feng
 // date:   April 2024
@@ -13,6 +14,23 @@ const versionString = Object.freeze({
     dev: "dev",
 });
 
+const engineString = Object.freeze({
+    webchuck: "webchuck",
+    webchugl: "webchugl",
+});
+
+export type EngineMode = "webchuck" | "webchugl";
+
+/**
+ * Read the current engine mode from localStorage
+ */
+export function getEngineMode(): EngineMode {
+    const stored = localStorage.getItem("engineMode");
+    return stored === engineString.webchugl
+        ? engineString.webchugl
+        : engineString.webchuck;
+}
+
 export default class Settings {
     public static openButton: HTMLButtonElement;
     public static modal: HTMLDialogElement;
@@ -22,6 +40,9 @@ export default class Settings {
     public static versionDescription: HTMLParagraphElement;
     public static sampleRateSelect: HTMLSelectElement;
     public static sampleRateDescription: HTMLParagraphElement;
+    public static versionGroup: HTMLDivElement;
+    public static engineSelect: HTMLSelectElement;
+    public static engineDescription: HTMLParagraphElement;
 
     constructor() {
         Settings.openButton =
@@ -43,6 +64,12 @@ export default class Settings {
             document.querySelector<HTMLSelectElement>("#sample-rate-select")!;
         Settings.sampleRateDescription =
             document.querySelector<HTMLParagraphElement>("#sample-rate-desc")!;
+        Settings.versionGroup =
+            document.querySelector<HTMLDivElement>("#chuck-version-group")!;
+        Settings.engineSelect =
+            document.querySelector<HTMLSelectElement>("#engine-select")!;
+        Settings.engineDescription =
+            document.querySelector<HTMLParagraphElement>("#engine-desc")!;
 
         // Open settings
         Settings.openButton.addEventListener("click", () => {
@@ -62,6 +89,12 @@ export default class Settings {
             this.applySettings();
         });
 
+        // Engine select
+        Settings.engineSelect.addEventListener("change", () => {
+            this.selectEngine(Settings.engineSelect.value as EngineMode);
+        });
+        this.selectEngine(getEngineMode());
+
         // Chuck version select
         Settings.versionSelect.addEventListener("change", () => {
             this.selectChucKVersion(Settings.versionSelect.value);
@@ -79,6 +112,23 @@ export default class Settings {
                 Settings.sampleRateSelect.value
             );
         });
+    }
+
+    /**
+     * Select engine mode (WebChucK or WebChuGL)
+     */
+    selectEngine(engine: EngineMode) {
+        Settings.engineSelect.value = engine;
+        if (engine === engineString.webchugl) {
+            Settings.engineDescription.textContent =
+                "ChucK with ChuGL graphics (WebGPU). Enables 3D rendering.";
+            // Hide version dropdown — WebChuGL has its own version
+            Settings.versionGroup.classList.add("hidden");
+        } else {
+            Settings.engineDescription.textContent =
+                "Audio-only ChucK runtime. Lightweight and fast.";
+            Settings.versionGroup.classList.remove("hidden");
+        }
     }
 
     /**
@@ -119,6 +169,10 @@ export default class Settings {
      * Apply settings and refresh the page
      */
     applySettings() {
+        // Save engine mode
+        localStorage.setItem("engineMode", Settings.engineSelect.value);
+
+        // Save ChucK version (only relevant for WebChucK mode)
         const version = Settings.versionSelect.value === versionString.stable;
         selectChuckSrc(version);
         localStorage.setItem(

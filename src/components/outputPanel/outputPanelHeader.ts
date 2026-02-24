@@ -1,13 +1,18 @@
 import Console from "@/components/outputPanel/console";
 import Editor from "@/components/editor/monaco/editor";
+import FullscreenOverlay from "@components/outputPanel/fullscreenOverlay";
 import OutputHeaderToggle from "@components/toggle/outputHeaderToggle";
-import { visual } from "@/host";
+import { visual, engineMode } from "@/host";
 import { getAppColumnWidths, setAppColumnWidths } from "@/utils/appLayout";
+
+const OUTPUT_HEADER_HEIGHT: number = 1.75; // rem
 
 export default class OutputPanelHeader {
     public static consoleContainer: HTMLDivElement;
     public static vmMonitorContainer: HTMLDivElement;
     public static visualizerContainer: HTMLDivElement;
+    public static canvasContainer: HTMLDivElement;
+    public static fullscreenButton: HTMLButtonElement;
     private static savedColumnWidths: [number, number, number] | null = null;
 
     constructor() {
@@ -27,6 +32,18 @@ export default class OutputPanelHeader {
             document.querySelector<HTMLButtonElement>("#visualizerTab")!;
         OutputPanelHeader.visualizerContainer =
             document.querySelector<HTMLDivElement>("#visualizerContainer")!;
+        // Canvas (ChuGL)
+        const canvasButton =
+            document.querySelector<HTMLButtonElement>("#canvasTab")!;
+        OutputPanelHeader.canvasContainer =
+            document.querySelector<HTMLDivElement>("#canvasContainer")!;
+
+        // Fullscreen button
+        OutputPanelHeader.fullscreenButton =
+            document.querySelector<HTMLButtonElement>("#fullscreenBtn")!;
+        OutputPanelHeader.fullscreenButton.addEventListener("click", () => {
+            OutputPanelHeader.openFullscreen();
+        });
 
         // Build toggles
         new OutputHeaderToggle(
@@ -44,12 +61,39 @@ export default class OutputPanelHeader {
             OutputPanelHeader.visualizerContainer
         );
 
+        // Canvas tab — only visible in WebChuGL mode
+        if (engineMode === "webchugl") {
+            canvasButton.classList.remove("hidden");
+            new OutputHeaderToggle(
+                canvasButton,
+                OutputPanelHeader.canvasContainer,
+                true // default active in ChuGL mode
+            );
+        }
+
         // Recalculate split heights on window resize
         window.addEventListener("resize", () => {
             OutputPanelHeader.updateOutputPanel(
                 OutputHeaderToggle.numActive
             );
         });
+    }
+
+    /**
+     * Determine which output tab is active and open the fullscreen overlay
+     */
+    static openFullscreen() {
+        if (
+            !OutputPanelHeader.canvasContainer.classList.contains("hidden")
+        ) {
+            FullscreenOverlay.open("canvas");
+        } else if (
+            !OutputPanelHeader.visualizerContainer.classList.contains(
+                "hidden"
+            )
+        ) {
+            FullscreenOverlay.open("visualizer");
+        }
     }
 
     /**
@@ -91,9 +135,25 @@ export default class OutputPanelHeader {
             return;
         }
 
-        requestAnimationFrame(() => {
-            Console.resizeConsole();
-            visual?.resize();
-        });
+        // Split the container heights evenly
+        const splitHeight: string = `calc((100% - ${OUTPUT_HEADER_HEIGHT}rem)/${tabsActive})`;
+        OutputPanelHeader.consoleContainer.style.height = splitHeight;
+        OutputPanelHeader.visualizerContainer.style.height = splitHeight;
+        OutputPanelHeader.canvasContainer.style.height = splitHeight;
+
+        Console.resizeConsole();
+        visual?.resize();
+
+        // Show fullscreen button only when visualizer or canvas is visible
+        const showFullscreen =
+            !OutputPanelHeader.visualizerContainer.classList.contains(
+                "hidden"
+            ) ||
+            !OutputPanelHeader.canvasContainer.classList.contains("hidden");
+        if (showFullscreen) {
+            OutputPanelHeader.fullscreenButton?.classList.remove("hidden");
+        } else {
+            OutputPanelHeader.fullscreenButton?.classList.add("hidden");
+        }
     }
 }

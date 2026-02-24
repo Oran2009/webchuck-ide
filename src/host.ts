@@ -4,7 +4,8 @@
 //        related to Web Audio API
 //
 //        Creates the AudioContext and WebChucK Web Audio
-//        Node instance (Chuck)
+//        Node instance (Chuck) — or initializes WebChuGL
+//        when in ChuGL engine mode.
 //
 // author: terry feng
 // date:   August 2023
@@ -22,6 +23,12 @@ import ChuckBar from "@/components/chuckBar/chuckBar";
 import ProjectSystem from "@/components/fileExplorer/projectSystem";
 import Recorder from "@/components/chuckBar/recorder";
 import NavBar from "./components/navbar/navbar";
+import { getEngineMode, type EngineMode } from "@/components/settings";
+import {
+    type ChucKAdapter,
+    WebChucKAdapter,
+    WebChuGLAdapter,
+} from "@/adapter";
 
 // WebChucK source
 const DEV_CHUCK_SRC = "https://chuck.stanford.edu/webchuck/dev/"; // dev webchuck src
@@ -32,7 +39,11 @@ let whereIsChuck: string =
         ? DEV_CHUCK_SRC
         : PROD_CHUCK_SRC;
 
-let theChuck: Chuck;
+// Engine mode
+export const engineMode: EngineMode = getEngineMode();
+
+// The unified ChucK adapter (set during init)
+let theChuck: ChucKAdapter;
 let chuckVersion: string = "1.5.X.X";
 let audioContext: AudioContext;
 let sampleRate: number = 0;
@@ -55,10 +66,22 @@ export async function selectChuckSrc(production: boolean) {
 }
 
 /**
- * Initialize theChuck and audio context on page load
- * Audio Context will be suspended until the user presses "Start WebChucK"
+ * Initialize theChuck — dispatches to WebChucK or WebChuGL
+ * based on the engine mode setting.
  */
 export async function initChuck() {
+    if (engineMode === "webchugl") {
+        await initChuGL();
+    } else {
+        await initWebChucK();
+    }
+}
+
+/**
+ * Initialize WebChucK (audio-only mode)
+ * Audio Context will be suspended until the user presses "Start WebChucK"
+ */
+async function initWebChucK() {
     const storedRate = localStorage.getItem("sampleRate");
     audioContext =
         storedRate && storedRate !== "default"
@@ -98,11 +121,12 @@ export async function initChuck() {
         }
     }
 
+    let rawChuck: Chuck;
     try {
         if (targetSrc === BACKUP_CHUCK_SRC) {
             Chuck.chuginsToLoad = [];
         }
-        theChuck = await Chuck.init(
+        rawChuck = await Chuck.init(
             [],
             audioContext,
             audioContext.destination.maxChannelCount,
@@ -114,16 +138,57 @@ export async function initChuck() {
         if (targetSrc !== BACKUP_CHUCK_SRC) {
             console.error("Falling to backup WebChucK WASM + JS");
             Chuck.chuginsToLoad = [];
-            theChuck = await Chuck.init(
+            rawChuck = await Chuck.init(
                 [],
                 audioContext,
                 audioContext.destination.maxChannelCount,
                 BACKUP_CHUCK_SRC
             );
+        } else {
+            throw error;
         }
     }
+
+    theChuck = new WebChucKAdapter(rawChuck);
     theChuck.connect(audioContext.destination);
     Console.print("WebChucK is ready!");
+
+    onChuckReady();
+}
+
+/**
+ * Initialize WebChuGL (audio + graphics mode)
+ */
+async function initChuGL() {
+    const ChuGL = (await import("webchugl")).default;
+
+    const canvas = document.querySelector<HTMLCanvasElement>("#canvas")!;
+
+    // Ensure canvas container is visible before WebGPU init
+    const container = document.querySelector<HTMLDivElement>("#canvasContainer");
+    if (container) container.classList.remove("hidden");
+
+    // Collect chugin URLs for ChuGL config
+    const chugins: string[] = loadWebChugins();
+
+    const ck = await ChuGL.init({
+        canvas,
+        chugins,
+        serviceWorker: false, // COOP/COEP headers provided by server
+    });
+
+    if (!ck) {
+        Console.print("WebChuGL failed to initialize. Check browser WebGPU support.");
+        console.error("[WebChuGL] Init returned null");
+        return;
+    }
+
+    theChuck = new WebChuGLAdapter(ck);
+    audioContext = theChuck.audioContext;
+    sampleRate = audioContext.sampleRate;
+    calculateDisplayDigits(sampleRate);
+
+    Console.print("WebChuGL is ready!");
 
     onChuckReady();
 }
@@ -133,7 +198,8 @@ export async function initChuck() {
  */
 export async function onChuckReady() {
     ChuckBar.webchuckButton.disabled = false;
-    ChuckBar.webchuckButton.innerText = "Start WebChucK";
+    ChuckBar.webchuckButton.innerText =
+        engineMode === "webchugl" ? "Start WebChuGL" : "Start WebChucK";
     ProjectSystem.uploadFilesButton.disabled = false;
     ProjectSystem.uploadFilesIcon.disabled = false;
     ProjectSystem.initDragUpload();
@@ -144,7 +210,7 @@ export async function onChuckReady() {
 }
 
 /**
- * Start theChuck (when user presses "Start WebChucK")
+ * Start theChuck (when user presses "Start WebChucK" / "Start WebChuGL")
  * Audio context will resume
  * Build theChuck connections for VM time, HID, and visualizer
  */
@@ -180,13 +246,14 @@ export async function startChuck() {
     theChuck.connect(recordGain);
     Recorder.configureRecorder(audioContext, recordGain);
 
-    // Enable WebChucK Packages
-    // HID, mouse and keyboard on
-    new HidPanel(await HID.init(theChuck));
-    new SensorPanel(
-        await Gyro.init(theChuck, false),
-        await Accel.init(theChuck, false)
-    );
+    // HID/Sensors — only for WebChucK mode (WebChuGL has built-in support)
+    if (engineMode === "webchuck") {
+        new HidPanel(await HID.init(theChuck as any));
+        new SensorPanel(
+            await Gyro.init(theChuck as any, false),
+            await Accel.init(theChuck as any, false)
+        );
+    }
 
     // TODO: for debugging, make theChuck global
     (window as any).theChuck = theChuck;
@@ -247,8 +314,14 @@ export function getChuckNow(): number {
 
 /**
  * Connect microphone input to theChuck
+ * In WebChuGL mode, mic is managed internally — this is a no-op.
  */
 export async function connectMic() {
+    if (engineMode === "webchugl") {
+        Console.print("Microphone is managed internally by WebChuGL");
+        return;
+    }
+
     // Get microphone with no constraints
     navigator.mediaDevices
         .getUserMedia({
@@ -261,7 +334,7 @@ export async function connectMic() {
         })
         .then((stream) => {
             const adc = audioContext.createMediaStreamSource(stream);
-            adc.connect(theChuck);
+            adc.connect(theChuck as any);
         });
 }
 

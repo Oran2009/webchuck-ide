@@ -91,6 +91,21 @@ export default class Dropdown {
             }
         });
 
+        // Hover-to-switch: when a dropdown is already open, hovering
+        // over another menu button switches to that dropdown
+        this.button.addEventListener("mouseenter", () => {
+            if (currentDropdown && currentDropdown !== this) {
+                currentDropdown.close();
+                const pos = this.button.getBoundingClientRect();
+                this.dropdown.style.left = `${pos.left}px`;
+                this.dropdown.style.top = `${pos.bottom}px`;
+                this.open = true;
+                this.button.setAttribute("aria-expanded", "true");
+                this.dropdown.classList.remove("hidden");
+                currentDropdown = this;
+            }
+        });
+
         // Initial accessibility state
         this.button.setAttribute("aria-expanded", "false");
         this.button.setAttribute("aria-haspopup", "true");

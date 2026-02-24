@@ -14,7 +14,7 @@
 // date:   August 2023
 //--------------------------------------------------------------------
 
-import { theChuck, startChuck, connectMic } from "@/host";
+import { theChuck, startChuck, connectMic, engineMode } from "@/host";
 import Editor from "@/components/editor/monaco/editor";
 import VmMonitor from "@/components/vmMonitor";
 import Recorder, { RecordState } from "./recorder";
@@ -130,7 +130,10 @@ export default class ChuckBar {
 
         // Start WebChuck Host
         await startChuck();
-        ChuckBar.webchuckButton.innerText = "WebChucK running...";
+        ChuckBar.webchuckButton.innerText =
+            engineMode === "webchugl"
+                ? "WebChuGL running..."
+                : "WebChucK running...";
         ChuckBar.running = true;
 
         // Enable the ChuckBar buttons
