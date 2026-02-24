@@ -40,6 +40,7 @@ export default class SVGToggle {
         }
         // toggle to true
         this.open = true;
+        this.button.setAttribute("aria-expanded", "true");
         this.callback();
         this.button.classList.remove(ACCENT_COLOR_CLASS);
         this.button.classList.add(TEXT_COLOR_CLASS);
@@ -52,6 +53,7 @@ export default class SVGToggle {
         // toggle to false
         if (!this.open) return;
         this.open = false;
+        this.button.setAttribute("aria-expanded", "false");
         this.callback();
         this.button.classList.add(ACCENT_COLOR_CLASS);
         this.button.classList.remove(TEXT_COLOR_CLASS);

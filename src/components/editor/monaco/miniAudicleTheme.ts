@@ -56,11 +56,11 @@ const miniAudicleDark: monaco.editor.IStandaloneThemeData = {
         },
         {
             token: "event",
-            foreground: "800023",
+            foreground: "e05577",
         },
         {
             token: "library",
-            foreground: "a64c65",
+            foreground: "d4728a",
         },
         {
             token: "comment",

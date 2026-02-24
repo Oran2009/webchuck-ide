@@ -128,6 +128,8 @@ export default class Recorder {
         Recorder.state = RecordState.recording;
         Console.print("\x1b[31mrecording...\x1b[0m"); // Print in red
         Recorder.recordImage.src = RecordButtonImage.stop;
+        Recorder.recordImage.alt = "Stop recording";
+        Recorder.recordButton.setAttribute("aria-label", "Stop recording");
 
         Recorder.playButton.removeEventListener(
             "click",
@@ -140,6 +142,8 @@ export default class Recorder {
         Recorder.state = RecordState.stopped;
         Console.print("recording stopped...");
         Recorder.recordImage.src = RecordButtonImage.record;
+        Recorder.recordImage.alt = "Record";
+        Recorder.recordButton.setAttribute("aria-label", "Record");
 
         Recorder.recorder.stop();
     }
@@ -148,6 +152,8 @@ export default class Recorder {
         Recorder.state = RecordState.armed;
         Console.print("armed for recording...");
         Recorder.recordImage.src = RecordButtonImage.armed;
+        Recorder.recordImage.alt = "Armed for recording";
+        Recorder.recordButton.setAttribute("aria-label", "Armed for recording, click to disarm");
 
         Recorder.playButton.addEventListener("click", Recorder.startRecording);
     }
@@ -155,6 +161,8 @@ export default class Recorder {
     static disarmRecorder() {
         Recorder.state = RecordState.stopped;
         Recorder.recordImage.src = RecordButtonImage.record;
+        Recorder.recordImage.alt = "Record";
+        Recorder.recordButton.setAttribute("aria-label", "Record");
         Recorder.playButton.removeEventListener(
             "click",
             Recorder.startRecording

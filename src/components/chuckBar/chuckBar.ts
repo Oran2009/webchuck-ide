@@ -88,6 +88,8 @@ export default class ChuckBar {
                     "[chuck]: \x1b[32m" +
                         `(VM) sporking incoming shred: ${shredID} (compiled.code)...\x1b[0m`
                 );
+                const status = document.getElementById("a11y-status");
+                if (status) status.textContent = `Shred ${shredID} is running`;
             },
             () => {} // Failure, do nothing
         );
@@ -135,6 +137,9 @@ export default class ChuckBar {
                 ? "WebChuGL running..."
                 : "WebChucK running...";
         ChuckBar.running = true;
+
+        const status = document.getElementById("a11y-status");
+        if (status) status.textContent = engineMode === "webchugl" ? "WebChuGL is running" : "WebChucK is running";
 
         // Enable the ChuckBar buttons
         ChuckBar.micButton.disabled = false;

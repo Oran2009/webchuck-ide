@@ -31,6 +31,7 @@
     animation: leave-transition 0.1s ease-in-out forwards;
 }
 
+/* Respect user preference for reduced motion */
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

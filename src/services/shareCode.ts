@@ -57,6 +57,8 @@ export function initShareCode() {
         shareCodeURLField.setSelectionRange(0, 0);
 
         shareCodeCopyButton.textContent = "Copied!";
+        const status = document.getElementById("a11y-status");
+        if (status) status.textContent = "URL copied to clipboard";
         setTimeout(() => {
             shareCodeCopyButton.textContent = "Copy";
         }, 2000);

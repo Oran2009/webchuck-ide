@@ -33,6 +33,7 @@ export default class ButtonToggle {
     }
 
     setActive(newState: boolean) {
+        this.button.setAttribute("aria-pressed", String(newState));
         if (newState) {
             // button on
             this.button.innerText = this.activeText;
