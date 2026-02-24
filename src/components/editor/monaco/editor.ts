@@ -313,6 +313,8 @@ export default class Editor {
         });
         Editor.vimToggle.innerText = "Vim Mode: Off";
         Editor.vimStatus?.setAttribute("style", "display: none !important");
+        Editor.editorContainer.style.top = HEADER_HEIGHT;
+        Editor.resizeEditor();
 
         localStorage.setItem("vimMode", "false");
         Editor.vimMode = false;
