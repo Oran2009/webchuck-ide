@@ -27,6 +27,7 @@ import { initChuck } from "@/host";
 import { initAppSplitters } from "@utils/appLayout";
 import { initTheme } from "@utils/theme";
 import { initExportWebChuck } from "@/services/export/exportWebchuck";
+import { initExportWebChuGL } from "@/services/export/exportWebchugl";
 import { initExportChuck } from "@/services/export/exportChuck";
 import { parseURLParams as initParseURLParams } from "./services/urlParamParser";
 import { initShareCode } from "./services/shareCode";
@@ -91,6 +92,7 @@ class Main {
         // SERVICES
         initExportChuck();
         initExportWebChuck();
+        initExportWebChuGL();
         initShareCode();
         initParseURLParams();
 
