@@ -5,6 +5,7 @@ import { setLoadedExample } from "@/components/suggestions";
 
 interface WelcomeExample {
     title: string;
+    icon: string; // emoji shown on welcome cards
     description: string;
     blurb?: string;
     filename: string; // primary .ck filename for suggestion tracking
@@ -14,6 +15,7 @@ interface WelcomeExample {
 const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
     {
         title: "Hello Sine",
+        icon: "\uD83C\uDFB5",
         description: "Your first sound — a simple sine wave",
         blurb: "The simplest ChucK program: one line to make sound. This is where everyone starts.",
         filename: "helloSine.ck",
@@ -21,6 +23,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
     },
     {
         title: "Play a Beat",
+        icon: "\uD83E\uDD41",
         description: "Load and loop a drum sample",
         blurb: "Load a .wav file and loop it with SndBuf — the foundation of sample-based music in ChucK.",
         filename: "slammin.ck",
@@ -31,6 +34,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
     },
     {
         title: "FM Synthesis GUI",
+        icon: "\uD83C\uDF9B\uFE0F",
         description: "FM synthesis with interactive controls",
         blurb: "Tweak FM parameters in real time with auto-generated GUI sliders. See how carrier and modulator interact.",
         filename: "fmGUI.ck",
@@ -41,6 +45,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
     },
     {
         title: "On-the-Fly",
+        icon: "\u26A1",
         description: "Live-code a beat, one shred at a time",
         blurb: "The classic ChucK demo: add instruments one at a time while the beat plays. This is on-the-fly programming.",
         filename: "otf_01.ck",
@@ -51,6 +56,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
     },
     {
         title: "Harmonic Series Arp",
+        icon: "\uD83C\uDFB6",
         description: "Arpeggiate through the harmonic series",
         blurb: "Hear the natural overtone series — the building blocks of all musical timbre.",
         filename: "harmonicSeriesArp.ck",
@@ -58,6 +64,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
     },
     {
         title: "Hello Sine GUI",
+        icon: "\uD83D\uDD0A",
         description: "A sine wave with a frequency slider",
         blurb: "Your first interactive ChucK program — control a sine wave's frequency with a GUI slider.",
         filename: "helloSineGUI.ck",
@@ -68,6 +75,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
     },
     {
         title: "Mouse PWM HID",
+        icon: "\uD83D\uDDB1\uFE0F",
         description: "Control sound with your mouse",
         blurb: "Move your mouse to change pitch and pulse width — your cursor becomes a musical controller.",
         filename: "mouseHID.ck",
@@ -78,6 +86,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
     },
     {
         title: "Keyboard Organ HID",
+        icon: "\uD83C\uDFB9",
         description: "Play notes with your keyboard",
         blurb: "Turn your QWERTY keyboard into a musical instrument. Each key plays a different note.",
         filename: "keyboardHID.ck",
@@ -91,6 +100,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
 const WEBCHUGL_EXAMPLES: WelcomeExample[] = [
     {
         title: "Basic Shapes",
+        icon: "\uD83D\uDFE9",
         description: "3D primitives in a scene",
         blurb: "The 'Hello World' of ChuGL — cubes, spheres, and tori in a 3D scene.",
         filename: "basicShapes.ck",
@@ -98,6 +108,7 @@ const WEBCHUGL_EXAMPLES: WelcomeExample[] = [
     },
     {
         title: "Circles",
+        icon: "\uD83D\uDD35",
         description: "Animated colorful circles",
         blurb: "Mesmerizing animated circles — audio-driven visuals at their simplest.",
         filename: "circles.ck",
@@ -105,6 +116,7 @@ const WEBCHUGL_EXAMPLES: WelcomeExample[] = [
     },
     {
         title: "Solar System",
+        icon: "\uD83E\uDE90",
         description: "Orbital scene graph hierarchy",
         blurb: "Planets orbiting a star — learn scene graph hierarchies through space.",
         filename: "solarSystem.ck",
@@ -112,6 +124,7 @@ const WEBCHUGL_EXAMPLES: WelcomeExample[] = [
     },
     {
         title: "Lissajous",
+        icon: "\uD83C\uDF00",
         description: "Audio-visual oscilloscope",
         blurb: "Turn sound into art — watch oscillators trace beautiful Lissajous curves in real time.",
         filename: "lissajous.ck",
@@ -153,7 +166,7 @@ function buildCard(ex: WelcomeExample, onClick: () => void): HTMLButtonElement {
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-orange",
     ].join(" ");
     card.innerHTML = `
-        <div class="font-semibold text-orange text-sm">${ex.title}</div>
+        <div class="font-semibold text-orange text-sm">${ex.icon} ${ex.title}</div>
         <div class="text-xs text-dark-5 dark:text-dark-a mt-0.5">${ex.description}</div>
     `;
     card.addEventListener("click", onClick);
@@ -210,7 +223,7 @@ export default class WelcomeTab {
         ].join(" ");
         featuredCard.innerHTML = `
             <div class="text-xs font-semibold text-dark-5 dark:text-dark-a uppercase tracking-wide mb-1">Example of the Day</div>
-            <div class="font-bold text-orange text-base">${featured.title}</div>
+            <div class="font-bold text-orange text-base">${featured.icon} ${featured.title}</div>
             <div class="text-xs text-dark-5 dark:text-dark-a mt-1">${featured.blurb || featured.description}</div>
         `;
         featuredCard.addEventListener("click", () => {
