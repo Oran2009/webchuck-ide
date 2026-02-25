@@ -434,6 +434,7 @@ export default class MoreExamples {
      * Load example from preview into editor
      */
     static loadChuckFile() {
+        ProjectSystem.removeBlankDefaultFile();
         ProjectSystem.addNewFile(
             MoreExamples.previewExample.name,
             MoreExamples.previewExample.code
