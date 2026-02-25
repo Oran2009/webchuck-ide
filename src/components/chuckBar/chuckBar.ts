@@ -19,6 +19,7 @@ import Editor from "@/components/editor/monaco/editor";
 import VmMonitor from "@/components/vmMonitor";
 import Recorder, { RecordState } from "./recorder";
 import Console from "@/components/outputPanel/console";
+import Toast from "@/components/toast";
 
 // detect operating system
 const isWindows = navigator.userAgent.includes("Windows");
@@ -91,7 +92,9 @@ export default class ChuckBar {
                 const status = document.getElementById("a11y-status");
                 if (status) status.textContent = `Shred ${shredID} is running`;
             },
-            () => {} // Failure, do nothing
+            () => {
+                Toast.error("error compiling code...");
+            }
         );
     }
 
@@ -102,7 +105,9 @@ export default class ChuckBar {
                 VmMonitor.removeShredRow(shreds.oldShred);
                 VmMonitor.addShredRow(shreds.newShred);
             },
-            () => {} // Failure, do nothing
+            () => {
+                Toast.error("error replacing code...");
+            }
         );
     }
 
@@ -119,7 +124,9 @@ export default class ChuckBar {
                     Recorder.stopRecording();
                 }
             },
-            () => {} // Failure, do nothing
+            () => {
+                Toast.error("no shreds to remove");
+            }
         );
     }
 
@@ -147,5 +154,6 @@ export default class ChuckBar {
         ChuckBar.replaceButton.disabled = false;
         ChuckBar.removeButton.disabled = false;
         ChuckBar.recordButton.disabled = false;
+
     }
 }

@@ -13,12 +13,14 @@ import { monaco } from "./monacoLite";
 import { editorConfig } from "./chuck-lang";
 import { initVimMode, VimMode } from "monaco-vim";
 import { miniAudicleLight, miniAudicleDark } from "./miniAudicleTheme";
-import { File, fetchTextFile } from "@/utils/fileLoader";
 import EditorPanelHeader from "@/components/editor/editorPanelHeader";
-import Console from "@/components/outputPanel/console";
+import WelcomeTab from "@/components/editor/welcomeTab";
+import Toast from "@/components/toast";
 import ProjectSystem from "../../fileExplorer/projectSystem";
 import FindInProject from "../../fileExplorer/findInProject";
 import GUI from "@/components/inputPanel/gui/gui";
+import { getActiveTheme, PRESET_THEMES, applyTheme } from "@/utils/themes";
+import ThemeEditor from "@/components/themeEditor";
 
 // Constants
 const VIM_STATUS_HEIGHT: string = "1.75rem";
@@ -65,6 +67,9 @@ export default class Editor {
         // When the editor is changed, update project system immediately
         // but debounce localStorage save to avoid hammering on every keystroke
         Editor.editor.onDidChangeModelContent(() => {
+            if (WelcomeTab.isVisible()) {
+                WelcomeTab.dismiss();
+            }
             ProjectSystem.updateActiveFile(Editor.getEditorCode());
             if (Editor.saveTimer) clearTimeout(Editor.saveTimer);
             Editor.saveTimer = setTimeout(() => Editor.saveCode(), 300);
@@ -124,23 +129,20 @@ export default class Editor {
         }
         ProjectSystem.addNewFile(filename, code);
 
-        const wasSettingsReload = sessionStorage.getItem("settingsReload");
-        if (wasSettingsReload) {
+        if (sessionStorage.getItem("settingsReload")) {
             sessionStorage.removeItem("settingsReload");
-            Console.print(
-                `settings applied, restored: \x1b[38;2;34;178;254m${Editor.filename}\x1b[0m`
-            );
+            Toast.info("Settings applied!");
         } else {
-            Console.print(
-                `loaded autosave: \x1b[38;2;34;178;254m${Editor.filename
-                }\x1b[0m (${localStorage.getItem("editorCodeTime")})`
+            Toast.info(
+                `loaded autosave: ${Editor.filename} (${localStorage.getItem("editorCodeTime")})`
             );
         }
     }
 
     static async loadDefault() {
-        const code: File = await fetchTextFile("./examples/helloSine.ck");
-        ProjectSystem.addNewFile("untitled.ck", code.data as string);
+        const editorPanel = document.getElementById("editorPanel")!;
+        WelcomeTab.show(editorPanel);
+        ProjectSystem.addNewFile("untitled.ck", "");
     }
 
     /**
@@ -177,6 +179,32 @@ export default class Editor {
         Editor.editor?.updateOptions({
             theme: dark ? "miniAudicleDark" : "miniAudicleLight",
         });
+    }
+
+    /**
+     * Apply a dynamic theme from the IDETheme system
+     */
+    static applyDynamicTheme(theme: import("@/utils/themes").IDETheme) {
+        const c = theme.colors;
+        const themeName = "ideTheme-" + theme.id;
+        monaco.editor.defineTheme(themeName, {
+            base: theme.isDark ? "vs-dark" : "vs",
+            inherit: true,
+            rules: [
+                { token: "", foreground: c.editorText.replace("#", "") },
+                { token: "keyword", foreground: c.editorKeyword.replace("#", "") },
+                { token: "type", foreground: c.editorType.replace("#", "") },
+                { token: "comment", foreground: c.editorComment.replace("#", "") },
+                { token: "string", foreground: c.editorString.replace("#", "") },
+                { token: "number", foreground: c.editorNumber.replace("#", "") },
+                { token: "event", foreground: c.editorEvent.replace("#", "") },
+                { token: "library", foreground: c.editorLibrary.replace("#", "") },
+            ],
+            colors: {
+                "editor.background": c.editorBg,
+            },
+        });
+        Editor.editor?.updateOptions({ theme: themeName });
     }
 
     /**

@@ -122,9 +122,9 @@ export default class Console {
         if (Console.firstPrint) {
             Console.terminal.write(text);
             Console.firstPrint = false;
-            return;
+        } else {
+            Console.terminal.write("\r\n" + text);
         }
-        Console.terminal.write("\r\n" + text);
     }
 
     /**
@@ -158,6 +158,20 @@ export default class Console {
                 foreground: "#222222",
                 background: "#ffffff",
                 selectionBackground: "#cccccc55",
+            };
+        }
+    }
+
+    /**
+     * Apply theme colors from the IDE theme system
+     */
+    static applyThemeColors(bg: string, fg: string) {
+        Console.theme = bg.toLowerCase() === "#ffffff" ? "light" : "dark";
+        if (Console.terminal) {
+            Console.terminal.options.theme = {
+                background: bg,
+                foreground: fg,
+                selectionBackground: Console.theme === "light" ? "#cccccc55" : "#eeeeee55",
             };
         }
     }

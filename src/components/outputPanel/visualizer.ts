@@ -190,4 +190,13 @@ export default class Visualizer {
             this.spectrumFill = spectrumFillLight;
         }
     }
+
+    /**
+     * Apply theme colors from the IDE theme system
+     */
+    applyThemeColors(waveform: string, spectrum: string, fill: string) {
+        this.waveformColor = waveform;
+        this.spectrumColor = spectrum;
+        this.spectrumFill = fill;
+    }
 }

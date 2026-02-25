@@ -144,4 +144,5 @@ export default class OutputPanelHeader {
         Console.resizeConsole();
         visual?.resize();
     }
+
 }

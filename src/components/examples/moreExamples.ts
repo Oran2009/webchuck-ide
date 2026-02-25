@@ -327,7 +327,6 @@ export default class MoreExamples {
                 item.appendChild(button);
             } else if (i < MoreExamples.breadCrumbPath.length - 1) {
                 // Middle items
-                console.log(MoreExamples.breadCrumbPath[i]);
                 const div = document.createElement("div");
                 div.classList.add("flex", "items-center");
                 div.innerHTML = ARROW_SVG;
