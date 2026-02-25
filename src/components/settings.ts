@@ -43,6 +43,8 @@ export default class Settings {
     public static versionGroup: HTMLDivElement;
     public static engineSelect: HTMLSelectElement;
     public static engineDescription: HTMLParagraphElement;
+    public static sampleRateSelect: HTMLSelectElement;
+    public static sampleRateDescription: HTMLParagraphElement;
 
     constructor() {
         Settings.openButton =
@@ -70,6 +72,10 @@ export default class Settings {
             document.querySelector<HTMLSelectElement>("#engine-select")!;
         Settings.engineDescription =
             document.querySelector<HTMLParagraphElement>("#engine-desc")!;
+        Settings.sampleRateSelect =
+            document.querySelector<HTMLSelectElement>("#sample-rate-select")!;
+        Settings.sampleRateDescription =
+            document.querySelector<HTMLParagraphElement>("#sample-rate-desc")!;
 
         // Open settings
         Settings.openButton.addEventListener("click", () => {
@@ -169,6 +175,9 @@ export default class Settings {
      * Apply settings and refresh the page
      */
     applySettings() {
+        // Flag so the editor shows a confirmation message after reload
+        sessionStorage.setItem("settingsReload", "true");
+
         // Save engine mode
         localStorage.setItem("engineMode", Settings.engineSelect.value);
 

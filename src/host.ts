@@ -171,10 +171,14 @@ async function initChuGL() {
     // Collect chugin URLs for ChuGL config
     const chugins: string[] = loadWebChugins();
 
+    const storedRate = localStorage.getItem("sampleRate");
     const ck = await ChuGL.init({
         canvas,
         chugins,
         serviceWorker: false, // COOP/COEP headers provided by server
+        ...(storedRate && storedRate !== "default" && {
+            audioConfig: { sampleRate: Number(storedRate) },
+        }),
     });
 
     if (!ck) {

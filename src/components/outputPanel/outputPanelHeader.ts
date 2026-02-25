@@ -143,17 +143,5 @@ export default class OutputPanelHeader {
 
         Console.resizeConsole();
         visual?.resize();
-
-        // Show fullscreen button only when visualizer or canvas is visible
-        const showFullscreen =
-            !OutputPanelHeader.visualizerContainer.classList.contains(
-                "hidden"
-            ) ||
-            !OutputPanelHeader.canvasContainer.classList.contains("hidden");
-        if (showFullscreen) {
-            OutputPanelHeader.fullscreenButton?.classList.remove("hidden");
-        } else {
-            OutputPanelHeader.fullscreenButton?.classList.add("hidden");
-        }
     }
 }
