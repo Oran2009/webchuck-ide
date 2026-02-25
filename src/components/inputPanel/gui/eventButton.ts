@@ -9,15 +9,12 @@
 /* eslint-disable indent */
 
 import { theChuck } from "@/host";
+import type { GUIThemeColors } from "./gui";
 
 const RATIO = window.devicePixelRatio || 1;
 const RADIUS = 6 * RATIO;
 const LINE_WIDTH = 4 * RATIO;
 const PADDING = 5 * RATIO;
-const BUTTON_COLOR = "#eee";
-const BUTTON_HOVER_COLOR = "#ccc";
-const DARK_BUTTON_COLOR = "#333";
-const DARK_BUTTON_HOVER_COLOR = "#444";
 const FONT = 0.7 * RATIO + "rem Arial";
 
 export default class EventButton {
@@ -28,10 +25,7 @@ export default class EventButton {
     public eventName: string;
     public isPressed: boolean;
     public isHovered: boolean;
-    public isDark: boolean;
-    private readonly color: string;
-    private readonly hoverColor: string;
-    private readonly pressedColor: string;
+    private readonly theme: GUIThemeColors;
 
     constructor(
         x: number,
@@ -39,7 +33,7 @@ export default class EventButton {
         size: number,
         eventName: string,
         ctx: CanvasRenderingContext2D,
-        dark: boolean
+        theme: GUIThemeColors
     ) {
         this.x = x;
         this.y = y;
@@ -48,17 +42,7 @@ export default class EventButton {
         this.ctx = ctx;
         this.isPressed = false;
         this.isHovered = false;
-        this.isDark = dark;
-
-        if (this.isDark) {
-            this.color = DARK_BUTTON_COLOR;
-            this.hoverColor = DARK_BUTTON_HOVER_COLOR;
-            this.pressedColor = DARK_BUTTON_COLOR;
-        } else {
-            this.color = BUTTON_COLOR;
-            this.hoverColor = BUTTON_HOVER_COLOR;
-            this.pressedColor = BUTTON_COLOR;
-        }
+        this.theme = theme;
     }
 
     draw() {
@@ -83,22 +67,20 @@ export default class EventButton {
         this.ctx.closePath();
 
         // Draw the button border
-        this.ctx.strokeStyle = this.isDark
-            ? BUTTON_HOVER_COLOR
-            : DARK_BUTTON_HOVER_COLOR;
+        this.ctx.strokeStyle = this.theme.border;
         this.ctx.lineWidth = LINE_WIDTH;
         this.ctx.stroke();
 
         // Fill the button
-        this.ctx.fillStyle = this.isPressed
-            ? this.pressedColor
-            : this.isHovered
-            ? this.hoverColor
-            : this.color;
+        this.ctx.fillStyle = this.isPressed || this.isHovered
+            ? this.theme.accent
+            : this.theme.bgAlt;
         this.ctx.fill();
 
         // Add the button text
-        this.ctx.fillStyle = this.isDark ? "white" : "black";
+        this.ctx.fillStyle = this.isPressed || this.isHovered
+            ? this.theme.bg
+            : this.theme.text;
         this.ctx.font = FONT;
         this.ctx.fillText(
             this.eventName.substring(0, 10),

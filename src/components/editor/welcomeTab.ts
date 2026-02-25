@@ -1,7 +1,13 @@
 import { loadChuckFileFromURL, loadDataFileFromURL } from "@components/fileExplorer/projectSystem";
+import ProjectSystem from "@components/fileExplorer/projectSystem";
 import InputPanelHeader from "@/components/inputPanel/inputPanelHeader";
 import { engineMode } from "@/host";
 import { setLoadedExample } from "@/components/suggestions";
+import {
+    fetchTextFile,
+    fetchDataFile,
+    isPlaintextFile,
+} from "@/utils/fileLoader";
 
 interface WelcomeExample {
     title: string;
@@ -11,6 +17,8 @@ interface WelcomeExample {
     filename: string; // primary .ck filename for suggestion tracking
     load: () => void;
 }
+
+// ---- Handcrafted examples (curated icons, blurbs, special load logic) ----
 
 const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
     {
@@ -55,6 +63,70 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         },
     },
     {
+        title: "OTF: Hi-Hat",
+        icon: "\u26A1",
+        description: "Add a hi-hat to the beat",
+        blurb: "Layer a hi-hat on top of the kick — on-the-fly programming, one shred at a time.",
+        filename: "otf_02.ck",
+        load: () => {
+            loadChuckFileFromURL("examples/otf/otf_02.ck");
+            loadDataFileFromURL("examples/otf/data/hihat.wav");
+        },
+    },
+    {
+        title: "OTF: Open Hi-Hat",
+        icon: "\u26A1",
+        description: "Add an open hi-hat layer",
+        blurb: "Keep building the beat — add an open hi-hat for more groove.",
+        filename: "otf_03.ck",
+        load: () => {
+            loadChuckFileFromURL("examples/otf/otf_03.ck");
+            loadDataFileFromURL("examples/otf/data/hihat-open.wav");
+        },
+    },
+    {
+        title: "OTF: Snare",
+        icon: "\u26A1",
+        description: "Drop in a snare pattern",
+        blurb: "The snare hits — now the beat is really coming together.",
+        filename: "otf_04.ck",
+        load: () => {
+            loadChuckFileFromURL("examples/otf/otf_04.ck");
+            loadDataFileFromURL("examples/otf/data/snare-hop.wav");
+        },
+    },
+    {
+        title: "OTF: Synth Bass",
+        icon: "\u26A1",
+        description: "Add a synthesized bass line",
+        blurb: "No samples needed — synthesize a bass line from pure oscillators.",
+        filename: "otf_05.ck",
+        load: () => {
+            loadChuckFileFromURL("examples/otf/otf_05.ck");
+        },
+    },
+    {
+        title: "OTF: Melody",
+        icon: "\u26A1",
+        description: "Layer a melodic line on top",
+        blurb: "Add a melody over the rhythm — the beat becomes a song.",
+        filename: "otf_06.ck",
+        load: () => {
+            loadChuckFileFromURL("examples/otf/otf_06.ck");
+        },
+    },
+    {
+        title: "OTF: Snare Roll",
+        icon: "\u26A1",
+        description: "Finish with a snare roll",
+        blurb: "The final layer — a snare roll to complete the on-the-fly demo.",
+        filename: "otf_07.ck",
+        load: () => {
+            loadChuckFileFromURL("examples/otf/otf_07.ck");
+            loadDataFileFromURL("examples/otf/data/snare.wav");
+        },
+    },
+    {
         title: "Harmonic Series Arp",
         icon: "\uD83C\uDFB6",
         description: "Arpeggiate through the harmonic series",
@@ -95,6 +167,29 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
             InputPanelHeader.setNotificationPing(1, true);
         },
     },
+    {
+        title: "Gyro Demo",
+        icon: "\uD83D\uDCF1",
+        description: "Tilt your phone to make sound",
+        blurb: "Use your device's gyroscope as a musical controller — tilt to change the sound.",
+        filename: "gyroDemo.ck",
+        load: () => {
+            loadChuckFileFromURL("examples/gyro/gyroDemo.ck");
+            loadDataFileFromURL("examples/gyro/gyroLoop.wav");
+            InputPanelHeader.setNotificationPing(2, true);
+        },
+    },
+    {
+        title: "Accel Demo",
+        icon: "\uD83C\uDFC3",
+        description: "Shake your device to make sound",
+        blurb: "Use your device's accelerometer to control sound — motion becomes music.",
+        filename: "accelDemo.ck",
+        load: () => {
+            loadChuckFileFromURL("examples/accelDemo.ck");
+            InputPanelHeader.setNotificationPing(2, true);
+        },
+    },
 ];
 
 const WEBCHUGL_EXAMPLES: WelcomeExample[] = [
@@ -130,13 +225,168 @@ const WEBCHUGL_EXAMPLES: WelcomeExample[] = [
         filename: "lissajous.ck",
         load: () => loadChuckFileFromURL("examples/chugl/lissajous.ck"),
     },
+    {
+        title: "JS Freq Control",
+        icon: "\u2699\uFE0F",
+        description: "Control ChuGL from JavaScript",
+        blurb: "Bridge ChucK and JavaScript — control a frequency parameter from the host page.",
+        filename: "jsFreqControl.ck",
+        load: () => {
+            loadChuckFileFromURL("examples/chugl/jsFreqControl.ck");
+            loadChuckFileFromURL("examples/chugl/jsFreqControl.js");
+        },
+    },
+    {
+        title: "JS Scene Builder",
+        icon: "\uD83C\uDFD7\uFE0F",
+        description: "Build a 3D scene from JavaScript",
+        blurb: "Create and manipulate a ChuGL scene entirely from JavaScript — no ChucK code needed.",
+        filename: "jsSceneBuilder.js",
+        load: () => {
+            loadChuckFileFromURL("examples/chugl/jsSceneBuilder.js");
+        },
+    },
 ];
+
+// ---- More Examples JSON integration ----
+
+interface MoreExampleEntry {
+    name: string;
+    code: string;
+    data: string[];
+}
+
+interface MoreExamplesJSON {
+    [folder: string]: Array<string | Record<string, MoreExampleEntry>>;
+}
+
+/** Map folder names to category icons for More Examples */
+const FOLDER_ICONS: Record<string, string> = {
+    examples: "\uD83D\uDCC4",
+    basic: "\uD83C\uDFB5",
+    deep: "\uD83D\uDD2C",
+    extend: "\uD83D\uDD27",
+    stk: "\uD83C\uDFBB",
+    analysis: "\uD83D\uDCCA",
+    array: "\uD83D\uDCCB",
+    ctrl: "\uD83C\uDFAE",
+    multi: "\uD83E\uDDF5",
+    io: "\uD83D\uDCC2",
+    math: "\uD83D\uDD22",
+    time: "\u23F1\uFE0F",
+    special: "\u2728",
+    type: "\uD83D\uDCDD",
+    ai: "\uD83E\uDD16",
+    machine: "\u2699\uFE0F",
+    class: "\uD83C\uDFD7\uFE0F",
+    shred: "\uD83E\uDDF6",
+    string: "\uD83D\uDCDC",
+    filter: "\uD83D\uDD0D",
+    spatial: "\uD83C\uDF10",
+    effects: "\u2728",
+    import: "\uD83D\uDCE6",
+    vector: "\u27A1\uFE0F",
+    event: "\u26A1",
+    oper: "\u2795",
+    func: "\uD83D\uDD04",
+    stereo: "\uD83D\uDD0A",
+    education: "\uD83D\uDCDA",
+    rendergraph: "\uD83D\uDDBC\uFE0F",
+    sequencers: "\uD83C\uDFB9",
+};
+
+/** Extract the first // desc: line from a ChucK code comment header */
+function extractDescription(code: string): string {
+    const match = code.match(/\/\/\s*desc:\s*(.+)/);
+    return match ? match[1].trim().replace(/^"(.*)"$/, "$1") : "";
+}
+
+/** Fetch the More Examples JSON and flatten all entries into WelcomeExample[] */
+async function fetchMoreExamples(
+    isChuGL: boolean
+): Promise<WelcomeExample[]> {
+    const url = isChuGL
+        ? "examples/moreChuglExamples.json"
+        : "examples/moreExamples.json";
+    try {
+        const resp = await fetch(url);
+        const json: MoreExamplesJSON = await resp.json();
+        return flattenMoreExamples(json);
+    } catch {
+        return [];
+    }
+}
+
+/** Recursively flatten the JSON into WelcomeExample[], one per file entry */
+function flattenMoreExamples(json: MoreExamplesJSON): WelcomeExample[] {
+    const results: WelcomeExample[] = [];
+    const seen = new Set<string>();
+    for (const folder in json) {
+        const icon = FOLDER_ICONS[folder] || "\uD83D\uDCC4";
+        for (const item of json[folder]) {
+            if (typeof item !== "object") continue;
+            const ex = Object.values(item)[0];
+            if (seen.has(ex.name)) continue;
+            seen.add(ex.name);
+
+            const desc = extractDescription(ex.code);
+            results.push({
+                title: ex.name.replace(/\.(ck|js)$/, ""),
+                icon,
+                description: desc || ex.name,
+                filename: ex.name,
+                load: () => {
+                    ProjectSystem.removeBlankDefaultFile();
+                    ProjectSystem.addNewFile(ex.name, ex.code);
+                    for (const dataUrl of ex.data) {
+                        if (isPlaintextFile(dataUrl)) {
+                            fetchTextFile(dataUrl).then((f) => {
+                                if (f)
+                                    ProjectSystem.addNewFile(
+                                        f.name,
+                                        f.data as string
+                                    );
+                            });
+                        } else {
+                            fetchDataFile(dataUrl).then((f) => {
+                                if (f)
+                                    ProjectSystem.addNewFile(
+                                        f.name,
+                                        f.data as Uint8Array
+                                    );
+                            });
+                        }
+                    }
+                },
+            });
+        }
+    }
+    return results;
+}
+
+/**
+ * Merge handcrafted examples with More Examples from JSON.
+ * Handcrafted entries take priority (by filename) since they have
+ * curated icons, blurbs, and special load logic.
+ */
+function mergeExamples(
+    curated: WelcomeExample[],
+    more: WelcomeExample[]
+): WelcomeExample[] {
+    const curatedNames = new Set(curated.map((e) => e.filename));
+    const extra = more.filter((e) => !curatedNames.has(e.filename));
+    return [...curated, ...extra];
+}
 
 // ---- Deterministic daily rotation helpers ----
 
 function getDailySeed(): number {
     const now = new Date();
-    return now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+    return (
+        now.getFullYear() * 10000 +
+        (now.getMonth() + 1) * 100 +
+        now.getDate()
+    );
 }
 
 function seededRandom(seed: number): () => number {
@@ -156,7 +406,10 @@ function seededShuffle<T>(arr: T[], rng: () => number): T[] {
     return result;
 }
 
-function buildCard(ex: WelcomeExample, onClick: () => void): HTMLButtonElement {
+function buildCard(
+    ex: WelcomeExample,
+    onClick: () => void
+): HTMLButtonElement {
     const card = document.createElement("button");
     card.type = "button";
     card.className = [
@@ -178,10 +431,25 @@ export default class WelcomeTab {
 
     /**
      * Show the welcome overlay inside the editor panel.
+     * Renders immediately with curated examples, then fetches More Examples
+     * in the background to expand the Surprise Me pool.
      * Call dismiss() or click any example to remove it.
      */
     static show(editorPanel: HTMLElement) {
         if (WelcomeTab.overlay) return;
+
+        const isChuGL = engineMode === "webchugl";
+        const curated = isChuGL ? WEBCHUGL_EXAMPLES : WEBCHUCK_EXAMPLES;
+
+        // Mutable reference — Surprise Me uses this, updated when More Examples load
+        let allExamples: WelcomeExample[] = curated;
+
+        // Fetch More Examples in the background
+        fetchMoreExamples(isChuGL).then((more) => {
+            if (more.length > 0) {
+                allExamples = mergeExamples(curated, more);
+            }
+        });
 
         const overlay = document.createElement("div");
         overlay.id = "welcomeOverlay";
@@ -192,13 +460,10 @@ export default class WelcomeTab {
         overlay.style.top = "2rem"; // below editor header
         overlay.style.backgroundColor = "var(--ide-editor-bg, #FEFEFF)";
 
-        const isChuGL = engineMode === "webchugl";
-        const examples = isChuGL ? WEBCHUGL_EXAMPLES : WEBCHUCK_EXAMPLES;
-
-        // Deterministic daily shuffle
+        // Deterministic daily shuffle (curated pool for featured + grid)
         const seed = getDailySeed();
         const rng = seededRandom(seed);
-        const shuffled = seededShuffle(examples, rng);
+        const shuffled = seededShuffle(curated, rng);
         const featured = shuffled[0];
         const gridExamples = shuffled.slice(1, 4); // 3 examples + Surprise Me
 
@@ -238,14 +503,16 @@ export default class WelcomeTab {
         grid.className = "grid grid-cols-2 gap-3 max-w-md w-full mb-6";
 
         for (const ex of gridExamples) {
-            grid.appendChild(buildCard(ex, () => {
-                setLoadedExample(ex.filename);
-                ex.load();
-                WelcomeTab.dismiss();
-            }));
+            grid.appendChild(
+                buildCard(ex, () => {
+                    setLoadedExample(ex.filename);
+                    ex.load();
+                    WelcomeTab.dismiss();
+                })
+            );
         }
 
-        // "Surprise Me" as the 4th grid card
+        // "Surprise Me" as the 4th grid card — uses allExamples (includes More Examples once loaded)
         const surpriseCard = document.createElement("button");
         surpriseCard.type = "button";
         surpriseCard.className = [
@@ -259,7 +526,8 @@ export default class WelcomeTab {
             <div class="text-xs text-dark-5 dark:text-dark-a mt-0.5">Load a random example</div>
         `;
         surpriseCard.addEventListener("click", () => {
-            const random = examples[Math.floor(Math.random() * examples.length)];
+            const random =
+                allExamples[Math.floor(Math.random() * allExamples.length)];
             setLoadedExample(random.filename);
             random.load();
             WelcomeTab.dismiss();

@@ -8,6 +8,7 @@
 //---------------------------------------------------------
 
 import { theChuck } from "@/host";
+import type { GUIThemeColors } from "./gui";
 
 const RATIO = window.devicePixelRatio || 1;
 const TOP_PADDING = 20 * RATIO;
@@ -15,8 +16,6 @@ const RIGHT_PADDING = 11 * RATIO;
 const LINE_WIDTH = 3 * RATIO;
 const FONT = 0.7 * RATIO + "rem Arial";
 const RADIUS_FACTOR = 6;
-const LIGHT_COLOR = "#333";
-const DARK_COLOR = "#ccc";
 
 export default class FloatSlider {
     public ctx: CanvasRenderingContext2D;
@@ -27,8 +26,7 @@ export default class FloatSlider {
     public floatName: string;
     public value: number;
     public isPressed: boolean;
-    public isDark: boolean;
-    private readonly color: string;
+    private readonly theme: GUIThemeColors;
 
     constructor(
         x: number,
@@ -37,7 +35,7 @@ export default class FloatSlider {
         height: number,
         floatName: string,
         ctx: CanvasRenderingContext2D,
-        dark: boolean,
+        theme: GUIThemeColors,
         value: number = 0
     ) {
         this.x = x;
@@ -47,9 +45,8 @@ export default class FloatSlider {
         this.floatName = floatName;
         this.ctx = ctx;
         this.isPressed = false;
-        this.isDark = dark;
+        this.theme = theme;
         this.value = value;
-        this.color = this.isDark ? DARK_COLOR : LIGHT_COLOR;
     }
 
     draw() {
@@ -58,14 +55,14 @@ export default class FloatSlider {
 
         // Draw the slider name
         this.ctx.font = FONT;
-        this.ctx.fillStyle = this.color;
+        this.ctx.fillStyle = this.theme.text;
         this.ctx.fillText(this.floatName, this.x, label_height);
 
         // Draw horizontal slider line (track)
         this.ctx.beginPath();
         this.ctx.moveTo(this.x, slider_height);
         this.ctx.lineTo(this.x + this.width, slider_height);
-        this.ctx.strokeStyle = this.color;
+        this.ctx.strokeStyle = this.theme.textMuted;
         this.ctx.lineWidth = LINE_WIDTH;
         this.ctx.stroke();
 
@@ -82,11 +79,11 @@ export default class FloatSlider {
             0,
             2 * Math.PI
         );
-        // this.ctx.fillStyle = this.isDark ? "#ccc" : "#333"; // same as above
+        this.ctx.fillStyle = this.theme.accent;
         this.ctx.fill();
 
         // Draw the slider value
-        // this.ctx.fillStyle = this.color;
+        this.ctx.fillStyle = this.theme.text;
         this.ctx.fillText(
             this.value.toFixed(2),
             this.x + this.width - 2 * RIGHT_PADDING,
