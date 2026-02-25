@@ -11,6 +11,7 @@
 //-------------------------------------------------------------------
 
 import { getEngineMode } from "@/components/settings";
+import { loadChuckFileFromURL } from "@components/fileExplorer/projectSystem";
 
 type ToastVariant = "error" | "info";
 
@@ -22,6 +23,8 @@ const TIP_PREFIX_ICONS: [string, string][] = [
     ["Pro tip: ", "⚡ "],
     ["Reminder: ", "📌 "],
     ["Philosophy: ", "🎵 "],
+    ["Challenge: ", "🎯 "],
+    ["Try this: ", "🔬 "],
 ];
 
 function applyTipIcon(el: HTMLSpanElement, tip: string): void {
@@ -159,6 +162,44 @@ const GENERAL_TIPS: string[] = [
     "The best debugger for audio code is your ears",
     "48000 samples walk into a bar. The bartender says: 'I hear you.'",
     "There are only two hard problems: naming shreds and off-by-one errors",
+
+    // Challenges — playful creative prompts
+    "Challenge: Make a beat using only noise generators",
+    "Challenge: Write the shortest ChucK program that sounds good",
+    "Challenge: Make something with exactly 3 shreds",
+    "Challenge: Use only frequencies below 100 Hz",
+    "Challenge: Make a song with no oscillators — samples only",
+    "Challenge: Create a melody using only Math.random2f()",
+    "Challenge: Make a rhythm using only time and silence",
+    "Challenge: Build a chord using 4 SinOscs at different frequencies",
+    "Challenge: Make the ugliest sound you can, then make it beautiful",
+    "Challenge: Use feedback (dac => adc) to make something wild",
+
+    // Try this — micro-experiments
+    "Try this: Connect a SinOsc to another SinOsc. What happens?",
+    "Try this: Set .freq to 1. Can you hear it? Can you feel it?",
+    "Try this: Spork 100 shreds at once. What does chaos sound like?",
+    "Try this: Change .freq while a note is playing — live!",
+    "Try this: Set .gain to 0.01 and listen closely with headphones",
+    "Try this: Use Std.mtof() with a 'for' loop to play a scale",
+    "Try this: Connect Noise => LPF => dac and sweep the frequency",
+    "Try this: Make two oscillators with frequencies 1 Hz apart — listen for beating",
+    "Try this: Record yourself with adc => dac and add a JCRev",
+    "Try this: Use Math.random2(0,127) with Std.mtof() for random melodies",
+
+    // More jokes and philosophy
+    "Philosophy: Code is the sheet music; the CPU is the orchestra",
+    "Philosophy: There are no wrong notes, only wrong durations",
+    "Philosophy: Every bug in audio code is just an unexpected remix",
+    "\"It's not a bug, it's a feature\" — said every ChucK programmer about feedback",
+    "The best programs start with SinOsc s => dac; and go from there",
+    "44100 times per second, your speakers are just following orders",
+    "Fun fact: A4 = 440 Hz was standardized in 1955 — before that, it was chaos",
+    "Fun fact: The human ear can detect timing differences of about 10 microseconds",
+    "Fun fact: White noise contains all frequencies at equal intensity",
+    "Fun fact: The theremin, one of the earliest electronic instruments, was invented in 1920",
+    "Did you know? Fourier proved any sound can be built from sine waves in 1822",
+    "Did you know? The first computer-generated music was played on a Ferranti Mark 1 in 1951",
 ];
 
 // WebChuGL-specific tips
@@ -173,6 +214,27 @@ const WEBCHUGL_TIPS: string[] = [
     "Tip: Use GMesh + Geometry + Material to create 3D objects",
     "Tip: GCube, GSphere, GCircle — built-in geometry generators",
     "Fun fact: ChuGL was created by Andrew Zhu Aday and Ge Wang",
+];
+
+/** A tip that can optionally link to an example */
+interface LinkedTip {
+    text: string;
+    exampleURL: string;
+}
+
+const LINKED_TIPS: LinkedTip[] = [
+    {
+        text: "Try this: FM synthesis is just one oscillator modulating another",
+        exampleURL: "examples/fmGUI.ck",
+    },
+    {
+        text: "Try this: Live-code a beat — add instruments one shred at a time",
+        exampleURL: "examples/otf/otf_01.ck",
+    },
+    {
+        text: "Try this: Control parameters with GUI sliders",
+        exampleURL: "examples/helloSineGUI.ck",
+    },
 ];
 
 export default class Toast {
@@ -256,7 +318,11 @@ export default class Toast {
 
     // ---- Tips rotation ----
 
-    private static pickRandomTip(): string {
+    private static pickRandomTip(): string | LinkedTip {
+        // 1 in 8 chance of a linked tip
+        if (Math.random() < 0.125 && LINKED_TIPS.length > 0) {
+            return LINKED_TIPS[Math.floor(Math.random() * LINKED_TIPS.length)];
+        }
         const tips = [...GENERAL_TIPS];
         if (getEngineMode() === "webchugl") {
             tips.push(...WEBCHUGL_TIPS);
@@ -279,7 +345,22 @@ export default class Toast {
 
         const el = document.createElement("span");
         el.className = "toast text-dark-5 dark:text-dark-a truncate opacity-60";
-        applyTipIcon(el, Toast.pickRandomTip());
+
+        const tip = Toast.pickRandomTip();
+        if (typeof tip === "string") {
+            applyTipIcon(el, tip);
+        } else {
+            applyTipIcon(el, tip.text);
+            const link = document.createElement("button");
+            link.className =
+                "ml-2 underline underline-offset-2 text-orange hover:text-orange-dark cursor-pointer bg-transparent border-none text-xs";
+            link.textContent = "Load example \u2192";
+            link.addEventListener("click", (e) => {
+                e.stopPropagation();
+                loadChuckFileFromURL(tip.exampleURL);
+            });
+            el.appendChild(link);
+        }
 
         Toast.container.appendChild(el);
         Toast.tipEl = el;
