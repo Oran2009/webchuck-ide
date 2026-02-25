@@ -14,7 +14,7 @@ export function initExportChuck() {
         if (projectFiles.length === 1) {
             exportSingleFile();
         } else {
-            exportProjectFiles();
+            await exportProjectFiles();
         }
         NavBar.FileDropdown.close();
     });
@@ -48,15 +48,14 @@ async function exportProjectFiles() {
     projectFiles.forEach((file) => {
         zip.file(file.getFilename(), file.getData());
     });
-    zip.generateAsync({ type: "blob" }).then((content) => {
-        window.URL = window.URL || window.webkitURL;
-        const zipURL = window.URL.createObjectURL(content);
-        // Create invisible download link
-        const downloadLink = document.createElement("a");
-        downloadLink.href = zipURL;
-        downloadLink.download = `${
-            ProjectSystem.activeFile.getFilename().split(".")[0]
-        } Project.zip`;
-        downloadLink.click();
-    });
+    const content = await zip.generateAsync({ type: "blob" });
+    window.URL = window.URL || window.webkitURL;
+    const zipURL = window.URL.createObjectURL(content);
+    // Create invisible download link
+    const downloadLink = document.createElement("a");
+    downloadLink.href = zipURL;
+    downloadLink.download = `${
+        ProjectSystem.activeFile.getFilename().split(".")[0]
+    } Project.zip`;
+    downloadLink.click();
 }

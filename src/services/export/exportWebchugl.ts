@@ -1,4 +1,3 @@
-import JSZip from "jszip";
 import ProjectSystem from "@/components/fileExplorer/projectSystem";
 
 const exportWebchuglButton =
@@ -76,6 +75,7 @@ async function exportWebchugl(title: string, mainFile: string) {
     html = html.replace("{{{ MAIN_FILE }}}", mainFile);
 
     // 3. Create bundle.zip from all project files
+    const { default: JSZip } = await import("jszip");
     const bundleZip = new JSZip();
     const projectFiles = ProjectSystem.getProjectFiles();
     projectFiles.forEach((file) => {

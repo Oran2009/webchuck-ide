@@ -7,15 +7,48 @@
 // date:   September 2023
 //----------------------------------------------------------------
 
-import { Terminal } from "@xterm/xterm";
+import { Terminal, ILinkProvider, ILink } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
-import { LinkProvider } from "xterm-link-provider";
 import "@styles/xterm.css";
 
 import { theChuck } from "@/host";
 
 // Define a custom regular expression that matches blob URIs
 const blobRegex = /((blob:)?https?:\/\/\S+)/;
+
+/**
+ * Regex-based link provider compatible with @xterm/xterm v5+.
+ * Replaces xterm-link-provider which depends on the old xterm v4 types.
+ */
+class RegexLinkProvider implements ILinkProvider {
+    constructor(
+        private terminal: Terminal,
+        private regex: RegExp,
+        private handler: (event: MouseEvent, uri: string) => void
+    ) {}
+
+    provideLinks(
+        y: number,
+        callback: (links: ILink[] | undefined) => void
+    ): void {
+        const line = this.terminal.buffer.active.getLine(y - 1);
+        if (!line) { callback(undefined); return; }
+        const text = line.translateToString();
+        const links: ILink[] = [];
+        const re = new RegExp(this.regex.source, "g");
+        let match;
+        while ((match = re.exec(text)) !== null) {
+            const startX = match.index + 1;
+            const endX = match.index + match[0].length;
+            links.push({
+                range: { start: { x: startX, y }, end: { x: endX, y } },
+                text: match[0],
+                activate: (e, text) => this.handler(e, text),
+            });
+        }
+        callback(links.length > 0 ? links : undefined);
+    }
+}
 
 export default class Console {
     public static terminal: Terminal;
@@ -54,10 +87,7 @@ export default class Console {
 
         // Blob Links
         Console.terminal.registerLinkProvider(
-            // @ts-expect-error Link Provider relies on a deprecated version of
-            // xterm. Either wait for it to be updated, or write a custom
-            // Link Provider class - terry 7/16/2024
-            new LinkProvider(Console.terminal, blobRegex, (_e, uri) => {
+            new RegexLinkProvider(Console.terminal, blobRegex, (_e, uri) => {
                 window.open(uri, "_blank");
             })
         );
@@ -137,6 +167,17 @@ export default class Console {
      */
     static getWidth(): number {
         return Console.terminal.cols;
+    }
+
+    /**
+     * Change the console font size by delta
+     */
+    static changeFontSize(delta: number) {
+        const current = Console.terminal.options.fontSize ?? Console.DEFAULT_FONT_SIZE;
+        const next = Math.max(Console.MIN_FONT_SIZE, Math.min(Console.MAX_FONT_SIZE, current + delta));
+        Console.terminal.options.fontSize = next;
+        localStorage.setItem("consoleFontSize", String(next));
+        Console.fit();
     }
 
     /**

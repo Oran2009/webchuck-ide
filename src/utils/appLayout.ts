@@ -73,6 +73,14 @@ export const AppLayoutConstants = {
 // Initialize the app splitters
 export function initAppSplitters() {
     findSplitObjects(`.${CLASS_V_SPLIT},.${CLASS_H_SPLIT}`);
+
+    // Collapsible panel toggles
+    document.getElementById("inputPanelToggle")?.addEventListener("click", () => {
+        openInputPanel(!input_panel_open);
+    });
+    document.getElementById("outputPanelToggle")?.addEventListener("click", () => {
+        openOutputPanel(!output_panel_open);
+    });
 }
 
 //-----------------------------------

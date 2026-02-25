@@ -131,7 +131,7 @@ async function exportWebchuck(
     if (projectFilesToPreload.length === 0) {
         exportSingleWCFile(wc_html);
     } else {
-        exportProjectWCFiles(
+        await exportProjectWCFiles(
             title,
             selectedMainChucKFile,
             wc_html,
@@ -177,15 +177,14 @@ async function exportProjectWCFiles(
     projectFiles.forEach((file: any) => {
         zip.file(file.getFilename(), file.getData());
     });
-    zip.generateAsync({ type: "blob" }).then((content) => {
-        window.URL = window.URL || window.webkitURL;
-        const zipURL = window.URL.createObjectURL(content);
-        // Create invisible download link
-        const downloadLink = document.createElement("a");
-        downloadLink.href = zipURL;
-        downloadLink.download = `${title} Project.zip`;
-        downloadLink.click();
-    });
+    const content = await zip.generateAsync({ type: "blob" });
+    window.URL = window.URL || window.webkitURL;
+    const zipURL = window.URL.createObjectURL(content);
+    // Create invisible download link
+    const downloadLink = document.createElement("a");
+    downloadLink.href = zipURL;
+    downloadLink.download = `${title} Project.zip`;
+    downloadLink.click();
 }
 
 /**

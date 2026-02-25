@@ -62,7 +62,8 @@ export default class Editor {
 
         // Editor autosave config
         Editor.loadAutoSave();
-        // When the editor is changed, save the code to local storage & project system
+        // When the editor is changed, update project system immediately
+        // but debounce localStorage save to avoid hammering on every keystroke
         Editor.editor.onDidChangeModelContent(() => {
             ProjectSystem.updateActiveFile(Editor.getEditorCode());
             if (Editor.saveTimer) clearTimeout(Editor.saveTimer);
@@ -122,10 +123,19 @@ export default class Editor {
             return;
         }
         ProjectSystem.addNewFile(filename, code);
-        Console.print(
-            `loaded autosave: \x1b[38;2;34;178;254m${Editor.filename
-            }\x1b[0m (${localStorage.getItem("editorCodeTime")})`
-        );
+
+        const wasSettingsReload = sessionStorage.getItem("settingsReload");
+        if (wasSettingsReload) {
+            sessionStorage.removeItem("settingsReload");
+            Console.print(
+                `settings applied, restored: \x1b[38;2;34;178;254m${Editor.filename}\x1b[0m`
+            );
+        } else {
+            Console.print(
+                `loaded autosave: \x1b[38;2;34;178;254m${Editor.filename
+                }\x1b[0m (${localStorage.getItem("editorCodeTime")})`
+            );
+        }
     }
 
     static async loadDefault() {
@@ -148,6 +158,16 @@ export default class Editor {
      */
     static resizeEditor() {
         Editor.editor?.layout();
+    }
+
+    /**
+     * Change the editor font size by delta
+     */
+    static changeEditorFontSize(delta: number) {
+        const current = Editor.editor.getOption(monaco.editor.EditorOption.fontSize);
+        const next = Math.max(10, Math.min(24, current + delta));
+        Editor.editor.updateOptions({ fontSize: next });
+        localStorage.setItem("editorFontSize", String(next));
     }
 
     /**

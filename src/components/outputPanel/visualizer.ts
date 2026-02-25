@@ -39,6 +39,8 @@ export default class Visualizer {
     private readonly waveformData: Float32Array;
     private readonly frequencyData: Float32Array;
     private running: boolean = false;
+    private lastFrameTime: number = 0;
+    private static readonly FRAME_INTERVAL = 1000 / 30; // ~30fps
 
     private waveformColor: string = waveformColorLight;
     private spectrumColor: string = spectrumColorLight;
@@ -129,17 +131,25 @@ export default class Visualizer {
      */
     drawVisualization_() {
         if (!this.running) return;
-        this.context2D.clearRect(
-            0,
-            0,
-            this.context2D.canvas.width,
-            this.context2D.canvas.height
-        );
-        const w = this.context2D.canvas.width;
-        const h = this.context2D.canvas.height;
-        this.drawSpectrum_(w, h);
-        this.drawWaveform_(w, h);
-        requestAnimationFrame(this.drawVisualization_.bind(this));
+        requestAnimationFrame((timestamp) => {
+            if (!this.running) return;
+            if (timestamp - this.lastFrameTime < Visualizer.FRAME_INTERVAL) {
+                this.drawVisualization_();
+                return;
+            }
+            this.lastFrameTime = timestamp;
+            this.context2D.clearRect(
+                0,
+                0,
+                this.context2D.canvas.width,
+                this.context2D.canvas.height
+            );
+            const w = this.context2D.canvas.width;
+            const h = this.context2D.canvas.height;
+            this.drawSpectrum_(w, h);
+            this.drawWaveform_(w, h);
+            this.drawVisualization_();
+        });
     }
 
     /**
