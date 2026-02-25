@@ -101,9 +101,11 @@ export default class ChuckBar {
                 );
                 const status = document.getElementById("a11y-status");
                 if (status) status.textContent = `Shred ${shredID} is running`;
+                Toast.onRunSuccess(VmMonitor.getNumShreds());
             },
             () => {
                 Toast.error("error compiling code...");
+                Toast.onRunError();
             }
         );
     }
@@ -117,6 +119,7 @@ export default class ChuckBar {
             },
             () => {
                 Toast.error("error replacing code...");
+                Toast.onRunError();
             }
         );
     }
