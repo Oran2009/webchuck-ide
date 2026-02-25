@@ -13,7 +13,7 @@
 
 import { Chuck, HID, Gyro, Accel } from "webchuck";
 import { calculateDisplayDigits } from "@utils/time";
-import { ChuckNow } from "@/components/vmMonitor";
+import VmMonitor, { ChuckNow } from "@/components/vmMonitor";
 import { loadWebChugins } from "@/utils/webChugins";
 import Console from "@/components/outputPanel/console";
 import Toast from "@/components/toast";
@@ -385,9 +385,54 @@ export async function runJsCode(code: string, filename: string = "<js>") {
             Console.print(`\x1b[31m[js] ${args.join(" ")}\x1b[0m`),
     };
 
+    // Wrap raw runtime so shred operations update VmMonitor
+    const raw = theChuck.rawRuntime;
+    const ck = new Proxy(raw, {
+        get(target: any, prop: string) {
+            if (prop === "runCode") {
+                return async (code: string) => {
+                    const id: number = await target.runCode(code);
+                    VmMonitor.addShredRow(id);
+                    return id;
+                };
+            }
+            if (prop === "runFile") {
+                return async (path: string) => {
+                    const id: number = await target.runFile(path);
+                    VmMonitor.addShredRow(id);
+                    return id;
+                };
+            }
+            if (prop === "replaceCode") {
+                return async (code: string) => {
+                    const result = await target.replaceCode(code);
+                    VmMonitor.removeShredRow(result.oldShred);
+                    VmMonitor.addShredRow(result.newShred);
+                    return result;
+                };
+            }
+            if (prop === "removeLastCode") {
+                return async () => {
+                    const id: number = await target.removeLastCode();
+                    VmMonitor.removeShredRow(id);
+                    return id;
+                };
+            }
+            if (prop === "removeShred") {
+                return async (id: number) => {
+                    const result: number = await target.removeShred(id);
+                    VmMonitor.removeShredRow(result);
+                    return result;
+                };
+            }
+            const val = target[prop];
+            return typeof val === "function" ? val.bind(target) : val;
+        },
+    });
+
     try {
         const fn = new AsyncFn("ck", "audioContext", "console", code);
-        await fn(theChuck.rawRuntime, audioContext, jsConsole);
+        await fn(ck, audioContext, jsConsole);
     } catch (err: any) {
         Console.print(
             `\x1b[31m[js] Error in ${filename}: ${err.message}\x1b[0m`
