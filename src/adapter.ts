@@ -57,6 +57,9 @@ export interface ChucKAdapter {
 
     // Engine info
     readonly engineMode: EngineMode;
+
+    // Raw runtime access
+    readonly rawRuntime: any;
 }
 
 /**
@@ -139,13 +142,16 @@ export class WebChucKAdapter implements ChucKAdapter {
     get audioContext(): AudioContext {
         return this.chuck.audioContext;
     }
+
+    get rawRuntime(): any {
+        return this.chuck;
+    }
 }
 
 /**
  * WebChuGL adapter — thin pass-through to the ChucK instance
  * returned by ChuGL.init().
  * Structural differences:
- *  - Mic input managed internally → connectMic is a no-op
  *  - HID/Sensors built-in → skip HID.init() etc.
  *  - Some methods (setParamInt, getParamInt, setFloat, etc.) are
  *    synchronous/deferred; adapter wraps with async for consistency.
@@ -225,5 +231,9 @@ export class WebChuGLAdapter implements ChucKAdapter {
 
     get audioContext(): AudioContext {
         return this.ck.audioContext!;
+    }
+
+    get rawRuntime(): any {
+        return this.ck;
     }
 }

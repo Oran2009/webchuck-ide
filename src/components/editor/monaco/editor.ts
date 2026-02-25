@@ -20,7 +20,7 @@ import ProjectSystem from "../../fileExplorer/projectSystem";
 import FindInProject from "../../fileExplorer/findInProject";
 import GUI from "@/components/inputPanel/gui/gui";
 import { getActiveTheme, PRESET_THEMES, applyTheme } from "@/utils/themes";
-import ThemeEditor from "@/components/themeEditor";
+
 
 // Constants
 const VIM_STATUS_HEIGHT: string = "1.75rem";
@@ -61,6 +61,9 @@ export default class Editor {
             stickyScroll: { enabled: false },
             fixedOverflowWidgets: true,
         });
+
+        // Apply saved theme to Monaco (initTheme runs before Editor is created)
+        Editor.applyDynamicTheme(getActiveTheme());
 
         // Editor autosave config
         Editor.loadAutoSave();

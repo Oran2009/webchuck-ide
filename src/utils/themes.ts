@@ -241,6 +241,192 @@ export const PRESET_THEMES: IDETheme[] = [
             spectrumFill: "#3A2F25",
         },
     },
+    {
+        id: "tokyo-night",
+        name: "Tokyo Night",
+        isDark: true,
+        colors: {
+            bg: "#1A1B26",
+            bgAlt: "#24283B",
+            text: "#A9B1D6",
+            textMuted: "#565F89",
+            accent: "#7AA2F7",
+            accentHover: "#89B4FA",
+            border: "#3B4261",
+
+            editorBg: "#1A1B26",
+            editorText: "#A9B1D6",
+            editorKeyword: "#9D7CD8",
+            editorType: "#2AC3DE",
+            editorComment: "#565F89",
+            editorString: "#9ECE6A",
+            editorNumber: "#FF9E64",
+            editorEvent: "#F7768E",
+            editorLibrary: "#7AA2F7",
+
+            consoleBg: "#1A1B26",
+            consoleText: "#A9B1D6",
+
+            waveformColor: "#A9B1D6",
+            spectrumColor: "#7AA2F7",
+            spectrumFill: "#24283B",
+        },
+    },
+    {
+        id: "solarized-light",
+        name: "Solarized Light",
+        isDark: false,
+        colors: {
+            bg: "#FDF6E3",
+            bgAlt: "#EEE8D5",
+            text: "#657B83",
+            textMuted: "#93A1A1",
+            accent: "#CB4B16",
+            accentHover: "#DC4B11",
+            border: "#D3CBB8",
+
+            editorBg: "#FDF6E3",
+            editorText: "#657B83",
+            editorKeyword: "#859900",
+            editorType: "#268BD2",
+            editorComment: "#93A1A1",
+            editorString: "#2AA198",
+            editorNumber: "#D33682",
+            editorEvent: "#CB4B16",
+            editorLibrary: "#6C71C4",
+
+            consoleBg: "#FDF6E3",
+            consoleText: "#657B83",
+
+            waveformColor: "#586E75",
+            spectrumColor: "#CB4B16",
+            spectrumFill: "#EEE8D5",
+        },
+    },
+    {
+        id: "solarized-dark",
+        name: "Solarized Dark",
+        isDark: true,
+        colors: {
+            bg: "#002B36",
+            bgAlt: "#073642",
+            text: "#839496",
+            textMuted: "#586E75",
+            accent: "#CB4B16",
+            accentHover: "#DC4B11",
+            border: "#094855",
+
+            editorBg: "#002B36",
+            editorText: "#839496",
+            editorKeyword: "#859900",
+            editorType: "#268BD2",
+            editorComment: "#586E75",
+            editorString: "#2AA198",
+            editorNumber: "#D33682",
+            editorEvent: "#CB4B16",
+            editorLibrary: "#6C71C4",
+
+            consoleBg: "#002B36",
+            consoleText: "#839496",
+
+            waveformColor: "#93A1A1",
+            spectrumColor: "#CB4B16",
+            spectrumFill: "#073642",
+        },
+    },
+    {
+        id: "dracula",
+        name: "Dracula",
+        isDark: true,
+        colors: {
+            bg: "#21222C",
+            bgAlt: "#282A36",
+            text: "#F8F8F2",
+            textMuted: "#6272A4",
+            accent: "#BD93F9",
+            accentHover: "#CCA4FF",
+            border: "#44475A",
+
+            editorBg: "#282A36",
+            editorText: "#F8F8F2",
+            editorKeyword: "#FF79C6",
+            editorType: "#8BE9FD",
+            editorComment: "#6272A4",
+            editorString: "#F1FA8C",
+            editorNumber: "#BD93F9",
+            editorEvent: "#FFB86C",
+            editorLibrary: "#50FA7B",
+
+            consoleBg: "#21222C",
+            consoleText: "#F8F8F2",
+
+            waveformColor: "#F8F8F2",
+            spectrumColor: "#BD93F9",
+            spectrumFill: "#44475A",
+        },
+    },
+    {
+        id: "catppuccin-mocha",
+        name: "Catppuccin Mocha",
+        isDark: true,
+        colors: {
+            bg: "#1E1E2E",
+            bgAlt: "#313244",
+            text: "#CDD6F4",
+            textMuted: "#6C7086",
+            accent: "#CBA6F7",
+            accentHover: "#D4BBFF",
+            border: "#45475A",
+
+            editorBg: "#1E1E2E",
+            editorText: "#CDD6F4",
+            editorKeyword: "#CBA6F7",
+            editorType: "#89DCEB",
+            editorComment: "#6C7086",
+            editorString: "#A6E3A1",
+            editorNumber: "#FAB387",
+            editorEvent: "#F38BA8",
+            editorLibrary: "#89B4FA",
+
+            consoleBg: "#1E1E2E",
+            consoleText: "#CDD6F4",
+
+            waveformColor: "#CDD6F4",
+            spectrumColor: "#CBA6F7",
+            spectrumFill: "#313244",
+        },
+    },
+    {
+        id: "github-light",
+        name: "GitHub Light",
+        isDark: false,
+        colors: {
+            bg: "#F6F8FA",
+            bgAlt: "#FFFFFF",
+            text: "#24292F",
+            textMuted: "#656D76",
+            accent: "#0969DA",
+            accentHover: "#0550AE",
+            border: "#D0D7DE",
+
+            editorBg: "#FFFFFF",
+            editorText: "#24292F",
+            editorKeyword: "#CF222E",
+            editorType: "#8250DF",
+            editorComment: "#6E7781",
+            editorString: "#0A3069",
+            editorNumber: "#0550AE",
+            editorEvent: "#953800",
+            editorLibrary: "#8250DF",
+
+            consoleBg: "#FFFFFF",
+            consoleText: "#24292F",
+
+            waveformColor: "#24292F",
+            spectrumColor: "#0969DA",
+            spectrumFill: "#DDF4FF",
+        },
+    },
 ];
 
 // ── Theme State ───────────────────────────────────────────
@@ -259,26 +445,6 @@ export function getPresetById(id: string): IDETheme | undefined {
  */
 export function getActiveTheme(): IDETheme {
     return activeTheme;
-}
-
-/**
- * Load the saved custom theme from localStorage, or undefined.
- */
-export function loadCustomTheme(): IDETheme | undefined {
-    const json = localStorage.getItem("ideThemeCustom");
-    if (!json) return undefined;
-    try {
-        return JSON.parse(json) as IDETheme;
-    } catch {
-        return undefined;
-    }
-}
-
-/**
- * Save a custom theme to localStorage.
- */
-export function saveCustomTheme(theme: IDETheme) {
-    localStorage.setItem("ideThemeCustom", JSON.stringify(theme));
 }
 
 /**
@@ -336,15 +502,6 @@ export function applyTheme(theme: IDETheme) {
  */
 export function initThemeSystem() {
     const savedId = localStorage.getItem("ideTheme");
-
-    // Check for saved custom theme
-    if (savedId === "custom") {
-        const custom = loadCustomTheme();
-        if (custom) {
-            applyTheme(custom);
-            return;
-        }
-    }
 
     // Check for saved preset
     if (savedId) {

@@ -22,6 +22,7 @@ import HidPanel from "@/components/inputPanel/hidPanel";
 import SensorPanel from "@/components/inputPanel/sensorPanel";
 import ChuckBar from "@/components/chuckBar/chuckBar";
 import ProjectSystem from "@/components/fileExplorer/projectSystem";
+import Editor from "@/components/editor/monaco/editor";
 import Recorder from "@/components/chuckBar/recorder";
 import NavBar from "./components/navbar/navbar";
 import { getEngineMode, type EngineMode } from "@/components/settings";
@@ -298,6 +299,9 @@ export async function startChuck() {
     } catch (error) {
         console.error("Failed to load EZScore", error);
     }
+
+    // Run any .js host files in the project
+    await runProjectJsFiles();
 }
 
 /**
@@ -361,4 +365,51 @@ function startVisualizer() {
     // start visualizer
     visual.drawVisualization_();
     visual.start();
+}
+
+/**
+ * Execute user-written JavaScript with the raw ChucK runtime injected.
+ * Uses AsyncFunction to support top-level await.
+ * @param code JavaScript source code
+ * @param filename filename for error reporting
+ */
+export async function runJsCode(code: string, filename: string = "<js>") {
+    const AsyncFn = Object.getPrototypeOf(async function () {}).constructor;
+
+    const jsConsole = {
+        log: (...args: any[]) =>
+            Console.print(`[js] ${args.join(" ")}`),
+        warn: (...args: any[]) =>
+            Console.print(`\x1b[33m[js] ${args.join(" ")}\x1b[0m`),
+        error: (...args: any[]) =>
+            Console.print(`\x1b[31m[js] ${args.join(" ")}\x1b[0m`),
+    };
+
+    try {
+        const fn = new AsyncFn("ck", "audioContext", "console", code);
+        await fn(theChuck.rawRuntime, audioContext, jsConsole);
+    } catch (err: any) {
+        Console.print(
+            `\x1b[31m[js] Error in ${filename}: ${err.message}\x1b[0m`
+        );
+    }
+}
+
+/**
+ * Auto-run all .js files in the project when the VM starts.
+ */
+async function runProjectJsFiles() {
+    const jsFiles = ProjectSystem.getProjectFiles().filter((f) =>
+        f.getFilename().endsWith(".js")
+    );
+
+    for (const file of jsFiles) {
+        const filename = file.getFilename();
+        // If this file is active in the editor, get latest content from editor
+        const code = file.isActive()
+            ? Editor.getEditorCode()
+            : (file.getData() as string);
+        Console.print(`[js] running ${filename}...`);
+        await runJsCode(code, filename);
+    }
 }

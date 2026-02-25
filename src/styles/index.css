@@ -71,6 +71,10 @@ body {
     background-color: var(--ide-bg, #DDEEFF);
 }
 
+#console {
+    background-color: var(--ide-console-bg, #ffffff);
+}
+
 #visualizerContainer {
     background-color: var(--ide-console-bg, #ffffff);
 }

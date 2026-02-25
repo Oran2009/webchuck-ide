@@ -169,14 +169,30 @@
                       </button>
                     </li>
                     <li class="divider dark:border-t-gray-400" data-content="THEME" role="separator"></li>
-                    <div id="themePresetList"></div>
-                    <li class="divider dark:border-t-gray-400" role="separator"></li>
-                    <li role="none">
-                      <button id="customThemeButton" type="button" class="dropdownItem" role="menuitem">
-                        Custom Theme...
+                    <li id="lightThemesContainer" class="relative" role="none">
+                      <button id="lightThemesButton" type="button" class="dropdownItem nestedDropdownButton" role="menuitem">
+                        Light Themes
+                        <svg class="w-2.5 h-2.5 ml-3 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                          <path stroke="currentColor" stroke-linecap="" stroke-linejoin="round" stroke-width="1.5" d="m1 9 4-4-4-4"/>
+                        </svg>
                       </button>
+                      <div id="lightThemesList" class="nestedDropdown w-48 hidden">
+                        <ul class="py-2 text-base text-gray-700 dark:text-gray-200" role="menu" aria-labelledby="lightThemesButton">
+                        </ul>
+                      </div>
                     </li>
-                    <li class="divider dark:border-t-gray-400" role="separator"></li>
+                    <li id="darkThemesContainer" class="relative" role="none">
+                      <button id="darkThemesButton" type="button" class="dropdownItem nestedDropdownButton" role="menuitem">
+                        Dark Themes
+                        <svg class="w-2.5 h-2.5 ml-3 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                          <path stroke="currentColor" stroke-linecap="" stroke-linejoin="round" stroke-width="1.5" d="m1 9 4-4-4-4"/>
+                        </svg>
+                      </button>
+                      <div id="darkThemesList" class="nestedDropdown w-48 hidden">
+                        <ul class="py-2 text-base text-gray-700 dark:text-gray-200" role="menu" aria-labelledby="darkThemesButton">
+                        </ul>
+                      </div>
+                    </li>
                     <li role="none">
                       <button id="followSystemToggle" type="button" class="dropdownItem" role="menuitem">
                         Follow System: Off
@@ -389,7 +405,7 @@
                 SENSOR
                 <span id="SensorPing" class="animate-ping absolute top-0 right-0 h-2 w-2 rounded-full bg-orange opacity-75 hidden" aria-hidden="true"></span>
               </button>
-              <button id="inputPanelToggle" type="button" class="panel-collapse-btn ml-auto" aria-label="Collapse input panel" title="Collapse panel">
+              <button id="inputPanelToggle" type="button" class="panel-collapse-btn collapsed ml-auto" aria-label="Collapse input panel" title="Collapse panel">
                 <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
               </button>
             </div>
@@ -834,9 +850,6 @@
     </div>
 
       <!-- Custom Theme Editor Modal -->
-      <dialog id="theme-editor-modal" class="modal rounded-lg p-0 w-[600px] max-w-[90vw] max-h-[80vh]">
-      </dialog>
-
     <script type="module" src="/src/main.ts"></script>
   </body>
 
