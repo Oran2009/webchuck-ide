@@ -21,6 +21,7 @@ import VmMonitor from "@/components/vmMonitor";
 import Recorder, { RecordState } from "./recorder";
 import Console from "@/components/outputPanel/console";
 import Toast from "@/components/toast";
+import { getAndClearLoadedExample, onExampleRun } from "@/components/suggestions";
 
 // detect operating system
 const isWindows = navigator.userAgent.includes("Windows");
@@ -102,6 +103,10 @@ export default class ChuckBar {
                 const status = document.getElementById("a11y-status");
                 if (status) status.textContent = `Shred ${shredID} is running`;
                 Toast.onRunSuccess(VmMonitor.getNumShreds());
+                const exampleName = getAndClearLoadedExample();
+                if (exampleName) {
+                    onExampleRun(exampleName);
+                }
             },
             () => {
                 Toast.error("error compiling code...");
