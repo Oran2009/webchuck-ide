@@ -161,7 +161,7 @@
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m1 1 4 4 4-4"/>
                   </svg>
                 </button>
-                <div id="viewDropdown" class="hidden dropdown w-40">
+                <div id="viewDropdown" class="hidden dropdown w-52">
                   <ul class="py-2 text-base text-gray-700 dark:text-gray-200" aria-labelledby="viewButton" role="menu">
                     <li role="none">
                       <button id="chuckNowToggle" type="button" class="dropdownItem" role="menuitem">
@@ -169,14 +169,17 @@
                       </button>
                     </li>
                     <li class="divider dark:border-t-gray-400" data-content="THEME" role="separator"></li>
+                    <div id="themePresetList"></div>
+                    <li class="divider dark:border-t-gray-400" role="separator"></li>
                     <li role="none">
-                      <button id="darkModeToggle" type="button" class="dropdownItem disabled:opacity-50" role="menuitem">
-                        Mode: Light
+                      <button id="customThemeButton" type="button" class="dropdownItem" role="menuitem">
+                        Custom Theme...
                       </button>
                     </li>
+                    <li class="divider dark:border-t-gray-400" role="separator"></li>
                     <li role="none">
-                      <button id="colorPreferenceToggle" type="button" class="dropdownItem" role="menuitem">
-                        System: On
+                      <button id="followSystemToggle" type="button" class="dropdownItem" role="menuitem">
+                        Follow System: Off
                       </button>
                     </li>
                     <li class="divider dark:border-t-gray-400" data-content="FULLSCREEN" role="separator"></li>
@@ -728,22 +731,75 @@
       <!-- Keyboard Shortcuts Modal -->
       <dialog class="modal" id="shortcuts-modal" aria-labelledby="shortcuts-heading">
         <h2 id="shortcuts-heading" class="text-xl font-medium pb-2">Keyboard Shortcuts</h2>
-        <div class="grid grid-cols-2 gap-y-2 gap-x-4 py-4 text-sm">
-          <div class="font-mono text-right text-dark-5 dark:text-dark-a">Ctrl/Cmd + .</div>
-          <div>Start WebChucK</div>
-          <div class="font-mono text-right text-dark-5 dark:text-dark-a">Ctrl/Cmd + Enter</div>
-          <div>Run code</div>
-          <div class="font-mono text-right text-dark-5 dark:text-dark-a">Ctrl/Cmd + \</div>
-          <div>Replace shred</div>
-          <div class="font-mono text-right text-dark-5 dark:text-dark-a">Ctrl/Cmd + Backspace</div>
-          <div>Remove shred</div>
-          <div class="font-mono text-right text-dark-5 dark:text-dark-a">Ctrl/Cmd + S</div>
-          <div>Generate GUI</div>
-        </div>
+
+        <section class="shortcuts-section">
+          <h3 class="shortcuts-category">ChucK Controls</h3>
+          <div class="shortcuts-grid">
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>.</kbd></div>
+            <div>Start WebChucK</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Enter</kbd></div>
+            <div>Run code</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>\</kbd></div>
+            <div>Replace shred</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Backspace</kbd></div>
+            <div>Remove shred</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>S</kbd></div>
+            <div>Generate GUI</div>
+          </div>
+        </section>
+
+        <section class="shortcuts-section">
+          <h3 class="shortcuts-category">Editor</h3>
+          <div class="shortcuts-grid">
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Z</kbd></div>
+            <div>Undo</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd></div>
+            <div>Redo</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>D</kbd></div>
+            <div>Select next occurrence</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>/</kbd></div>
+            <div>Toggle line comment</div>
+            <div class="shortcuts-keys"><kbd>Alt</kbd> + <kbd>&uarr;</kbd>/<kbd>&darr;</kbd></div>
+            <div>Move line up/down</div>
+          </div>
+        </section>
+
+        <section class="shortcuts-section">
+          <h3 class="shortcuts-category">Navigation</h3>
+          <div class="shortcuts-grid">
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd></div>
+            <div>Find in files</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>F</kbd></div>
+            <div>Find in editor</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>H</kbd></div>
+            <div>Find and replace</div>
+          </div>
+        </section>
+
         <div class="flex justify-end pt-4">
           <button id="shortcuts-close" type="button" class="button secondary">Close</button>
         </div>
       </dialog>
+
+      <!-- Mobile Bottom Sheet: File Explorer -->
+      <div id="bottomSheet" class="bottom-sheet-overlay hidden" aria-modal="true" role="dialog" aria-label="File Explorer">
+        <div id="bottomSheetBackdrop" class="bottom-sheet-backdrop"></div>
+        <div id="bottomSheetContent" class="bottom-sheet-content">
+          <div class="bottom-sheet-handle" aria-hidden="true">
+            <div class="bottom-sheet-handle-bar"></div>
+          </div>
+          <div class="flex justify-end flex-none">
+            <button id="bottomSheetClose" type="button" class="p-1.5 mr-1 text-dark-5 dark:text-dark-a hover:text-dark dark:hover:text-light" aria-label="Close file explorer">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <div id="bottomSheetFiles" class="overflow-hidden" style="height: 50vh;"></div>
+        </div>
+      </div>
+
 
       <!-- Accessibility live region for status announcements -->
       <div id="a11y-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
@@ -754,14 +810,14 @@
       <div id="fullscreenContent" class="fullscreen-content"></div>
       <div id="fullscreenToolbar" class="fullscreen-toolbar toolbar-hidden">
         <button id="fullscreenClose" type="button" class="fullscreen-btn" title="Exit fullscreen (Esc)" aria-label="Close fullscreen">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
         <div class="fullscreen-divider"></div>
         <button id="fullscreenToggleBtn" type="button" class="fullscreen-btn" title="Toggle fullscreen" aria-label="Toggle fullscreen">
-          <svg id="fullscreenExpandIcon" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg id="fullscreenExpandIcon" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="15 3 21 3 21 9"></polyline>
             <polyline points="9 21 3 21 3 15"></polyline>
             <line x1="21" y1="3" x2="14" y2="10"></line>
@@ -776,6 +832,10 @@
         </button>
       </div>
     </div>
+
+      <!-- Custom Theme Editor Modal -->
+      <dialog id="theme-editor-modal" class="modal rounded-lg p-0 w-[600px] max-w-[90vw] max-h-[80vh]">
+      </dialog>
 
     <script type="module" src="/src/main.ts"></script>
   </body>

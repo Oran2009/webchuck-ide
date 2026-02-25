@@ -52,8 +52,17 @@ module.exports = {
           d: "#DDDDDD",
           e: "#EEEEEE",
           f: "#FFFFFF",
-
-        }
+        },
+        // IDE theme CSS variable colors
+        "ide-bg": "var(--ide-bg)",
+        "ide-bg-alt": "var(--ide-bg-alt)",
+        "ide-text": "var(--ide-text)",
+        "ide-text-muted": "var(--ide-text-muted)",
+        "ide-accent": "var(--ide-accent)",
+        "ide-accent-hover": "var(--ide-accent-hover)",
+        "ide-border": "var(--ide-border)",
+        "ide-editor-bg": "var(--ide-editor-bg)",
+        "ide-console-bg": "var(--ide-console-bg)",
       },
     },
     plugins: [],

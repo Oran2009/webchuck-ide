@@ -288,5 +288,17 @@ export default class GUI {
             GUI.generateGUI(sliderValues);
         }
     }
+
+    /**
+     * Apply theme from IDE theme system
+     */
+    static applyTheme(isDark: boolean, bgColor: string) {
+        GUI.isDark = isDark;
+        if (GUI.canvas) {
+            GUI.canvas.style.backgroundColor = bgColor;
+            const sliderValues = GUI.sliders.map((slider) => slider.value);
+            GUI.generateGUI(sliderValues);
+        }
+    }
 }
 (window as any).GUI = GUI;

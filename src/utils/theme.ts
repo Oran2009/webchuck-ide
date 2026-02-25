@@ -1,165 +1,141 @@
-//--------------------------------------------------------------------
+//------------------------------------------------------------
 // title: Theme
-// desc:  Handles the dark mode toggle and color scheme
+// desc:  Theme initialization and View dropdown wiring.
+//        Delegates actual theme application to themes.ts.
 //
 // author: terry feng
 // date:   August 2023
-//--------------------------------------------------------------------
+//------------------------------------------------------------
 
-import Console from "@/components/outputPanel/console";
-import GUI from "@/components/inputPanel/gui/gui";
-import Editor from "@/components/editor/monaco/editor";
-import { visual } from "@/host";
+import {
+    PRESET_THEMES,
+    applyTheme,
+    getActiveTheme,
+    initThemeSystem,
+    isFollowingSystem,
+    setFollowSystem,
+    type IDETheme,
+} from "@/utils/themes";
+import ThemeEditor from "@/components/themeEditor";
 
-let darkModeToggle: HTMLButtonElement;
-let colorPreferenceToggle: HTMLButtonElement;
-
-/* Header Theme */
-const ACCENT_COLOR_CLASS: string = "text-orange";
-const TEXT_COLOR_CLASS: string = "text-dark-5";
-const HOVER_COLOR_CLASS: string = "hover:text-dark-8";
-const DARK_TEXT_HOVER_CLASS: string = "dark:text-dark-a";
-const DARK_HOVER_COLOR_CLASS: string = "dark:hover:text-dark-c";
-
-export {
-    ACCENT_COLOR_CLASS,
-    DARK_HOVER_COLOR_CLASS,
-    DARK_TEXT_HOVER_CLASS,
-    HOVER_COLOR_CLASS,
-    TEXT_COLOR_CLASS,
-};
+// Header color constants (used by editorPanelHeader, outputPanelHeader, etc.)
+export const ACCENT_COLOR_CLASS: string = "text-orange";
+export const TEXT_COLOR_CLASS: string = "text-dark-5";
+export const HOVER_COLOR_CLASS: string = "hover:text-dark-8";
+export const DARK_TEXT_HOVER_CLASS: string = "dark:text-dark-a";
+export const DARK_HOVER_COLOR_CLASS: string = "dark:hover:text-dark-c";
 
 /**
- * Set the color scheme of the page
- */
-export function setColorScheme() {
-    if (localStorage.colorPreference === "true") {
-        setThemeFromPreference();
-        colorPreferenceToggle.innerHTML = "System: On";
-        darkModeToggle.disabled = true;
-    } else {
-        colorPreferenceToggle.innerHTML = "System: Off";
-        darkModeToggle.disabled = false;
-        switch (localStorage.theme) {
-            case "dark":
-                darkModeOn();
-                break;
-            case "light":
-                darkModeOff();
-                break;
-        }
-    }
-}
-
-/**
- * Return the current color scheme
- * @returns {string} "dark" or "light"
+ * Get the current color scheme.
  */
 export function getColorScheme(): string {
-    return localStorage.theme;
+    return getActiveTheme().isDark ? "dark" : "light";
 }
 
 /**
- * Initialize the dark mode toggle button
+ * Set the color scheme (called by components that still use the old API).
+ * Delegates to the new theme system.
+ */
+export function setColorScheme() {
+    applyTheme(getActiveTheme());
+}
+
+/**
+ * Initialize theme UI in the View dropdown.
+ * Call once from Main.init().
  */
 export function initTheme() {
-    colorPreferenceToggle = document.querySelector<HTMLButtonElement>(
-        "#colorPreferenceToggle"
-    )!;
-    colorPreferenceToggle.addEventListener("click", () => {
-        toggleColorPreference();
-    });
+    initThemeSystem();
+    buildThemeDropdown();
+    wireFollowSystem();
+}
 
-    localStorage.colorPreference = localStorage.colorPreference || "true";
+/**
+ * Build preset theme buttons in the View dropdown.
+ */
+function buildThemeDropdown() {
+    const list = document.getElementById("themePresetList");
+    if (!list) return;
 
-    darkModeToggle =
-        document.querySelector<HTMLButtonElement>("#darkModeToggle")!;
-    darkModeToggle.addEventListener("click", () => {
-        toggleDarkMode();
-    });
+    for (const preset of PRESET_THEMES) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "dropdownItem";
+        btn.setAttribute("role", "menuitem");
+        btn.dataset.themeId = preset.id;
+        updateThemeCheckmark(btn, preset);
 
-    window
-        .matchMedia("(prefers-color-scheme: dark)")
-        .addEventListener("change", (event) => {
-            if (localStorage.colorPreference === "false") {
-                return;
-            }
-            if (event.matches) {
-                darkModeOn();
-            } else {
-                darkModeOff();
-            }
+        btn.addEventListener("click", () => {
+            // Disable follow system when manually selecting a theme
+            localStorage.setItem("colorPreference", "false");
+            const followBtn = document.getElementById("followSystemToggle");
+            if (followBtn) followBtn.textContent = "Follow System: Off";
+
+            applyTheme(preset);
+            refreshThemeCheckmarks();
         });
-    setColorScheme();
-}
 
-function setThemeFromPreference() {
-    if (
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
-        darkModeOn();
-    } else {
-        darkModeOff();
-    }
-}
-
-/**
- * Disable WebChucK IDE dark mode
- */
-function darkModeOff() {
-    // turn off dark mode
-    localStorage.theme = "light";
-    darkModeToggle.innerHTML = "Mode: Light";
-    document.documentElement.classList.remove("dark");
-    Console.setLightTheme();
-    visual?.theme(false);
-    Editor.setTheme(false);
-    GUI.setTheme(false);
-}
-
-/**
- * Enable WebChucK IDE dark mode
- */
-function darkModeOn() {
-    // turn on dark mode
-    localStorage.theme = "dark";
-    darkModeToggle.innerHTML = "Mode: Dark";
-    document.documentElement.classList.add("dark");
-    Console.setDarkTheme();
-    visual?.theme(true);
-    Editor.setTheme(true);
-    GUI.setTheme(true);
-}
-
-/**
- * Switch between dark mode and light mode
- */
-function toggleColorPreference() {
-    switch (localStorage.colorPreference) {
-        case "true":
-            localStorage.colorPreference = "false";
-            break;
-        case "false":
-            localStorage.colorPreference = "true";
-            break;
+        list.appendChild(btn);
     }
 
-    setColorScheme();
+    // Custom theme button
+    document.getElementById("customThemeButton")?.addEventListener("click", () => {
+        openCustomThemeEditor();
+    });
 }
 
 /**
- * Switch between dark mode and light mode
+ * Update checkmark prefix on a theme button.
  */
-function toggleDarkMode() {
-    switch (localStorage.theme) {
-        case "light":
-            localStorage.theme = "dark";
-            break;
-        case "dark":
-            localStorage.theme = "light";
-            break;
-    }
+function updateThemeCheckmark(btn: HTMLElement, preset: IDETheme) {
+    const isActive = getActiveTheme().id === preset.id;
+    const suffix = isActive ? " \u2713" : "";
+    btn.textContent = preset.name + suffix;
+}
 
-    setColorScheme();
+/**
+ * Refresh all theme checkmarks after a theme change.
+ */
+export function refreshThemeCheckmarks() {
+    const list = document.getElementById("themePresetList");
+    if (!list) return;
+    const buttons = list.querySelectorAll<HTMLButtonElement>("button[data-theme-id]");
+    buttons.forEach((btn) => {
+        const id = btn.dataset.themeId!;
+        const preset = PRESET_THEMES.find((t) => t.id === id);
+        if (preset) updateThemeCheckmark(btn, preset);
+    });
+}
+
+/**
+ * Wire up the Follow System toggle.
+ */
+function wireFollowSystem() {
+    const btn = document.getElementById("followSystemToggle");
+    if (!btn) return;
+
+    const following = isFollowingSystem();
+    btn.textContent = "Follow System: " + (following ? "On" : "Off");
+
+    btn.addEventListener("click", () => {
+        const nowFollowing = !isFollowingSystem();
+        setFollowSystem(nowFollowing);
+        btn.textContent = "Follow System: " + (nowFollowing ? "On" : "Off");
+        refreshThemeCheckmarks();
+    });
+
+    // Listen for OS preference changes
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+        if (isFollowingSystem()) {
+            applyTheme(e.matches ? PRESET_THEMES[1] : PRESET_THEMES[0]);
+            refreshThemeCheckmarks();
+        }
+    });
+}
+
+/**
+ * Open the custom theme editor modal.
+ */
+function openCustomThemeEditor() {
+    ThemeEditor.open();
 }

@@ -16,6 +16,7 @@ import { calculateDisplayDigits } from "@utils/time";
 import { ChuckNow } from "@/components/vmMonitor";
 import { loadWebChugins } from "@/utils/webChugins";
 import Console from "@/components/outputPanel/console";
+import Toast from "@/components/toast";
 import Visualizer from "@/components/outputPanel/visualizer";
 import HidPanel from "@/components/inputPanel/hidPanel";
 import SensorPanel from "@/components/inputPanel/sensorPanel";
@@ -151,7 +152,7 @@ async function initWebChucK() {
 
     theChuck = new WebChucKAdapter(rawChuck);
     theChuck.connect(audioContext.destination);
-    Console.print("WebChucK is ready!");
+    Toast.info("WebChucK is ready!");
 
     onChuckReady();
 }
@@ -182,7 +183,7 @@ async function initChuGL() {
     });
 
     if (!ck) {
-        Console.print("WebChuGL failed to initialize. Check browser WebGPU support.");
+        Toast.error("WebChuGL failed to initialize. Check browser WebGPU support.");
         console.error("[WebChuGL] Init returned null");
         return;
     }
@@ -192,7 +193,7 @@ async function initChuGL() {
     sampleRate = audioContext.sampleRate;
     calculateDisplayDigits(sampleRate);
 
-    Console.print("WebChuGL is ready!");
+    Toast.info("WebChuGL is ready!");
 
     onChuckReady();
 }
@@ -259,8 +260,10 @@ export async function startChuck() {
         );
     }
 
-    // TODO: for debugging, make theChuck global
-    (window as any).theChuck = theChuck;
+    // Expose theChuck globally in dev mode for debugging
+    if (import.meta.env.DEV) {
+        (window as any).theChuck = theChuck;
+    }
 
     // TODO: EZScore HACKS @terryfeng @alexhan
     try {
@@ -322,7 +325,7 @@ export function getChuckNow(): number {
  */
 export async function connectMic() {
     if (engineMode === "webchugl") {
-        Console.print("Microphone is managed internally by WebChuGL");
+        Toast.info("Microphone is managed internally by WebChuGL");
         return;
     }
 

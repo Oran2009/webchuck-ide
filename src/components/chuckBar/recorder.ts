@@ -11,6 +11,7 @@
 //--------------------------------------------------------
 
 import Console from "@components/outputPanel/console";
+import Toast from "@/components/toast";
 import ProjectSystem from "@components/fileExplorer/projectSystem";
 import VmMonitor from "@components/vmMonitor";
 
@@ -20,16 +21,16 @@ export enum RecordState {
     armed = 2,
 }
 
-enum RecordButtonImage {
-    stop = "img/stop-button.svg",
-    record = "img/record-button.svg",
-    armed = "img/armed-button.svg",
-}
+// Inline SVG icons for record button states
+const RecordButtonIcon = {
+    record: `<svg viewBox="13 13 24 24" fill="none" class="w-6 h-6"><circle cx="25" cy="25" r="10" fill="#FF6868"/></svg>`,
+    stop: `<svg viewBox="15 15 20 20" fill="none" class="w-6 h-6"><path d="M17 19C17 17.8954 17.8954 17 19 17H31C32.1046 17 33 17.8954 33 19V31C33 32.1046 32.1046 33 31 33H19C17.8954 33 17 32.1046 17 31V19Z" fill="white"/></svg>`,
+    armed: `<svg viewBox="3 3 44 44" fill="none" class="w-6 h-6"><circle cx="25" cy="25" r="20" fill="white"/><circle cx="25" cy="25" r="7" fill="#FF6868"/></svg>`,
+};
 
 export default class Recorder {
     public static state: RecordState = RecordState.stopped;
     public static recordButton: HTMLButtonElement;
-    public static recordImage: HTMLImageElement;
     public static playButton: HTMLButtonElement;
     public static removeButton: HTMLButtonElement;
 
@@ -37,15 +38,17 @@ export default class Recorder {
     private static recorder: MediaRecorder;
     private static buffer: Blob[];
 
+    private static setRecordButton(icon: string, bg: string) {
+        Recorder.recordButton.innerHTML = icon;
+        Recorder.recordButton.style.backgroundColor = bg;
+    }
+
     constructor(recordButton: HTMLButtonElement) {
         Recorder.recordButton = recordButton;
         Recorder.recordButton.title = `Record`;
         Recorder.recordButton.addEventListener("click", async () => {
             Recorder.recordPressed();
         });
-        Recorder.recordImage = document.getElementById(
-            "recordImage"
-        )! as HTMLImageElement;
 
         // Get references to Chuck Buttons
         Recorder.playButton = document.getElementById(
@@ -126,9 +129,8 @@ export default class Recorder {
 
     static startRecording() {
         Recorder.state = RecordState.recording;
-        Console.print("\x1b[31mrecording...\x1b[0m"); // Print in red
-        Recorder.recordImage.src = RecordButtonImage.stop;
-        Recorder.recordImage.alt = "Stop recording";
+        Toast.info("recording...");
+        Recorder.setRecordButton(RecordButtonIcon.stop, "#FF6868");
         Recorder.recordButton.setAttribute("aria-label", "Stop recording");
 
         Recorder.playButton.removeEventListener(
@@ -140,9 +142,8 @@ export default class Recorder {
 
     static stopRecording() {
         Recorder.state = RecordState.stopped;
-        Console.print("recording stopped...");
-        Recorder.recordImage.src = RecordButtonImage.record;
-        Recorder.recordImage.alt = "Record";
+        Toast.info("recording stopped...");
+        Recorder.setRecordButton(RecordButtonIcon.record, "white");
         Recorder.recordButton.setAttribute("aria-label", "Record");
 
         Recorder.recorder.stop();
@@ -150,9 +151,8 @@ export default class Recorder {
 
     static armRecorder() {
         Recorder.state = RecordState.armed;
-        Console.print("armed for recording...");
-        Recorder.recordImage.src = RecordButtonImage.armed;
-        Recorder.recordImage.alt = "Armed for recording";
+        Toast.info("armed for recording...");
+        Recorder.setRecordButton(RecordButtonIcon.armed, "#FF6868");
         Recorder.recordButton.setAttribute("aria-label", "Armed for recording, click to disarm");
 
         Recorder.playButton.addEventListener("click", Recorder.startRecording);
@@ -160,8 +160,7 @@ export default class Recorder {
 
     static disarmRecorder() {
         Recorder.state = RecordState.stopped;
-        Recorder.recordImage.src = RecordButtonImage.record;
-        Recorder.recordImage.alt = "Record";
+        Recorder.setRecordButton(RecordButtonIcon.record, "white");
         Recorder.recordButton.setAttribute("aria-label", "Record");
         Recorder.playButton.removeEventListener(
             "click",

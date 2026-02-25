@@ -136,6 +136,7 @@ export default class VmMonitor {
     static getNumShreds(): number {
         return this.numShreds;
     }
+
 }
 
 /**

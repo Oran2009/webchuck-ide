@@ -80,6 +80,7 @@ export default class SensorPanel {
         gyroButton.disabled = false;
         accelButton.disabled = false;
     }
+
 }
 
 //-----------------------------------------------------------

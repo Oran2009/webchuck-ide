@@ -118,7 +118,7 @@ body {
     grid-template-rows: 1fr;
 }
 
-/* Mobile Layout */
+/* Mobile Layout — structural overrides (grid, visibility of panels) */
 @media (max-width: 640px) {
     #webchuck-ide {
         height: 100vh;
@@ -156,8 +156,25 @@ body {
         padding-right: 0.5rem;
     }
 
-    #fileToggle {
-        pointer-events: none;
+    /* Condense the Start button to make room for action buttons */
+    #webchuckButton {
+        width: auto !important;
+        min-width: 0;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    /* Ensure touch targets are 44px minimum */
+    .header-item {
+        min-height: 2.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Let Monaco handle its own touch scrolling */
+    #monacoEditor {
+        touch-action: none;
     }
 
     #app.output-collapsed {
@@ -613,6 +630,32 @@ dialog::backdrop {
     --tw-ring-color: var(--ide-accent, #FF8833);
 }
 
+/* Keyboard Shortcuts Modal */
+.shortcuts-section {
+    @apply py-3 border-b border-gray-200 dark:border-dark-5 last:border-b-0;
+}
+
+.shortcuts-category {
+    @apply text-xs font-semibold text-dark-5 dark:text-dark-a uppercase tracking-wider pb-2;
+}
+
+.shortcuts-grid {
+    @apply grid grid-cols-2 gap-y-2 gap-x-4 text-sm items-center;
+}
+
+.shortcuts-keys {
+    @apply text-right;
+}
+
+kbd {
+    @apply inline-block px-1.5 py-0.5 text-xs font-mono font-medium
+           bg-gray-100 dark:bg-dark-4 text-dark-5 dark:text-dark-b
+           border border-gray-300 dark:border-dark-5 rounded shadow-sm;
+    min-width: 1.5rem;
+    text-align: center;
+    line-height: 1.4;
+}
+
 .modal.modal-sm {
     max-width: 320px;
 }
@@ -855,3 +898,61 @@ kbd {
 .fullscreen-divider {
     @apply w-px h-6 mx-1 bg-dark-d dark:bg-dark-6;
 }
+
+/* ===== BOTTOM SHEET (Mobile File Explorer) ===== */
+.bottom-sheet-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+}
+
+.bottom-sheet-overlay.hidden {
+    display: none;
+}
+
+.bottom-sheet-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.bottom-sheet-content {
+    position: relative;
+    width: 100%;
+    max-height: 70vh;
+    @apply bg-white dark:bg-dark rounded-t-xl;
+    transform: translateY(0);
+    transition: transform 0.3s ease-out;
+    z-index: 101;
+    animation: slide-up 0.3s ease-out forwards;
+}
+
+.bottom-sheet-content.closing {
+    animation: slide-down 0.2s ease-in forwards;
+}
+
+@keyframes slide-up {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+@keyframes slide-down {
+    from { transform: translateY(0); }
+    to { transform: translateY(100%); }
+}
+
+.bottom-sheet-handle {
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem 0;
+}
+
+.bottom-sheet-handle-bar {
+    width: 2.5rem;
+    height: 0.25rem;
+    border-radius: 0.125rem;
+    @apply bg-dark-d dark:bg-dark-5;
+}
+

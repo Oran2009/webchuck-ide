@@ -16,7 +16,9 @@ export default class HidPanel {
     public static hidMonitor: InputMonitor;
     public static mouseActive: boolean = false;
     public static keyboardActive: boolean = false;
+
     constructor(hid: HID) {
+
         // Create Hid Log
         HidPanel.hidMonitor = new InputMonitor(hidLog, MAX_ELEMENTS, false);
 
@@ -79,6 +81,7 @@ export default class HidPanel {
             HidPanel.mouseActive || HidPanel.keyboardActive
         );
     }
+
 }
 
 //-----------------------------------------------------------
