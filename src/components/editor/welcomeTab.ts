@@ -187,7 +187,7 @@ export default class WelcomeTab {
         const rng = seededRandom(seed);
         const shuffled = seededShuffle(examples, rng);
         const featured = shuffled[0];
-        const gridExamples = shuffled.slice(1, 5);
+        const gridExamples = shuffled.slice(1, 4); // 3 examples + Surprise Me
 
         // Header
         const header = document.createElement("div");
@@ -220,25 +220,7 @@ export default class WelcomeTab {
         });
         overlay.appendChild(featuredCard);
 
-        // "Surprise Me" button
-        const surpriseBtn = document.createElement("button");
-        surpriseBtn.type = "button";
-        surpriseBtn.className = [
-            "mb-4 px-4 py-2 rounded-lg",
-            "bg-orange text-white font-semibold text-sm",
-            "hover:bg-orange-dark transition cursor-pointer",
-            "focus:outline-none focus-visible:ring-2 focus-visible:ring-orange",
-        ].join(" ");
-        surpriseBtn.textContent = "\uD83C\uDFB2 Surprise Me";
-        surpriseBtn.addEventListener("click", () => {
-            const random = examples[Math.floor(Math.random() * examples.length)];
-            setLoadedExample(random.filename);
-            random.load();
-            WelcomeTab.dismiss();
-        });
-        overlay.appendChild(surpriseBtn);
-
-        // Rotating example grid (seeded by date)
+        // Rotating example grid (3 examples + Surprise Me)
         const grid = document.createElement("div");
         grid.className = "grid grid-cols-2 gap-3 max-w-md w-full mb-6";
 
@@ -249,6 +231,28 @@ export default class WelcomeTab {
                 WelcomeTab.dismiss();
             }));
         }
+
+        // "Surprise Me" as the 4th grid card
+        const surpriseCard = document.createElement("button");
+        surpriseCard.type = "button";
+        surpriseCard.className = [
+            "flex flex-col items-center justify-center p-3 rounded-lg",
+            "border border-orange border-dashed",
+            "hover:bg-orange hover:text-white",
+            "transition cursor-pointer bg-transparent",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-orange",
+        ].join(" ");
+        surpriseCard.innerHTML = `
+            <div class="font-semibold text-orange text-sm">\uD83C\uDFB2 Surprise Me</div>
+            <div class="text-xs text-dark-5 dark:text-dark-a mt-0.5">Load a random example</div>
+        `;
+        surpriseCard.addEventListener("click", () => {
+            const random = examples[Math.floor(Math.random() * examples.length)];
+            setLoadedExample(random.filename);
+            random.load();
+            WelcomeTab.dismiss();
+        });
+        grid.appendChild(surpriseCard);
         overlay.appendChild(grid);
 
         // Blank file button
