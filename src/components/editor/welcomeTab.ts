@@ -236,7 +236,7 @@ export default class WelcomeTab {
         const surpriseCard = document.createElement("button");
         surpriseCard.type = "button";
         surpriseCard.className = [
-            "flex flex-col items-center justify-center p-3 rounded-lg",
+            "text-left p-3 rounded-lg",
             "border border-orange border-dashed",
             "hover:bg-orange hover:text-white",
             "transition cursor-pointer bg-transparent",
