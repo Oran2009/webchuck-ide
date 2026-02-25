@@ -267,6 +267,41 @@ export default class Toast {
         Toast.show(message, "info", Toast.DURATION_INFO);
     }
 
+    /**
+     * Show a suggestion toast with a clickable action.
+     * Auto-dismisses after 8 seconds (longer to give time to read).
+     */
+    static suggestion(message: string, onClickAction: () => void): void {
+        if (!Toast.container) return;
+
+        Toast.hideTip();
+
+        if (Toast.activeTimer) {
+            clearTimeout(Toast.activeTimer);
+            Toast.activeTimer = null;
+        }
+        if (Toast.activeEl) {
+            Toast.activeEl.remove();
+            Toast.activeEl = null;
+        }
+
+        const el = document.createElement("span");
+        el.className = "toast truncate cursor-pointer hover:text-orange transition";
+        el.textContent = message;
+        el.setAttribute("role", "status");
+        el.addEventListener("click", () => {
+            onClickAction();
+            Toast.dismiss(el);
+        });
+
+        Toast.container.appendChild(el);
+        Toast.activeEl = el;
+
+        Toast.activeTimer = setTimeout(() => {
+            Toast.dismiss(el);
+        }, 8000);
+    }
+
     // ---- Contextual encouragement ----
 
     private static session = {

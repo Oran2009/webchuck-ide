@@ -1,11 +1,13 @@
 import { loadChuckFileFromURL, loadDataFileFromURL } from "@components/fileExplorer/projectSystem";
 import InputPanelHeader from "@/components/inputPanel/inputPanelHeader";
 import { engineMode } from "@/host";
+import { setLoadedExample } from "@/components/suggestions";
 
 interface WelcomeExample {
     title: string;
     description: string;
     blurb?: string;
+    filename: string; // primary .ck filename for suggestion tracking
     load: () => void;
 }
 
@@ -14,12 +16,14 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         title: "Hello Sine",
         description: "Your first sound — a simple sine wave",
         blurb: "The simplest ChucK program: one line to make sound. This is where everyone starts.",
+        filename: "helloSine.ck",
         load: () => loadChuckFileFromURL("examples/helloSine.ck"),
     },
     {
         title: "Play a Beat",
         description: "Load and loop a drum sample",
         blurb: "Load a .wav file and loop it with SndBuf — the foundation of sample-based music in ChucK.",
+        filename: "slammin.ck",
         load: () => {
             loadChuckFileFromURL("examples/slammin/slammin.ck");
             loadDataFileFromURL("examples/slammin/were_slammin.wav");
@@ -29,6 +33,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         title: "FM Synthesis GUI",
         description: "FM synthesis with interactive controls",
         blurb: "Tweak FM parameters in real time with auto-generated GUI sliders. See how carrier and modulator interact.",
+        filename: "fmGUI.ck",
         load: () => {
             loadChuckFileFromURL("examples/fmGUI.ck");
             InputPanelHeader.setNotificationPing(0, true);
@@ -38,6 +43,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         title: "On-the-Fly",
         description: "Live-code a beat, one shred at a time",
         blurb: "The classic ChucK demo: add instruments one at a time while the beat plays. This is on-the-fly programming.",
+        filename: "otf_01.ck",
         load: () => {
             loadChuckFileFromURL("examples/otf/otf_01.ck");
             loadDataFileFromURL("examples/otf/data/kick.wav");
@@ -47,12 +53,14 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         title: "Harmonic Series Arp",
         description: "Arpeggiate through the harmonic series",
         blurb: "Hear the natural overtone series — the building blocks of all musical timbre.",
+        filename: "harmonicSeriesArp.ck",
         load: () => loadChuckFileFromURL("examples/harmonicSeriesArp.ck"),
     },
     {
         title: "Hello Sine GUI",
         description: "A sine wave with a frequency slider",
         blurb: "Your first interactive ChucK program — control a sine wave's frequency with a GUI slider.",
+        filename: "helloSineGUI.ck",
         load: () => {
             loadChuckFileFromURL("examples/helloSineGUI.ck");
             InputPanelHeader.setNotificationPing(0, true);
@@ -62,6 +70,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         title: "Mouse PWM HID",
         description: "Control sound with your mouse",
         blurb: "Move your mouse to change pitch and pulse width — your cursor becomes a musical controller.",
+        filename: "mouseHID.ck",
         load: () => {
             loadChuckFileFromURL("examples/mouseHID.ck");
             InputPanelHeader.setNotificationPing(1, true);
@@ -71,6 +80,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         title: "Keyboard Organ HID",
         description: "Play notes with your keyboard",
         blurb: "Turn your QWERTY keyboard into a musical instrument. Each key plays a different note.",
+        filename: "keyboardHID.ck",
         load: () => {
             loadChuckFileFromURL("examples/keyboardHID.ck");
             InputPanelHeader.setNotificationPing(1, true);
@@ -83,24 +93,28 @@ const WEBCHUGL_EXAMPLES: WelcomeExample[] = [
         title: "Basic Shapes",
         description: "3D primitives in a scene",
         blurb: "The 'Hello World' of ChuGL — cubes, spheres, and tori in a 3D scene.",
+        filename: "basicShapes.ck",
         load: () => loadChuckFileFromURL("examples/chugl/basicShapes.ck"),
     },
     {
         title: "Circles",
         description: "Animated colorful circles",
         blurb: "Mesmerizing animated circles — audio-driven visuals at their simplest.",
+        filename: "circles.ck",
         load: () => loadChuckFileFromURL("examples/chugl/circles.ck"),
     },
     {
         title: "Solar System",
         description: "Orbital scene graph hierarchy",
         blurb: "Planets orbiting a star — learn scene graph hierarchies through space.",
+        filename: "solarSystem.ck",
         load: () => loadChuckFileFromURL("examples/chugl/solarSystem.ck"),
     },
     {
         title: "Lissajous",
         description: "Audio-visual oscilloscope",
         blurb: "Turn sound into art — watch oscillators trace beautiful Lissajous curves in real time.",
+        filename: "lissajous.ck",
         load: () => loadChuckFileFromURL("examples/chugl/lissajous.ck"),
     },
 ];
@@ -200,6 +214,7 @@ export default class WelcomeTab {
             <div class="text-xs text-dark-5 dark:text-dark-a mt-1">${featured.blurb || featured.description}</div>
         `;
         featuredCard.addEventListener("click", () => {
+            setLoadedExample(featured.filename);
             featured.load();
             WelcomeTab.dismiss();
         });
@@ -217,6 +232,7 @@ export default class WelcomeTab {
         surpriseBtn.textContent = "\uD83C\uDFB2 Surprise Me";
         surpriseBtn.addEventListener("click", () => {
             const random = examples[Math.floor(Math.random() * examples.length)];
+            setLoadedExample(random.filename);
             random.load();
             WelcomeTab.dismiss();
         });
@@ -228,6 +244,7 @@ export default class WelcomeTab {
 
         for (const ex of gridExamples) {
             grid.appendChild(buildCard(ex, () => {
+                setLoadedExample(ex.filename);
                 ex.load();
                 WelcomeTab.dismiss();
             }));
