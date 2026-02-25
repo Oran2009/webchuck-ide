@@ -236,9 +236,8 @@ export default class WelcomeTab {
         const surpriseCard = document.createElement("button");
         surpriseCard.type = "button";
         surpriseCard.className = [
-            "text-left p-3 rounded-lg",
-            "border border-orange border-dashed",
-            "hover:bg-orange hover:text-white",
+            "text-left p-3 rounded-lg border border-gray-200 dark:border-dark-5",
+            "hover:border-orange dark:hover:border-orange hover:shadow-sm",
             "transition cursor-pointer bg-transparent",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-orange",
         ].join(" ");
