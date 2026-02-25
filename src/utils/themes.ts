@@ -488,7 +488,14 @@ export function applyTheme(theme: IDETheme) {
 
     // 5. Canvas components
     visual?.applyThemeColors(c.waveformColor, c.spectrumColor, c.spectrumFill);
-    GUI.applyTheme(theme.isDark, c.bg);
+    GUI.applyTheme(theme.isDark, {
+        bg: c.bg,
+        bgAlt: c.bgAlt,
+        text: c.text,
+        textMuted: c.textMuted,
+        accent: c.accent,
+        border: c.border,
+    });
 
     // 6. Persist
     localStorage.setItem("ideTheme", theme.id);

@@ -10,10 +10,20 @@
 import Editor from "@/components/editor/monaco/editor";
 import EventButton from "./eventButton";
 import FloatSlider from "./floatSlider";
-import { getColorScheme } from "@/utils/theme";
+import { getActiveTheme } from "@/utils/themes";
 import { getGlobalVariables } from "@/utils/chuckPreprocess";
 
 const GUIPanel = document.getElementById("GUIPanel") as HTMLDivElement;
+
+/** Theme colors for canvas-drawn GUI elements */
+export interface GUIThemeColors {
+    bg: string;
+    bgAlt: string;
+    text: string;
+    textMuted: string;
+    accent: string;
+    border: string;
+}
 
 // Constants
 const RATIO = window.devicePixelRatio || 1;
@@ -38,6 +48,7 @@ export default class GUI {
     public static sliderWidth: number = 0;
     private static buttonsPerRow: number = 4;
     private static isDark: boolean;
+    private static themeColors: GUIThemeColors;
     private static activeSlider: FloatSlider | undefined;
 
     constructor() {
@@ -46,7 +57,15 @@ export default class GUI {
         // Scale the context by the device pixel ratio
         GUI.ctx.scale(RATIO, RATIO);
 
-        GUI.setTheme(getColorScheme() === "dark");
+        const theme = getActiveTheme();
+        GUI.applyTheme(theme.isDark, {
+            bg: theme.colors.bg,
+            bgAlt: theme.colors.bgAlt,
+            text: theme.colors.text,
+            textMuted: theme.colors.textMuted,
+            accent: theme.colors.accent,
+            border: theme.colors.border,
+        });
         GUI.canvas.style.position = "absolute";
 
         GUI.resizeDimensions();
@@ -108,7 +127,7 @@ export default class GUI {
                 BUTTON_SIZE,
                 globals.Event[i],
                 GUI.ctx,
-                GUI.isDark
+                GUI.themeColors
             );
             GUI.buttons.push(eventButton);
         }
@@ -134,7 +153,7 @@ export default class GUI {
                 SLIDER_HEIGHT,
                 globals.float[i],
                 GUI.ctx,
-                GUI.isDark,
+                GUI.themeColors,
                 sliderValues != undefined ? sliderValues[i] : 0
             );
             GUI.sliders.push(floatSlider);
@@ -173,7 +192,7 @@ export default class GUI {
     private static showHelp() {
         GUI.ctx.clearRect(0, 0, GUI.canvas.width, GUI.canvas.height);
         GUI.ctx.font = `bold ${TITLE_SIZE}px Arial`;
-        GUI.ctx.fillStyle = GUI.isDark ? "#bbb" : "#666";
+        GUI.ctx.fillStyle = GUI.themeColors?.textMuted ?? (GUI.isDark ? "#bbb" : "#666");
         GUI.ctx.textAlign = "center";
         GUI.ctx.fillText(
             "Create a global float or Event to get started",
@@ -283,8 +302,11 @@ export default class GUI {
     static setTheme(isDark: boolean) {
         const sliderValues = GUI.sliders.map((slider) => slider.value);
         GUI.isDark = isDark;
+        GUI.themeColors = isDark
+            ? { bg: "#222", bgAlt: "#333", text: "#eee", textMuted: "#bbb", accent: "#FF8833", border: "#555" }
+            : { bg: "white", bgAlt: "#eee", text: "#333", textMuted: "#666", accent: "#FF8833", border: "#ccc" };
         if (GUI.canvas) {
-            GUI.canvas.style.backgroundColor = isDark ? "#222" : "white";
+            GUI.canvas.style.backgroundColor = GUI.themeColors.bg;
             GUI.generateGUI(sliderValues);
         }
     }
@@ -292,10 +314,11 @@ export default class GUI {
     /**
      * Apply theme from IDE theme system
      */
-    static applyTheme(isDark: boolean, bgColor: string) {
+    static applyTheme(isDark: boolean, colors: GUIThemeColors) {
         GUI.isDark = isDark;
+        GUI.themeColors = colors;
         if (GUI.canvas) {
-            GUI.canvas.style.backgroundColor = bgColor;
+            GUI.canvas.style.backgroundColor = colors.bg;
             const sliderValues = GUI.sliders.map((slider) => slider.value);
             GUI.generateGUI(sliderValues);
         }

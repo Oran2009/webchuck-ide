@@ -201,11 +201,11 @@ export default class Examples {
             loadChuckFileFromURL("examples/chugl/lissajous.ck")
         );
 
-        // JS Host Code Examples
+        // JS Examples
         const jsNested = NestedDropdown.createNewNestedDropdown(
             this.examplesDropdownContainer,
             "js-host",
-            "JS Host Code"
+            "JS"
         );
         Examples.newExample(
             "JS Freq Control",
