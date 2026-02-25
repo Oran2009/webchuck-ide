@@ -186,6 +186,7 @@ export function openInputPanel(open: boolean) {
         setContainerRowHeights(middle_panel, -1, `${MIN_SIZE_V}px`);
         input_panel_open = false;
     }
+    document.getElementById("inputPanelToggle")?.classList.toggle("collapsed", !input_panel_open);
     Editor.resizeEditor();
 }
 

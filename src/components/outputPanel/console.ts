@@ -12,6 +12,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import "@styles/xterm.css";
 
 import { theChuck } from "@/host";
+import { getActiveTheme } from "@/utils/themes";
 
 // Define a custom regular expression that matches blob URIs
 const blobRegex = /((blob:)?https?:\/\/\S+)/;
@@ -84,6 +85,10 @@ export default class Console {
         Console.terminal.loadAddon(Console.fitAddon);
         Console.terminal.open(Console.terminalElement);
         Console.fit();
+
+        // Apply saved theme (initTheme runs before Console is created)
+        const theme = getActiveTheme();
+        Console.applyThemeColors(theme.colors.consoleBg, theme.colors.consoleText);
 
         // Blob Links
         Console.terminal.registerLinkProvider(

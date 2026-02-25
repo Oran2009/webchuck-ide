@@ -16,10 +16,9 @@ import {
     setFollowSystem,
     type IDETheme,
 } from "@/utils/themes";
-import ThemeEditor from "@/components/themeEditor";
 
 // Header color constants (used by editorPanelHeader, outputPanelHeader, etc.)
-export const ACCENT_COLOR_CLASS: string = "text-orange";
+export const ACCENT_COLOR_CLASS: string = "text-accent";
 export const TEXT_COLOR_CLASS: string = "text-dark-5";
 export const HOVER_COLOR_CLASS: string = "hover:text-dark-8";
 export const DARK_TEXT_HOVER_CLASS: string = "dark:text-dark-a";
@@ -51,13 +50,17 @@ export function initTheme() {
 }
 
 /**
- * Build preset theme buttons in the View dropdown.
+ * Build preset theme buttons in the View dropdown,
+ * split into Light Themes and Dark Themes sub-dropdowns.
  */
 function buildThemeDropdown() {
-    const list = document.getElementById("themePresetList");
-    if (!list) return;
+    const lightList = document.querySelector("#lightThemesList ul");
+    const darkList = document.querySelector("#darkThemesList ul");
+    if (!lightList || !darkList) return;
 
     for (const preset of PRESET_THEMES) {
+        const li = document.createElement("li");
+        li.setAttribute("role", "none");
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "dropdownItem";
@@ -66,7 +69,6 @@ function buildThemeDropdown() {
         updateThemeCheckmark(btn, preset);
 
         btn.addEventListener("click", () => {
-            // Disable follow system when manually selecting a theme
             localStorage.setItem("colorPreference", "false");
             const followBtn = document.getElementById("followSystemToggle");
             if (followBtn) followBtn.textContent = "Follow System: Off";
@@ -75,12 +77,29 @@ function buildThemeDropdown() {
             refreshThemeCheckmarks();
         });
 
-        list.appendChild(btn);
+        li.appendChild(btn);
+        (preset.isDark ? darkList : lightList).appendChild(li);
     }
 
-    // Custom theme button
-    document.getElementById("customThemeButton")?.addEventListener("click", () => {
-        openCustomThemeEditor();
+    // Wire hover open/close for both sub-dropdowns
+    wireNestedHover("lightThemesContainer", "lightThemesList");
+    wireNestedHover("darkThemesContainer", "darkThemesList");
+
+}
+
+/**
+ * Wire hover behavior for a nested dropdown (show on mouseenter, hide on mouseleave).
+ */
+function wireNestedHover(containerId: string, dropdownId: string) {
+    const container = document.getElementById(containerId);
+    const dropdown = document.getElementById(dropdownId);
+    if (!container || !dropdown) return;
+
+    container.addEventListener("mouseenter", () => {
+        dropdown.classList.remove("hidden");
+    });
+    container.addEventListener("mouseleave", () => {
+        dropdown.classList.add("hidden");
     });
 }
 
@@ -97,9 +116,9 @@ function updateThemeCheckmark(btn: HTMLElement, preset: IDETheme) {
  * Refresh all theme checkmarks after a theme change.
  */
 export function refreshThemeCheckmarks() {
-    const list = document.getElementById("themePresetList");
-    if (!list) return;
-    const buttons = list.querySelectorAll<HTMLButtonElement>("button[data-theme-id]");
+    const buttons = document.querySelectorAll<HTMLButtonElement>(
+        "#lightThemesList button[data-theme-id], #darkThemesList button[data-theme-id]"
+    );
     buttons.forEach((btn) => {
         const id = btn.dataset.themeId!;
         const preset = PRESET_THEMES.find((t) => t.id === id);
@@ -133,9 +152,3 @@ function wireFollowSystem() {
     });
 }
 
-/**
- * Open the custom theme editor modal.
- */
-function openCustomThemeEditor() {
-    ThemeEditor.open();
-}

@@ -1,5 +1,6 @@
 import { loadChuckFileFromURL, loadDataFileFromURL } from "@components/fileExplorer/projectSystem";
 import InputPanelHeader from "@/components/inputPanel/inputPanelHeader";
+import { engineMode } from "@/host";
 
 interface WelcomeExample {
     title: string;
@@ -7,7 +8,7 @@ interface WelcomeExample {
     load: () => void;
 }
 
-const EXAMPLES: WelcomeExample[] = [
+const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
     {
         title: "Hello Sine",
         description: "Your first sound — a simple sine wave",
@@ -39,6 +40,29 @@ const EXAMPLES: WelcomeExample[] = [
     },
 ];
 
+const WEBCHUGL_EXAMPLES: WelcomeExample[] = [
+    {
+        title: "Basic Shapes",
+        description: "3D primitives in a scene",
+        load: () => loadChuckFileFromURL("examples/chugl/basicShapes.ck"),
+    },
+    {
+        title: "Circles",
+        description: "Animated colorful circles",
+        load: () => loadChuckFileFromURL("examples/chugl/circles.ck"),
+    },
+    {
+        title: "Solar System",
+        description: "Orbital scene graph hierarchy",
+        load: () => loadChuckFileFromURL("examples/chugl/solarSystem.ck"),
+    },
+    {
+        title: "Lissajous",
+        description: "Audio-visual oscilloscope",
+        load: () => loadChuckFileFromURL("examples/chugl/lissajous.ck"),
+    },
+];
+
 export default class WelcomeTab {
     private static overlay: HTMLDivElement | null = null;
 
@@ -58,12 +82,15 @@ export default class WelcomeTab {
         overlay.style.top = "2rem"; // below editor header
         overlay.style.backgroundColor = "var(--ide-editor-bg, #FEFEFF)";
 
+        const isChuGL = engineMode === "webchugl";
+        const examples = isChuGL ? WEBCHUGL_EXAMPLES : WEBCHUCK_EXAMPLES;
+
         // Header
         const header = document.createElement("div");
         header.className = "text-center mb-6";
         header.innerHTML = `
             <img src="img/ChonK.svg" alt="ChucK Logo" class="h-16 mx-auto mb-3" />
-            <h2 class="text-2xl font-bold text-dark dark:text-light">Welcome to WebChucK IDE</h2>
+            <h2 class="text-2xl font-bold text-dark dark:text-light">Welcome to ${isChuGL ? "WebChuGL" : "WebChucK"} IDE</h2>
             <p class="text-sm text-dark-5 dark:text-dark-a mt-1">Pick an example to get started</p>
         `;
         overlay.appendChild(header);
@@ -72,7 +99,7 @@ export default class WelcomeTab {
         const grid = document.createElement("div");
         grid.className = "grid grid-cols-2 gap-3 max-w-md w-full mb-6";
 
-        for (const ex of EXAMPLES) {
+        for (const ex of examples) {
             const card = document.createElement("button");
             card.type = "button";
             card.className = [
