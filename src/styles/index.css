@@ -229,6 +229,13 @@ body {
     grid-template-rows: 1fr 2px 28px;
 }
 
+#actionButtons {
+    user-select: none;
+    background-color: var(--ide-bg-alt, #DDEEFF);
+    border-bottom: 1px solid var(--ide-border, #C9E0F7);
+    justify-content: flex-end;
+}
+
 #app-right {
     grid-area: app-right;
     min-width: 1rem;
@@ -939,7 +946,10 @@ kbd {
     position: relative;
     width: 100%;
     max-height: 70vh;
-    @apply bg-white dark:bg-dark rounded-t-xl;
+    background-color: var(--ide-bg-alt, #ffffff);
+    color: var(--ide-text, #555);
+    border-top: 1px solid var(--ide-border, #ccc);
+    @apply rounded-t-xl;
     transform: translateY(0);
     transition: transform 0.3s ease-out;
     z-index: 101;
@@ -970,6 +980,6 @@ kbd {
     width: 2.5rem;
     height: 0.25rem;
     border-radius: 0.125rem;
-    @apply bg-dark-d dark:bg-dark-5;
+    background-color: var(--ide-border, #ccc);
 }
 
