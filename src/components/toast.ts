@@ -23,7 +23,6 @@ const TIP_PREFIX_ICONS: [string, string][] = [
     ["Pro tip: ", "⚡ "],
     ["Reminder: ", "📌 "],
     ["Philosophy: ", "🎵 "],
-    ["Challenge: ", "🎯 "],
     ["Try this: ", "🔬 "],
 ];
 
@@ -162,18 +161,6 @@ const GENERAL_TIPS: string[] = [
     "The best debugger for audio code is your ears",
     "48000 samples walk into a bar. The bartender says: 'I hear you.'",
     "There are only two hard problems: naming shreds and off-by-one errors",
-
-    // Challenges — playful creative prompts
-    "Challenge: Make a beat using only noise generators",
-    "Challenge: Write the shortest ChucK program that sounds good",
-    "Challenge: Make something with exactly 3 shreds",
-    "Challenge: Use only frequencies below 100 Hz",
-    "Challenge: Make a song with no oscillators — samples only",
-    "Challenge: Create a melody using only Math.random2f()",
-    "Challenge: Make a rhythm using only time and silence",
-    "Challenge: Build a chord using 4 SinOscs at different frequencies",
-    "Challenge: Make the ugliest sound you can, then make it beautiful",
-    "Challenge: Use feedback (dac => adc) to make something wild",
 
     // Try this — micro-experiments
     "Try this: Connect a SinOsc to another SinOsc. What happens?",
