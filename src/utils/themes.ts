@@ -1,9 +1,8 @@
 //------------------------------------------------------------
 // title: Themes
-// desc:  Theme data model, preset themes, and theme application
-//        engine for the WebChucK IDE custom theming system.
+// desc:  Theme system for the IDE
 //
-// author: claude
+// author: ben hoang
 // date:   February 2026
 //------------------------------------------------------------
 

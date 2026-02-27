@@ -16,6 +16,7 @@ import { calculateDisplayDigits } from "@utils/time";
 import VmMonitor, { ChuckNow } from "@/components/vmMonitor";
 import { loadWebChugins } from "@/utils/webChugins";
 import Console from "@/components/outputPanel/console";
+import OutputPanelHeader from "@/components/outputPanel/outputPanelHeader";
 import Toast from "@/components/toast";
 import Visualizer from "@/components/outputPanel/visualizer";
 import HidPanel from "@/components/inputPanel/hidPanel";
@@ -367,9 +368,12 @@ export async function connectMic() {
  * Start the audio visualizer for time/frequency domain
  */
 function startVisualizer() {
-    const cnv: HTMLCanvasElement = document.getElementById(
-        "visualizer"
-    )! as HTMLCanvasElement;
+    // Use querySelector on the container (which may live in a pop-out
+    // window) so the canvas is found even when reparented.
+    const cnv = OutputPanelHeader.visualizerContainer?.querySelector<HTMLCanvasElement>(
+        "#visualizer"
+    ) ?? document.getElementById("visualizer") as HTMLCanvasElement;
+    if (!cnv) return;
 
     analyser = audioContext.createAnalyser();
     // instantiate visualizer

@@ -44,7 +44,7 @@ export default class ProjectSystem {
         ProjectSystem.uploadFilesButton =
             document.querySelector<HTMLButtonElement>("#uploadFiles")!;
         ProjectSystem.uploadFilesButton.addEventListener("click", () => {
-            ProjectSystem.fileUploader.click();
+            ProjectSystem.triggerFileUpload();
         });
         ProjectSystem.fileUploader.addEventListener(
             "change",
@@ -87,6 +87,32 @@ export default class ProjectSystem {
 
     static size(): number {
         return ProjectSystem.projectFiles.size;
+    }
+
+    /**
+     * Trigger the file upload dialog in the correct window context.
+     * When the file explorer is popped out, the main-document input
+     * won't open a dialog in the pop-out window, so we create a
+     * temporary input in the pop-out's document instead.
+     */
+    private static triggerFileUpload() {
+        const doc = ProjectSystem.fileExplorer.ownerDocument;
+        if (doc === document) {
+            // Still in main window — use the persistent input
+            ProjectSystem.fileUploader.click();
+            return;
+        }
+        // Pop-out window — create a temporary file input there
+        const tmp = doc.createElement("input");
+        tmp.type = "file";
+        tmp.multiple = true;
+        tmp.style.display = "none";
+        doc.body.appendChild(tmp);
+        tmp.addEventListener("change", () => {
+            ProjectSystem.uploadFiles(tmp.files);
+            tmp.remove();
+        });
+        tmp.click();
     }
 
     /**
@@ -417,11 +443,16 @@ export default class ProjectSystem {
     static showContextMenu(x: number, y: number, filename: string) {
         ProjectSystem.hideContextMenu();
 
-        const menu = document.createElement("div");
+        // Use the file explorer's ownerDocument so the menu appears in
+        // the correct window (main or pop-out).
+        const doc = ProjectSystem.fileExplorer.ownerDocument;
+        const win = doc.defaultView ?? window;
+
+        const menu = doc.createElement("div");
         menu.className = "fileContextMenu";
         menu.setAttribute("role", "menu");
 
-        const renameItem = document.createElement("button");
+        const renameItem = doc.createElement("button");
         renameItem.className = "fileContextMenuItem";
         renameItem.textContent = "Rename";
         renameItem.setAttribute("role", "menuitem");
@@ -446,24 +477,24 @@ export default class ProjectSystem {
         // Position, clamped to viewport
         menu.style.left = `${x}px`;
         menu.style.top = `${y}px`;
-        document.body.appendChild(menu);
+        doc.body.appendChild(menu);
 
         // Clamp to viewport after measuring
         const rect = menu.getBoundingClientRect();
-        if (rect.right > window.innerWidth) {
-            menu.style.left = `${window.innerWidth - rect.width - 4}px`;
+        if (rect.right > win.innerWidth) {
+            menu.style.left = `${win.innerWidth - rect.width - 4}px`;
         }
-        if (rect.bottom > window.innerHeight) {
-            menu.style.top = `${window.innerHeight - rect.height - 4}px`;
+        if (rect.bottom > win.innerHeight) {
+            menu.style.top = `${win.innerHeight - rect.height - 4}px`;
         }
 
         ProjectSystem.activeContextMenu = menu;
 
         // Close on click/tap outside or Escape
         const cleanup = () => {
-            document.removeEventListener("mousedown", mouseCloseHandler);
-            document.removeEventListener("touchend", touchCloseHandler);
-            document.removeEventListener("keydown", escHandler);
+            doc.removeEventListener("mousedown", mouseCloseHandler);
+            doc.removeEventListener("touchend", touchCloseHandler);
+            doc.removeEventListener("keydown", escHandler);
         };
         const mouseCloseHandler = (e: MouseEvent) => {
             if (!menu.contains(e.target as Node)) {

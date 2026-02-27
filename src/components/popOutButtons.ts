@@ -5,51 +5,93 @@ export default class PopOutButtons {
     private static activeContextMenu: HTMLDivElement | null = null;
 
     constructor() {
-        // File Explorer pop-out
-        const feBtn = document.querySelector<HTMLButtonElement>("#popOutFileExplorer");
-        feBtn?.addEventListener("click", () => {
-            if (!isPopOut("fileExplorer")) popOut("fileExplorer");
-        });
-
-        // Editor pop-out
-        const edBtn = document.querySelector<HTMLButtonElement>("#popOutEditor");
-        edBtn?.addEventListener("click", () => {
-            if (!isPopOut("editor")) popOut("editor");
-        });
-
-        // Output panel pop-out — pops out whichever tab is currently visible
-        const outBtn = document.querySelector<HTMLButtonElement>("#popOutOutput");
-        outBtn?.addEventListener("click", () => {
-            const panelId = PopOutButtons.getActiveOutputPanel();
-            if (panelId && !isPopOut(panelId)) popOut(panelId);
-        });
-
-        // Right-click context menu on panel headers
-        const headers: { el: string; panelId: PanelId | "output" }[] = [
-            { el: "#fileExplorerHeader", panelId: "fileExplorer" },
-            { el: "#editorPanelHeader", panelId: "editor" },
-            { el: "#outputPanelHeader", panelId: "output" },
+        // Right-click anywhere in file explorer or editor panels
+        const panels: { el: string; panelId: PanelId }[] = [
+            { el: "#fileExplorerPanel", panelId: "fileExplorer" },
+            { el: "#app-middle", panelId: "editor" },
         ];
 
-        for (const { el, panelId } of headers) {
+        for (const { el, panelId } of panels) {
             document
                 .querySelector(el)
                 ?.addEventListener("contextmenu", (e: Event) => {
                     const me = e as MouseEvent;
                     me.preventDefault();
-                    const id =
-                        panelId === "output"
-                            ? PopOutButtons.getActiveOutputPanel()
-                            : panelId;
-                    if (id && !isPopOut(id)) {
+                    if (!isPopOut(panelId)) {
                         PopOutButtons.showContextMenu(
                             me.clientX,
                             me.clientY,
-                            id,
+                            panelId,
                         );
                     }
                 });
         }
+
+        // Right-click on specific output tab buttons in the header
+        const outputTabs: { el: string; panelId: PanelId }[] = [
+            { el: "#consoleTab", panelId: "console" },
+            { el: "#vmMonitorTab", panelId: "vmMonitor" },
+            { el: "#visualizerTab", panelId: "visualizer" },
+            { el: "#canvasTab", panelId: "canvas" },
+        ];
+
+        for (const { el, panelId } of outputTabs) {
+            document
+                .querySelector(el)
+                ?.addEventListener("contextmenu", (e: Event) => {
+                    const me = e as MouseEvent;
+                    me.preventDefault();
+                    me.stopPropagation();
+                    if (!isPopOut(panelId)) {
+                        PopOutButtons.showContextMenu(
+                            me.clientX,
+                            me.clientY,
+                            panelId,
+                        );
+                    }
+                });
+        }
+
+        // Right-click on output panel content containers
+        const outputContainers: { el: string; panelId: PanelId }[] = [
+            { el: "#consoleContainer", panelId: "console" },
+            { el: "#vmMonitorContainer", panelId: "vmMonitor" },
+            { el: "#visualizerContainer", panelId: "visualizer" },
+            { el: "#canvasContainer", panelId: "canvas" },
+        ];
+
+        for (const { el, panelId } of outputContainers) {
+            document
+                .querySelector(el)
+                ?.addEventListener("contextmenu", (e: Event) => {
+                    const me = e as MouseEvent;
+                    me.preventDefault();
+                    if (!isPopOut(panelId)) {
+                        PopOutButtons.showContextMenu(
+                            me.clientX,
+                            me.clientY,
+                            panelId,
+                        );
+                    }
+                });
+        }
+
+        // Right-click on the output panel header (not on a tab) ->
+        // pop out whichever tab is currently active
+        document
+            .querySelector("#outputPanelHeader")
+            ?.addEventListener("contextmenu", (e: Event) => {
+                const me = e as MouseEvent;
+                me.preventDefault();
+                const id = PopOutButtons.getActiveOutputPanel();
+                if (id && !isPopOut(id)) {
+                    PopOutButtons.showContextMenu(
+                        me.clientX,
+                        me.clientY,
+                        id,
+                    );
+                }
+            });
     }
 
     /**

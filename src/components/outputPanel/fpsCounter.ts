@@ -1,9 +1,8 @@
 //-----------------------------------------------------------
 // title: FpsCounter
-// desc:  FPS overlay for ChuGL canvas. Reads ck.fps() from
-//        the WebChuGL runtime directly. Toggled from View menu.
+// desc:  FPS overlay for ChuGL canvas.
 //
-// author: terry feng
+// author: ben hoang
 // date:   February 2026
 //-----------------------------------------------------------
 
