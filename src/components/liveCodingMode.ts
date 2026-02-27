@@ -30,11 +30,14 @@ export default class LiveCodingMode {
 
     // Reparented element tracking
     private static originalBgParent: HTMLElement | null = null;
+    private static originalBgNextSibling: Node | null = null;
     private static reparentedBg: HTMLElement | null = null;
     private static originalBarParent: HTMLElement | null = null;
     private static originalBarNextSibling: Node | null = null;
     private static originalConsoleParent: HTMLElement | null = null;
+    private static originalConsoleNextSibling: Node | null = null;
     private static originalVmMonitorParent: HTMLElement | null = null;
+    private static originalVmMonitorNextSibling: Node | null = null;
 
     // Toast/tips state
     private static toastContainer: HTMLDivElement | null = null;
@@ -93,6 +96,7 @@ export default class LiveCodingMode {
         const bgElement = LiveCodingMode.getBackgroundElement();
         if (bgElement) {
             LiveCodingMode.originalBgParent = bgElement.parentElement;
+            LiveCodingMode.originalBgNextSibling = bgElement.nextSibling;
             LiveCodingMode.reparentedBg = bgElement;
             LiveCodingMode.bgMount.appendChild(bgElement);
             bgElement.classList.remove("hidden");
@@ -115,6 +119,7 @@ export default class LiveCodingMode {
         const consoleContainer =
             document.querySelector<HTMLDivElement>("#consoleContainer")!;
         LiveCodingMode.originalConsoleParent = consoleContainer.parentElement;
+        LiveCodingMode.originalConsoleNextSibling = consoleContainer.nextSibling;
         LiveCodingMode.consoleMount.appendChild(consoleContainer);
         consoleContainer.classList.remove("hidden");
         // Clear inline bg so the transparent CSS takes over
@@ -128,13 +133,17 @@ export default class LiveCodingMode {
         const vmMonitorContainer =
             document.querySelector<HTMLDivElement>("#vmMonitorContainer")!;
         LiveCodingMode.originalVmMonitorParent = vmMonitorContainer.parentElement;
+        LiveCodingMode.originalVmMonitorNextSibling = vmMonitorContainer.nextSibling;
         LiveCodingMode.vmMonitorMount.appendChild(vmMonitorContainer);
         vmMonitorContainer.classList.remove("hidden");
 
-        // 6. Show overlay
+        // 6. Apply live coding console theme
+        Console.applyLiveCodingTheme();
+
+        // 7. Show overlay
         LiveCodingMode.overlay.classList.remove("hidden");
 
-        // 7. Create transparent Monaco editor
+        // 8. Create transparent Monaco editor
         LiveCodingMode.createEditor();
 
         // 8. Add event listeners
@@ -160,9 +169,16 @@ export default class LiveCodingMode {
             LiveCodingMode.lcEditor = null;
         }
 
-        // 2. Reparent background back
+        // 2. Reparent background back to original position
         if (LiveCodingMode.originalBgParent && LiveCodingMode.reparentedBg) {
-            LiveCodingMode.originalBgParent.appendChild(LiveCodingMode.reparentedBg);
+            if (LiveCodingMode.originalBgNextSibling) {
+                LiveCodingMode.originalBgParent.insertBefore(
+                    LiveCodingMode.reparentedBg,
+                    LiveCodingMode.originalBgNextSibling
+                );
+            } else {
+                LiveCodingMode.originalBgParent.appendChild(LiveCodingMode.reparentedBg);
+            }
         }
 
         // 3. Reparent ChucK bar back
@@ -184,25 +200,40 @@ export default class LiveCodingMode {
             LiveCodingMode.toastContainer = null;
         }
 
-        // 5. Reparent console back
+        // 5. Reparent console back to original position
         if (LiveCodingMode.originalConsoleParent) {
             const consoleContainer =
                 document.querySelector<HTMLDivElement>("#consoleContainer")!;
-            LiveCodingMode.originalConsoleParent.appendChild(consoleContainer);
-            // Restore inline bg
+            if (LiveCodingMode.originalConsoleNextSibling) {
+                LiveCodingMode.originalConsoleParent.insertBefore(
+                    consoleContainer,
+                    LiveCodingMode.originalConsoleNextSibling
+                );
+            } else {
+                LiveCodingMode.originalConsoleParent.appendChild(consoleContainer);
+            }
+            // Restore inline bg and console theme
             const consoleInner =
                 document.querySelector<HTMLDivElement>("#console");
             if (consoleInner) {
                 consoleInner.style.backgroundColor =
                     "var(--ide-console-bg, #fff)";
             }
+            Console.restoreTheme();
         }
 
-        // 6. Reparent VM monitor back
+        // 6. Reparent VM monitor back to original position
         if (LiveCodingMode.originalVmMonitorParent) {
             const vmMonitorContainer =
                 document.querySelector<HTMLDivElement>("#vmMonitorContainer")!;
-            LiveCodingMode.originalVmMonitorParent.appendChild(vmMonitorContainer);
+            if (LiveCodingMode.originalVmMonitorNextSibling) {
+                LiveCodingMode.originalVmMonitorParent.insertBefore(
+                    vmMonitorContainer,
+                    LiveCodingMode.originalVmMonitorNextSibling
+                );
+            } else {
+                LiveCodingMode.originalVmMonitorParent.appendChild(vmMonitorContainer);
+            }
         }
 
         // 7. Hide overlay
@@ -215,11 +246,14 @@ export default class LiveCodingMode {
         // 9. Reset state
         LiveCodingMode.isOpen = false;
         LiveCodingMode.originalBgParent = null;
+        LiveCodingMode.originalBgNextSibling = null;
         LiveCodingMode.reparentedBg = null;
         LiveCodingMode.originalBarParent = null;
         LiveCodingMode.originalBarNextSibling = null;
         LiveCodingMode.originalConsoleParent = null;
+        LiveCodingMode.originalConsoleNextSibling = null;
         LiveCodingMode.originalVmMonitorParent = null;
+        LiveCodingMode.originalVmMonitorNextSibling = null;
 
         // 10. Resize main editor and console
         requestAnimationFrame(() => {

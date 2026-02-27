@@ -83,6 +83,7 @@ export const PRESET_THEMES: IDETheme[] = [
             consoleBg: "#ffffff",
             consoleText: "#222222",
 
+
             waveformColor: "#333333",
             spectrumColor: "#FF8833",
             spectrumFill: "#FFE5C4",
@@ -113,6 +114,7 @@ export const PRESET_THEMES: IDETheme[] = [
 
             consoleBg: "#222222",
             consoleText: "#ffffff",
+
 
             waveformColor: "#eeeeee",
             spectrumColor: "#FF8833",
@@ -145,6 +147,7 @@ export const PRESET_THEMES: IDETheme[] = [
             consoleBg: "#1e1e1e",
             consoleText: "#F8F8F2",
 
+
             waveformColor: "#F8F8F2",
             spectrumColor: "#F92672",
             spectrumFill: "#49483E",
@@ -175,6 +178,7 @@ export const PRESET_THEMES: IDETheme[] = [
 
             consoleBg: "#2E3440",
             consoleText: "#D8DEE9",
+
 
             waveformColor: "#D8DEE9",
             spectrumColor: "#88C0D0",
@@ -207,6 +211,7 @@ export const PRESET_THEMES: IDETheme[] = [
             consoleBg: "#121212",
             consoleText: "#D4D4D4",
 
+
             waveformColor: "#00FF5E",
             spectrumColor: "#FF6B2B",
             spectrumFill: "#2A2A2A",
@@ -237,6 +242,7 @@ export const PRESET_THEMES: IDETheme[] = [
 
             consoleBg: "#1F1A15",
             consoleText: "#D4C4B0",
+
 
             waveformColor: "#D4C4B0",
             spectrumColor: "#D4A574",
@@ -269,6 +275,7 @@ export const PRESET_THEMES: IDETheme[] = [
             consoleBg: "#1A1B26",
             consoleText: "#A9B1D6",
 
+
             waveformColor: "#A9B1D6",
             spectrumColor: "#7AA2F7",
             spectrumFill: "#24283B",
@@ -299,6 +306,7 @@ export const PRESET_THEMES: IDETheme[] = [
 
             consoleBg: "#FDF6E3",
             consoleText: "#657B83",
+
 
             waveformColor: "#586E75",
             spectrumColor: "#CB4B16",
@@ -331,6 +339,7 @@ export const PRESET_THEMES: IDETheme[] = [
             consoleBg: "#002B36",
             consoleText: "#839496",
 
+
             waveformColor: "#93A1A1",
             spectrumColor: "#CB4B16",
             spectrumFill: "#073642",
@@ -361,6 +370,7 @@ export const PRESET_THEMES: IDETheme[] = [
 
             consoleBg: "#21222C",
             consoleText: "#F8F8F2",
+
 
             waveformColor: "#F8F8F2",
             spectrumColor: "#BD93F9",
@@ -393,6 +403,7 @@ export const PRESET_THEMES: IDETheme[] = [
             consoleBg: "#1E1E2E",
             consoleText: "#CDD6F4",
 
+
             waveformColor: "#CDD6F4",
             spectrumColor: "#CBA6F7",
             spectrumFill: "#313244",
@@ -423,6 +434,7 @@ export const PRESET_THEMES: IDETheme[] = [
 
             consoleBg: "#FFFFFF",
             consoleText: "#24292F",
+
 
             waveformColor: "#24292F",
             spectrumColor: "#0969DA",
