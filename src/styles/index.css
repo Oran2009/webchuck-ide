@@ -229,13 +229,6 @@ body {
     grid-template-rows: 1fr 2px 28px;
 }
 
-#actionButtons {
-    user-select: none;
-    background-color: var(--ide-bg-alt, #DDEEFF);
-    border-bottom: 1px solid var(--ide-border, #C9E0F7);
-    justify-content: flex-end;
-}
-
 #app-right {
     grid-area: app-right;
     min-width: 1rem;
