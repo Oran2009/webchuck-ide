@@ -1003,14 +1003,7 @@ kbd {
     height: 100% !important;
 }
 
-.live-coding-right-label {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.625rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: rgba(255, 255, 255, 0.4);
-}
+
 
 /* Hide Monaco scrollbar backgrounds and decorations for cleaner look */
 .live-coding-editor .monaco-scrollable-element > .scrollbar {
