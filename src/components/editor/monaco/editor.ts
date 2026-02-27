@@ -132,8 +132,7 @@ export default class Editor {
         }
         ProjectSystem.addNewFile(filename, code);
 
-        if (sessionStorage.getItem("settingsReload")) {
-            sessionStorage.removeItem("settingsReload");
+        if (isSettingsReload) {
             Toast.info("Settings applied!");
         } else {
             Toast.info(

@@ -229,6 +229,7 @@ export default class Toast {
     private static activeTimer: ReturnType<typeof setTimeout> | null = null;
     private static activeEl: HTMLSpanElement | null = null;
     private static tipEl: HTMLSpanElement | null = null;
+    private static tipsEnabled: boolean = true;
 
     private static readonly DURATION_INFO = 3000;
     private static readonly DURATION_ERROR = 5000;
@@ -237,6 +238,26 @@ export default class Toast {
     constructor() {
         Toast.container =
             document.querySelector<HTMLDivElement>("#toastContainer")!;
+
+        // Tips toggle
+        Toast.tipsEnabled =
+            localStorage.getItem("tipsEnabled") !== "false";
+        const tipsToggle =
+            document.querySelector<HTMLButtonElement>("#tipsToggle")!;
+        tipsToggle.textContent = Toast.tipsEnabled ? "Tips: On" : "Tips: Off";
+        tipsToggle.addEventListener("click", () => {
+            Toast.tipsEnabled = !Toast.tipsEnabled;
+            tipsToggle.textContent = Toast.tipsEnabled
+                ? "Tips: On"
+                : "Tips: Off";
+            localStorage.setItem("tipsEnabled", String(Toast.tipsEnabled));
+            if (Toast.tipsEnabled) {
+                Toast.showTip();
+            } else {
+                Toast.hideTip();
+            }
+        });
+
         Toast.startTips();
     }
 
@@ -466,6 +487,7 @@ export default class Toast {
     private static showTip(): void {
         if (!Toast.container) return;
         if (Toast.tipEl) return; // already visible
+        if (!Toast.tipsEnabled) return;
 
         const el = document.createElement("span");
         el.className = "toast text-dark-5 dark:text-dark-a truncate opacity-60";
@@ -475,15 +497,18 @@ export default class Toast {
             applyTipIcon(el, tip);
         } else {
             applyTipIcon(el, tip.text);
-            const link = document.createElement("button");
-            link.className =
-                "ml-2 underline underline-offset-2 text-orange hover:text-orange-dark cursor-pointer bg-transparent border-none text-xs";
-            link.textContent = "Load example \u2192";
-            link.addEventListener("click", (e) => {
-                e.stopPropagation();
+            el.append(" \u2192");
+            el.classList.add(
+                "cursor-pointer",
+                "hover:text-orange",
+                "transition"
+            );
+            el.style.textDecoration = "underline";
+            el.style.textDecorationStyle = "dotted";
+            el.style.textUnderlineOffset = "3px";
+            el.addEventListener("click", () => {
                 loadChuckFileFromURL(tip.exampleURL);
             });
-            el.appendChild(link);
         }
 
         Toast.container.appendChild(el);

@@ -163,9 +163,15 @@
                 </button>
                 <div id="viewDropdown" class="hidden dropdown w-52">
                   <ul class="py-2 text-base" aria-labelledby="viewButton" role="menu">
+                    <li class="divider" data-content="IDE" role="separator"></li>
                     <li role="none">
                       <button id="chuckNowToggle" type="button" class="dropdownItem" role="menuitem">
                         ChucK Time: Off
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button id="tipsToggle" type="button" class="dropdownItem" role="menuitem">
+                        Tips: On
                       </button>
                     </li>
                     <li class="divider" data-content="THEME" role="separator"></li>
@@ -198,10 +204,15 @@
                         Follow System: Off
                       </button>
                     </li>
-                    <li class="divider" data-content="FULLSCREEN" role="separator"></li>
+                    <li class="divider" data-content="CANVAS" role="separator"></li>
                     <li role="none">
                       <button id="toolbarToggle" type="button" class="dropdownItem" role="menuitem">
                         Toolbar: On
+                      </button>
+                    </li>
+                    <li id="fpsToggleItem" role="none" class="hidden">
+                      <button id="fpsToggle" type="button" class="dropdownItem" role="menuitem">
+                        FPS: Off
                       </button>
                     </li>
                   </ul>
@@ -492,8 +503,9 @@
               </div>
               <canvas id="visualizer" class="absolute inset-0 w-full h-full" aria-label="Audio visualizer"></canvas>
             </div>
-            <div id="canvasContainer" class="flex-1 hidden" style="background-color: var(--ide-editor-bg, #fff)" role="tabpanel" aria-labelledby="canvasTab">
+            <div id="canvasContainer" class="flex-1 hidden relative" style="background-color: var(--ide-editor-bg, #fff)" role="tabpanel" aria-labelledby="canvasTab">
               <canvas id="canvas" class="w-full h-full" aria-label="ChuGL graphics canvas"></canvas>
+              <div id="fpsCounter" class="absolute top-1 left-2 text-xs font-mono text-white bg-black/50 px-1.5 py-0.5 rounded pointer-events-none select-none" style="display: none;"></div>
             </div>
           </div>
           </div><!-- /app-right-grid -->

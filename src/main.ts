@@ -13,6 +13,7 @@ import EditorPanelHeader from "@/components/editor/editorPanelHeader";
 import InputPanelHeader from "@/components/inputPanel/inputPanelHeader";
 import OutputPanelHeader from "@/components/outputPanel/outputPanelHeader";
 import FullscreenOverlay from "@/components/outputPanel/fullscreenOverlay";
+import FpsCounter from "@/components/outputPanel/fpsCounter";
 import Console from "@/components/outputPanel/console";
 import VmMonitor from "@/components/vmMonitor";
 import ProjectSystem from "@/components/fileExplorer/projectSystem";
@@ -47,6 +48,7 @@ class Main {
     public static moreExamples: MoreExamples;
     public static settings: Settings;
     public static fullscreenOverlay: FullscreenOverlay;
+    public static fpsCounter: FpsCounter;
     public static GUI: GUI;
     public static bottomSheet: BottomSheet;
 
@@ -64,6 +66,7 @@ class Main {
         Main.inputPanelHeader = new InputPanelHeader();
         Main.outputPanelHeader = new OutputPanelHeader();
         Main.fullscreenOverlay = new FullscreenOverlay();
+        Main.fpsCounter = new FpsCounter();
         Main.editorPanelHeader = new EditorPanelHeader();
         Main.console = new Console();
         Main.editor = new Editor(
