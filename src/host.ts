@@ -200,6 +200,64 @@ async function initChuGL() {
 }
 
 /**
+ * Destroy and re-initialize WebChuGL to reset graphics state.
+ * Called when all shreds are removed so stale GPU state (e.g. bloom)
+ * doesn't leak into the next program.
+ */
+export async function resetChuGL() {
+    if (engineMode !== "webchugl") return;
+
+    // Only reset if frames were actually rendered (i.e. graphics state exists)
+    if (theChuck.rawRuntime.frameCount() === 0) return;
+
+    const ChuGL = (await import("webchugl")).default;
+
+    // Destroy current graphics context
+    ChuGL.destroy();
+    const canvas = document.querySelector<HTMLCanvasElement>("#canvas")!;
+    const storedRate = localStorage.getItem("sampleRate");
+
+    const chugins: string[] = loadWebChugins();
+    const ck = await ChuGL.init({
+        canvas,
+        chugins,
+        serviceWorker: false,
+        ...(storedRate && storedRate !== "default" && {
+            audioConfig: { sampleRate: Number(storedRate) },
+        }),
+    });
+
+    if (!ck) {
+        console.error("[WebChuGL] Re-init returned null");
+        return;
+    }
+
+    theChuck = new WebChuGLAdapter(ck);
+    audioContext = theChuck.audioContext;
+
+    // Re-attach console output and VM params
+    theChuck.chuckPrint = Console.print;
+    theChuck.setParamInt("TTY_COLOR", 1);
+    theChuck.setParamInt("TTY_WIDTH_HINT", Console.getWidth());
+
+    // Reconnect audio graph (nodes must be recreated for the new AudioContext)
+    theChuck.connect(audioContext.destination);
+
+    if (visual) {
+        analyser = audioContext.createAnalyser();
+        visual.analyserNode = analyser;
+        theChuck.connect(analyser);
+    }
+
+    if (recordGain) {
+        recordGain = audioContext.createGain();
+        recordGain.gain.value = 0.98;
+        theChuck.connect(recordGain);
+        Recorder.configureRecorder(audioContext, recordGain);
+    }
+}
+
+/**
  * Called when theChuck is ready
  */
 export async function onChuckReady() {

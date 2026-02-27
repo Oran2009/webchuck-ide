@@ -212,8 +212,7 @@ export class WebChuGLAdapter implements ChucKAdapter {
         filename: string,
         data: string | Uint8Array
     ): Promise<void> {
-        const buf = data instanceof Uint8Array ? data.buffer as ArrayBuffer : data;
-        return this.ck.createFile(dir, filename, buf);
+        this.ck.createFile(dir, filename, data);
     }
     loadFile(url: string): Promise<string> {
         return this.ck.loadFile(url);
