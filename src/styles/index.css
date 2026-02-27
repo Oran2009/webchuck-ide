@@ -1011,9 +1011,27 @@ kbd {
     color: rgba(255, 255, 255, 0.4);
 }
 
-/* Hide Monaco scrollbar backgrounds for cleaner look */
+/* Hide Monaco scrollbar backgrounds and decorations for cleaner look */
 .live-coding-editor .monaco-scrollable-element > .scrollbar {
     background: transparent !important;
+}
+.live-coding-editor .decorationsOverviewRuler {
+    display: none !important;
+}
+.live-coding-editor .monaco-editor .overflow-guard {
+    border: none !important;
+}
+.live-coding-editor .monaco-editor .minimap {
+    display: none !important;
+}
+.live-coding-editor .monaco-editor .editor-scrollable {
+    border-right: none !important;
+}
+.live-coding-editor .monaco-scrollable-element > .visible {
+    background: transparent !important;
+}
+.live-coding-editor .monaco-scrollable-element > .shadow {
+    display: none !important;
 }
 
 /* Make line numbers slightly transparent */
