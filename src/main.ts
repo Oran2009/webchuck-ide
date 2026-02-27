@@ -33,6 +33,7 @@ import { initExportWebChuGL } from "@/services/export/exportWebchugl";
 import { initExportChuck } from "@/services/export/exportChuck";
 import { parseURLParams as initParseURLParams } from "./services/urlParamParser";
 import { initShareCode } from "./services/shareCode";
+import { closeAll as closeAllPopOuts } from "@/utils/popOut";
 
 class Main {
     public static navBar: NavBar;
@@ -89,6 +90,7 @@ class Main {
 
         // Prevent accidental page refresh/close
         window.addEventListener("beforeunload", (e) => {
+            closeAllPopOuts();
             if (ProjectSystem.size() > 1) {
                 e.preventDefault();
                 e.returnValue = "";
