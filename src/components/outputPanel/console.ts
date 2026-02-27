@@ -188,6 +188,27 @@ export default class Console {
     }
 
     /**
+     * Apply transparent live coding theme
+     */
+    static applyLiveCodingTheme() {
+        if (!Console.terminal) return;
+        Console.terminal.options.theme = {
+            background: "transparent",
+            foreground: "rgba(255, 255, 255, 0.85)",
+            selectionBackground: "#ffffff30",
+            cursor: "#ffffff",
+        };
+    }
+
+    /**
+     * Restore normal IDE theme colors (after exiting live coding mode)
+     */
+    static restoreTheme() {
+        const theme = getActiveTheme();
+        Console.applyThemeColors(theme.colors.consoleBg, theme.colors.consoleText);
+    }
+
+    /**
      * Get the console width
      */
     static getWidth(): number {

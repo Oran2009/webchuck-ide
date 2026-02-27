@@ -182,6 +182,12 @@ body {
         padding-right: 0.5rem;
     }
 
+    #webchuckButton {
+        width: auto !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     /* Ensure touch targets are 44px minimum */
     .header-item {
         min-height: 2.75rem;
@@ -951,6 +957,7 @@ kbd {
     z-index: 1;
     display: flex;
     flex-direction: column;
+    background: rgba(0, 0, 0, 0.35);
 }
 
 /* Top bar: fully transparent */
@@ -972,23 +979,21 @@ kbd {
     min-height: 0;
 }
 
-/* Editor takes remaining space, semi-transparent backdrop over entire area */
+/* Editor takes remaining space */
 .live-coding-editor {
     flex: 1;
     position: relative;
-    background: rgba(0, 0, 0, 0.35);
     min-width: 0;
     overflow: hidden;
 }
 
-/* Right panel: console + VM monitor stacked, same backdrop as editor */
+/* Right panel: console + VM monitor stacked */
 .live-coding-right {
     width: 28%;
     min-width: 300px;
     max-width: 500px;
     display: flex;
     flex-direction: column;
-    background: rgba(0, 0, 0, 0.35);
 }
 
 .live-coding-right-panel {
@@ -1048,10 +1053,14 @@ kbd {
 .live-coding-right #vmMonitorContainer {
     background: transparent !important;
     color: rgba(255, 255, 255, 0.7);
+    border: none !important;
 }
 .live-coding-right #vmMonitorContainer * {
     background: transparent !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
+}
+.live-coding-right #vmMonitorStatusBar {
+    border: none !important;
 }
 .live-coding-right #vmMonitorContainer th,
 .live-coding-right #vmMonitorContainer td {
@@ -1067,6 +1076,20 @@ kbd {
 }
 .live-coding-right #console {
     background: transparent !important;
+}
+
+/* Hide scrollbars in live coding right panel */
+.live-coding-right .xterm-viewport {
+    scrollbar-width: none;
+}
+.live-coding-right .xterm-viewport::-webkit-scrollbar {
+    display: none;
+}
+.live-coding-right .overflow-auto {
+    scrollbar-width: none;
+}
+.live-coding-right .overflow-auto::-webkit-scrollbar {
+    display: none;
 }
 
 /* ===== BOTTOM SHEET (Mobile File Explorer) ===== */
