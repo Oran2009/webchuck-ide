@@ -953,10 +953,16 @@ kbd {
     flex-direction: column;
 }
 
-/* Top bar: transparent, no blur */
+/* Top bar: fully transparent */
 .live-coding-topbar {
     flex: none;
     z-index: 2;
+    background: transparent;
+}
+
+/* Force ChucK bar transparent when inside live coding overlay */
+.live-coding-topbar #chuckBar {
+    background: transparent !important;
 }
 
 /* Main body below topbar: editor left, panels right */
@@ -974,13 +980,14 @@ kbd {
     min-width: 0;
 }
 
-/* Right panel: console + VM monitor stacked, transparent */
+/* Right panel: console + VM monitor stacked, same backdrop as editor */
 .live-coding-right {
-    width: 300px;
+    width: 28%;
+    min-width: 300px;
+    max-width: 500px;
     display: flex;
     flex-direction: column;
     background: rgba(0, 0, 0, 0.35);
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .live-coding-right-panel {
@@ -1002,11 +1009,6 @@ kbd {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: rgba(255, 255, 255, 0.4);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.live-coding-right-panel + .live-coding-right-panel {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Hide Monaco scrollbar backgrounds for cleaner look */
@@ -1030,16 +1032,29 @@ kbd {
     background-color: transparent !important;
 }
 
-/* VM monitor in live coding mode: transparent */
-.live-coding-right table {
+/* VM monitor in live coding mode: fully transparent */
+.live-coding-right #vmMonitorContainer {
+    background: transparent !important;
     color: rgba(255, 255, 255, 0.7);
 }
-.live-coding-right th,
-.live-coding-right td {
-    border-color: rgba(255, 255, 255, 0.1);
+.live-coding-right #vmMonitorContainer * {
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
 }
-.live-coding-right thead {
-    background: transparent;
+.live-coding-right #vmMonitorContainer th,
+.live-coding-right #vmMonitorContainer td {
+    color: rgba(255, 255, 255, 0.7);
+}
+.live-coding-right #vmMonitorContainer button {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Console container in live coding mode: transparent */
+.live-coding-right #consoleContainer {
+    background: transparent !important;
+}
+.live-coding-right #console {
+    background: transparent !important;
 }
 
 /* ===== BOTTOM SHEET (Mobile File Explorer) ===== */
