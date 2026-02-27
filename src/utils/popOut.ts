@@ -11,6 +11,7 @@
 
 import Editor from "@/components/editor/monaco/editor";
 import Console from "@/components/outputPanel/console";
+import OutputPanelHeader from "@/components/outputPanel/outputPanelHeader";
 import GUI from "@/components/inputPanel/gui/gui";
 import Toast from "@/components/toast";
 import { visual } from "@/host";
@@ -277,6 +278,12 @@ export function popOut(panelId: PanelId): void {
     // Trigger resize in the pop-out after layout settles
     requestAnimationFrame(() => {
         triggerResize(panelId);
+        // Monaco needs font remeasure after reparenting to a new document
+        if (panelId === "editor") {
+            import("monaco-editor").then((monaco) => {
+                monaco.editor.remeasureFonts();
+            });
+        }
     });
 }
 
@@ -322,6 +329,12 @@ function dockBackInternal(panelId: PanelId, closeWindow: boolean): void {
     // Trigger resize after layout settles
     requestAnimationFrame(() => {
         triggerResize(panelId);
+        // Monaco needs font remeasure after reparenting to a new document
+        if (panelId === "editor") {
+            import("monaco-editor").then((monaco) => {
+                monaco.editor.remeasureFonts();
+            });
+        }
     });
 }
 
@@ -408,10 +421,18 @@ function collapsePanel(panelId: PanelId): void {
         }
         case "visualizer": {
             document.getElementById("visualizerTab")?.classList.add("hidden");
+            // Hide fullscreen button if canvas is also popped out
+            if (isPopOut("canvas")) {
+                OutputPanelHeader.fullscreenButton?.classList.add("hidden");
+            }
             break;
         }
         case "canvas": {
             document.getElementById("canvasTab")?.classList.add("hidden");
+            // Hide fullscreen button if visualizer is also popped out
+            if (isPopOut("visualizer")) {
+                OutputPanelHeader.fullscreenButton?.classList.add("hidden");
+            }
             break;
         }
     }
@@ -472,12 +493,14 @@ function restorePanel(
             document
                 .getElementById("visualizerTab")
                 ?.classList.remove("hidden");
+            OutputPanelHeader.fullscreenButton?.classList.remove("hidden");
             break;
         }
         case "canvas": {
             document
                 .getElementById("canvasTab")
                 ?.classList.remove("hidden");
+            OutputPanelHeader.fullscreenButton?.classList.remove("hidden");
             break;
         }
     }
