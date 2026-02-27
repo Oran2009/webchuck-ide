@@ -182,6 +182,20 @@ export function openInputPanel(open: boolean) {
 }
 
 /**
+ * Deactivate a splitter by index (prevents drag-resizing).
+ */
+export function deactivateSplitter(index: number): void {
+    if (splitters[index]) splitters[index].deactivate();
+}
+
+/**
+ * Activate a splitter by index (re-enables drag-resizing).
+ */
+export function activateSplitter(index: number): void {
+    if (splitters[index]) splitters[index].activate();
+}
+
+/**
  * Helper Function for resizers
  */
 function findSplitObjects(selector: string) {
