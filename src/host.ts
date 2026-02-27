@@ -262,8 +262,7 @@ export async function resetChuGL() {
  */
 export async function onChuckReady() {
     ChuckBar.webchuckButton.disabled = false;
-    ChuckBar.webchuckButton.innerText =
-        engineMode === "webchugl" ? "Start WebChuGL" : "Start WebChucK";
+    ChuckBar.webchuckButton.innerText = "Start VM";
     ProjectSystem.uploadFilesButton.disabled = false;
     ProjectSystem.uploadFilesIcon.disabled = false;
     ProjectSystem.initDragUpload();
@@ -274,7 +273,7 @@ export async function onChuckReady() {
 }
 
 /**
- * Start theChuck (when user presses "Start WebChucK" / "Start WebChuGL")
+ * Start theChuck (when user presses "Start VM")
  * Audio context will resume
  * Build theChuck connections for VM time, HID, and visualizer
  */
