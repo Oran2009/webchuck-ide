@@ -18,6 +18,8 @@ import {
     getAppColumnWidths,
     setAppColumnWidths,
     toggleLeft,
+    deactivateSplitter,
+    activateSplitter,
 } from "@/utils/appLayout";
 
 //-----------------------------------------------------------
@@ -36,8 +38,11 @@ interface PopOutState {
     window: Window;
     originalParent: HTMLElement;
     reparentedElement: HTMLElement;
+    nextSibling: ChildNode | null;
     savedLayoutWidths: [number, number, number];
+    wasLeftPanelOpen: boolean;
     onBeforeUnload: () => void;
+    heartbeat: ReturnType<typeof setInterval>;
 }
 
 interface PanelConfig {
@@ -158,6 +163,16 @@ export function popOut(panelId: PanelId): void {
     // Save current layout widths before collapsing
     const savedLayoutWidths = getAppColumnWidths();
 
+    // Save the element's next sibling so we can restore DOM order
+    const nextSibling = element.nextSibling;
+
+    // Save whether the left panel is currently visible (for fileExplorer)
+    const appLeft = document.getElementById("app-left");
+    const wasLeftPanelOpen =
+        panelId === "fileExplorer"
+            ? !!(appLeft && !appLeft.classList.contains("hidden"))
+            : false;
+
     // Open the pop-out window
     const { defaultWidth, defaultHeight } = config;
     const left = window.screenX + 100;
@@ -233,13 +248,27 @@ export function popOut(panelId: PanelId): void {
         triggerResize(panelId);
     });
 
+    // Heartbeat: poll for pop-out window closure (beforeunload is unreliable)
+    const heartbeat = setInterval(() => {
+        const s = popOuts.get(panelId);
+        if (!s || s.window.closed) {
+            clearInterval(heartbeat);
+            if (popOuts.has(panelId)) {
+                dockBackInternal(panelId, false);
+            }
+        }
+    }, 500);
+
     // Save state into the registry
     popOuts.set(panelId, {
         window: popOutWindow,
         originalParent,
         reparentedElement: element,
+        nextSibling,
         savedLayoutWidths,
+        wasLeftPanelOpen,
         onBeforeUnload,
+        heartbeat,
     });
 
     // Collapse the panel in the main window to reclaim space
@@ -264,17 +293,26 @@ function dockBackInternal(panelId: PanelId, closeWindow: boolean): void {
     const state = popOuts.get(panelId);
     if (!state) return;
 
+    // Extract fields we need after deleting from the map
+    const { savedLayoutWidths, wasLeftPanelOpen } = state;
+
+    // Clear the heartbeat polling interval
+    clearInterval(state.heartbeat);
+
     // Remove from map FIRST to prevent re-entrance from beforeunload
     popOuts.delete(panelId);
 
     // Remove the beforeunload listener from the pop-out window
     state.window.removeEventListener("beforeunload", state.onBeforeUnload);
 
-    // Reparent element back to its original parent
-    state.originalParent.appendChild(state.reparentedElement);
+    // Reparent element back to its original parent (preserve DOM order)
+    state.originalParent.insertBefore(
+        state.reparentedElement,
+        state.nextSibling
+    );
 
     // Restore the panel layout in the main window
-    restorePanel(panelId, state.savedLayoutWidths);
+    restorePanel(panelId, savedLayoutWidths, wasLeftPanelOpen);
 
     // Close the pop-out window if requested and not already closed
     if (closeWindow && !state.window.closed) {
@@ -354,6 +392,10 @@ function collapsePanel(panelId: PanelId): void {
             appMiddle?.classList.add("hidden");
             splitV1?.classList.add("hidden");
             splitV2?.classList.add("hidden");
+
+            // Deactivate splitters flanking the editor column
+            deactivateSplitter(0); // splitV1
+            deactivateSplitter(2); // splitV2
             break;
         }
         case "console": {
@@ -376,6 +418,7 @@ function collapsePanel(panelId: PanelId): void {
 
     Editor.resizeEditor();
     Console.resizeConsole();
+    GUI.onResize();
 }
 
 /**
@@ -384,14 +427,16 @@ function collapsePanel(panelId: PanelId): void {
  */
 function restorePanel(
     panelId: PanelId,
-    savedWidths: [number, number, number]
+    savedWidths: [number, number, number],
+    wasLeftPanelOpen: boolean
 ): void {
     switch (panelId) {
         case "fileExplorer": {
-            const appLeft = document.getElementById("app-left");
-            // If the left panel IS hidden, toggle it to show
-            if (appLeft && appLeft.classList.contains("hidden")) {
-                toggleLeft();
+            if (wasLeftPanelOpen) {
+                const appLeft = document.getElementById("app-left");
+                if (appLeft && appLeft.classList.contains("hidden")) {
+                    toggleLeft();
+                }
             }
             break;
         }
@@ -403,6 +448,10 @@ function restorePanel(
             appMiddle?.classList.remove("hidden");
             splitV1?.classList.remove("hidden");
             splitV2?.classList.remove("hidden");
+
+            // Re-activate splitters flanking the editor column
+            activateSplitter(0); // splitV1
+            activateSplitter(2); // splitV2
 
             setAppColumnWidths(savedWidths);
             break;
@@ -435,6 +484,7 @@ function restorePanel(
 
     Editor.resizeEditor();
     Console.resizeConsole();
+    GUI.onResize();
 }
 
 //-----------------------------------------------------------
