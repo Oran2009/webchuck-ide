@@ -8,6 +8,8 @@ import { getAppColumnWidths, setAppColumnWidths } from "@/utils/appLayout";
 const OUTPUT_HEADER_HEIGHT: number = 1.75; // rem
 
 export default class OutputPanelHeader {
+    public static outputPanel: HTMLDivElement;
+    public static outputPanelHeader: HTMLDivElement;
     public static vmMonitorContainer: HTMLDivElement;
     public static consoleContainer: HTMLDivElement;
     public static vmMonitorContainer: HTMLDivElement;
@@ -17,6 +19,11 @@ export default class OutputPanelHeader {
     private static savedColumnWidths: [number, number, number] | null = null;
 
     constructor() {
+        OutputPanelHeader.outputPanel =
+            document.querySelector<HTMLDivElement>("#outputPanel")!;
+        OutputPanelHeader.outputPanelHeader =
+            document.querySelector<HTMLDivElement>("#outputPanelHeader")!;
+
         // Setup Output Panel Header Tabs
         // VM Monitor
         const vmMonitorButton =
@@ -162,11 +169,6 @@ export default class OutputPanelHeader {
             OutputPanelHeader.visualizerContainer,
             OutputPanelHeader.canvasContainer,
         ];
-        for (const c of allContainers) {
-            if (c.ownerDocument === document) {
-                c.style.height = "";
-            }
-        }
 
         let first = true;
         for (const panel of allContainers) {
@@ -181,7 +183,8 @@ export default class OutputPanelHeader {
             first = false;
         }
 
-        // Defer resize to next frame so layout is settled
+        // Resize content after layout settles (no flex-basis override needed —
+        // absolute-inset-0 containment + CSS flex: 1 1 0% handles equal sizing)
         requestAnimationFrame(() => {
             Console.resizeConsole();
             visual?.resize();
