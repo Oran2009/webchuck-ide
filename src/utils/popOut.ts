@@ -25,6 +25,47 @@ import {
 } from "@/utils/appLayout";
 
 //-----------------------------------------------------------
+// requestAnimationFrame redirect
+//
+// WebChuGL's Emscripten MainLoop calls window.requestAnimationFrame
+// to drive the render + audio loop. When the main window is hidden
+// (e.g. the popped-out canvas is fullscreened on another monitor),
+// the browser stops firing rAF on the main window, freezing
+// everything. Redirecting rAF to the pop-out window keeps the
+// Emscripten loop alive because that window remains visible.
+//-----------------------------------------------------------
+
+const nativeRequestAnimationFrame =
+    window.requestAnimationFrame.bind(window);
+const nativeCancelAnimationFrame =
+    window.cancelAnimationFrame.bind(window);
+
+function redirectRAFToPopOut(popOutWindow: Window): void {
+    window.requestAnimationFrame = (cb: FrameRequestCallback) => {
+        // Self-heal: if the pop-out was closed before dockBack ran,
+        // restore native rAF so the Emscripten loop doesn't break.
+        if (popOutWindow.closed) {
+            restoreRAF();
+            return nativeRequestAnimationFrame(cb);
+        }
+        return popOutWindow.requestAnimationFrame(cb);
+    };
+    window.cancelAnimationFrame = (id: number) => {
+        if (popOutWindow.closed) {
+            restoreRAF();
+            nativeCancelAnimationFrame(id);
+            return;
+        }
+        popOutWindow.cancelAnimationFrame(id);
+    };
+}
+
+function restoreRAF(): void {
+    window.requestAnimationFrame = nativeRequestAnimationFrame;
+    window.cancelAnimationFrame = nativeCancelAnimationFrame;
+}
+
+//-----------------------------------------------------------
 // Types
 //-----------------------------------------------------------
 
@@ -260,6 +301,12 @@ export function popOut(panelId: PanelId): void {
         return;
     }
 
+    // Redirect rAF to the pop-out window so Emscripten's MainLoop
+    // keeps running when the main window is hidden.
+    if (panelId === "canvas") {
+        redirectRAFToPopOut(popOutWindow);
+    }
+
     // Set up the pop-out document
     popOutWindow.document.title = `${config.title} \u2014 WebChucK IDE`;
     const stylesReady = cloneStyles(popOutWindow.document);
@@ -413,6 +460,11 @@ function dockBack(panelId: PanelId, closeWindow: boolean): void {
 
     // Clear the heartbeat polling interval
     clearInterval(state.heartbeat);
+
+    // Restore native rAF before the pop-out window is gone
+    if (panelId === "canvas") {
+        restoreRAF();
+    }
 
     // Remove from map FIRST to prevent re-entrance from beforeunload
     popOuts.delete(panelId);
