@@ -349,6 +349,13 @@ export default class Editor {
     }
 
     /**
+     * Get the underlying Monaco editor model (for sharing with live coding mode)
+     */
+    public static getModel(): monaco.editor.ITextModel | null {
+        return Editor.editor?.getModel();
+    }
+
+    /**
      * Set the contents of the editor
      * @param code code to replace in the editor
      */

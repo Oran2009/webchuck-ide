@@ -215,6 +215,12 @@
                         FPS: Off
                       </button>
                     </li>
+                    <li class="divider" data-content="PERFORMANCE" role="separator"></li>
+                    <li role="none">
+                      <button id="liveCodingToggle" type="button" class="dropdownItem" role="menuitem">
+                        Live Coding Mode
+                      </button>
+                    </li>
                     <li class="divider" data-content="FUN" role="separator"></li>
                     <li role="none">
                       <button id="petToggle" type="button" class="dropdownItem" role="menuitem">
@@ -873,6 +879,13 @@
           </svg>
         </button>
       </div>
+    </div>
+
+    <!-- Live Coding Mode Overlay -->
+    <div id="liveCodingOverlay" class="live-coding-overlay hidden">
+      <div id="liveCodingBg" class="live-coding-bg"></div>
+      <div id="liveCodingEditor" class="live-coding-editor"></div>
+      <div id="liveCodingTopBar" class="live-coding-topbar"></div>
     </div>
 
       <!-- Custom Theme Editor Modal -->
