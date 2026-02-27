@@ -68,6 +68,10 @@ export default class ChuckBar {
             connectMic();
             ChuckBar.micButton.disabled = true;
         });
+        // Mic is not needed in WebChuGL mode
+        if (engineMode === "webchugl") {
+            ChuckBar.micButton.style.display = "none";
+        }
         ChuckBar.playButton.addEventListener("click", async () => {
             ChuckBar.runEditorCode();
         });
@@ -157,10 +161,7 @@ export default class ChuckBar {
 
         // Start WebChuck Host
         await startChuck();
-        ChuckBar.webchuckButton.innerText =
-            engineMode === "webchugl"
-                ? "WebChuGL running..."
-                : "WebChucK running...";
+        ChuckBar.webchuckButton.innerText = "VM running...";
         ChuckBar.running = true;
 
         const status = document.getElementById("a11y-status");
