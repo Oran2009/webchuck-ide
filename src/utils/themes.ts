@@ -10,6 +10,7 @@
 import Editor from "@/components/editor/monaco/editor";
 import Console from "@/components/outputPanel/console";
 import GUI from "@/components/inputPanel/gui/gui";
+import Pet from "@/components/pet";
 import { visual } from "@/host";
 
 /**
@@ -488,6 +489,7 @@ export function applyTheme(theme: IDETheme) {
 
     // 5. Canvas components
     visual?.applyThemeColors(c.waveformColor, c.spectrumColor, c.spectrumFill);
+    Pet.applyTheme(theme.isDark);
     GUI.applyTheme(theme.isDark, {
         bg: c.bg,
         bgAlt: c.bgAlt,
