@@ -1,7 +1,8 @@
 //-----------------------------------------------------------
 // title: LiveCodingMode
 // desc:  Fullscreen live coding overlay — canvas/visualizer
-//        as background with transparent code editor overlay.
+//        as background with transparent code editor overlay,
+//        console and VM monitor on the right.
 //
 // author: claude
 // date:   February 2026
@@ -9,6 +10,7 @@
 
 import { monaco } from "@/components/editor/monaco/monacoLite";
 import Editor from "@/components/editor/monaco/editor";
+import Console from "@/components/outputPanel/console";
 import { getActiveTheme, type IDETheme } from "@/utils/themes";
 import { engineMode } from "@/host";
 import FullscreenOverlay from "@/components/outputPanel/fullscreenOverlay";
@@ -19,14 +21,23 @@ export default class LiveCodingMode {
     private static bgMount: HTMLDivElement;
     private static editorMount: HTMLDivElement;
     private static topBarMount: HTMLDivElement;
+    private static consoleMount: HTMLDivElement;
+    private static vmMonitorMount: HTMLDivElement;
 
     // State
     private static isOpen: boolean = false;
     private static lcEditor: monaco.editor.IStandaloneCodeEditor | null = null;
+
+    // Reparented element tracking
     private static originalBgParent: HTMLElement | null = null;
     private static reparentedBg: HTMLElement | null = null;
     private static originalBarParent: HTMLElement | null = null;
     private static originalBarNextSibling: Node | null = null;
+    private static originalConsoleParent: HTMLElement | null = null;
+    private static originalVmMonitorParent: HTMLElement | null = null;
+
+    // Toast/tips state
+    private static toastContainer: HTMLDivElement | null = null;
 
     // Bound event handlers
     private static boundOnKeyDown: (e: KeyboardEvent) => void;
@@ -41,6 +52,10 @@ export default class LiveCodingMode {
             document.querySelector<HTMLDivElement>("#liveCodingEditor")!;
         LiveCodingMode.topBarMount =
             document.querySelector<HTMLDivElement>("#liveCodingTopBar")!;
+        LiveCodingMode.consoleMount =
+            document.querySelector<HTMLDivElement>("#liveCodingConsole")!;
+        LiveCodingMode.vmMonitorMount =
+            document.querySelector<HTMLDivElement>("#liveCodingVmMonitor")!;
 
         LiveCodingMode.boundOnKeyDown = LiveCodingMode.onKeyDown.bind(LiveCodingMode);
         LiveCodingMode.boundOnResize = LiveCodingMode.onResize.bind(LiveCodingMode);
@@ -89,17 +104,44 @@ export default class LiveCodingMode {
         LiveCodingMode.originalBarNextSibling = chuckBar.nextSibling;
         LiveCodingMode.topBarMount.appendChild(chuckBar);
 
-        // 3. Show overlay
+        // 3. Hide tips in the toast container
+        LiveCodingMode.toastContainer =
+            document.querySelector<HTMLDivElement>("#toastContainer");
+        if (LiveCodingMode.toastContainer) {
+            LiveCodingMode.toastContainer.style.display = "none";
+        }
+
+        // 4. Reparent console
+        const consoleContainer =
+            document.querySelector<HTMLDivElement>("#consoleContainer")!;
+        LiveCodingMode.originalConsoleParent = consoleContainer.parentElement;
+        LiveCodingMode.consoleMount.appendChild(consoleContainer);
+        consoleContainer.classList.remove("hidden");
+        // Clear inline bg so the transparent CSS takes over
+        const consoleInner =
+            document.querySelector<HTMLDivElement>("#console");
+        if (consoleInner) {
+            consoleInner.style.backgroundColor = "transparent";
+        }
+
+        // 5. Reparent VM monitor
+        const vmMonitorContainer =
+            document.querySelector<HTMLDivElement>("#vmMonitorContainer")!;
+        LiveCodingMode.originalVmMonitorParent = vmMonitorContainer.parentElement;
+        LiveCodingMode.vmMonitorMount.appendChild(vmMonitorContainer);
+        vmMonitorContainer.classList.remove("hidden");
+
+        // 6. Show overlay
         LiveCodingMode.overlay.classList.remove("hidden");
 
-        // 4. Create transparent Monaco editor
+        // 7. Create transparent Monaco editor
         LiveCodingMode.createEditor();
 
-        // 5. Add event listeners
+        // 8. Add event listeners
         document.addEventListener("keydown", LiveCodingMode.boundOnKeyDown);
         window.addEventListener("resize", LiveCodingMode.boundOnResize);
 
-        // 6. Layout after reparent
+        // 9. Layout after reparent
         requestAnimationFrame(() => {
             LiveCodingMode.onResize();
             LiveCodingMode.lcEditor?.focus();
@@ -136,24 +178,54 @@ export default class LiveCodingMode {
             }
         }
 
-        // 4. Hide overlay
+        // 4. Restore toast container visibility
+        if (LiveCodingMode.toastContainer) {
+            LiveCodingMode.toastContainer.style.display = "";
+            LiveCodingMode.toastContainer = null;
+        }
+
+        // 5. Reparent console back
+        if (LiveCodingMode.originalConsoleParent) {
+            const consoleContainer =
+                document.querySelector<HTMLDivElement>("#consoleContainer")!;
+            LiveCodingMode.originalConsoleParent.appendChild(consoleContainer);
+            // Restore inline bg
+            const consoleInner =
+                document.querySelector<HTMLDivElement>("#console");
+            if (consoleInner) {
+                consoleInner.style.backgroundColor =
+                    "var(--ide-console-bg, #fff)";
+            }
+        }
+
+        // 6. Reparent VM monitor back
+        if (LiveCodingMode.originalVmMonitorParent) {
+            const vmMonitorContainer =
+                document.querySelector<HTMLDivElement>("#vmMonitorContainer")!;
+            LiveCodingMode.originalVmMonitorParent.appendChild(vmMonitorContainer);
+        }
+
+        // 7. Hide overlay
         LiveCodingMode.overlay.classList.add("hidden");
 
-        // 5. Remove event listeners
+        // 8. Remove event listeners
         document.removeEventListener("keydown", LiveCodingMode.boundOnKeyDown);
         window.removeEventListener("resize", LiveCodingMode.boundOnResize);
 
-        // 6. Reset state
+        // 9. Reset state
         LiveCodingMode.isOpen = false;
         LiveCodingMode.originalBgParent = null;
         LiveCodingMode.reparentedBg = null;
         LiveCodingMode.originalBarParent = null;
         LiveCodingMode.originalBarNextSibling = null;
+        LiveCodingMode.originalConsoleParent = null;
+        LiveCodingMode.originalVmMonitorParent = null;
 
-        // 7. Resize main editor
+        // 10. Resize main editor and console
         requestAnimationFrame(() => {
             Editor.resizeEditor();
             Editor.focusEditor();
+            Console.resizeConsole();
         });
     }
 
@@ -246,11 +318,12 @@ export default class LiveCodingMode {
     }
 
     /**
-     * Handle resize — re-layout the overlay editor
+     * Handle resize — re-layout the overlay editor and console
      */
     private static onResize() {
         if (!LiveCodingMode.isOpen) return;
         LiveCodingMode.lcEditor?.layout();
+        Console.fit();
     }
 
     /**
