@@ -21,6 +21,7 @@ import FindInProject from "../../fileExplorer/findInProject";
 import GUI from "@/components/inputPanel/gui/gui";
 import { getActiveTheme, PRESET_THEMES, applyTheme } from "@/utils/themes";
 import Pet from "@/components/pet";
+import LiveCodingMode from "@/components/liveCodingMode";
 
 
 // Constants

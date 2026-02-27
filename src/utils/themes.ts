@@ -12,6 +12,7 @@ import GUI from "@/components/inputPanel/gui/gui";
 import Pet from "@/components/pet";
 import { visual } from "@/host";
 import { syncThemeToPopOuts } from "@/utils/popOut";
+import LiveCodingMode from "@/components/liveCodingMode";
 
 /**
  * The shape of every IDE theme — preset or custom.
@@ -506,6 +507,9 @@ export function applyTheme(theme: IDETheme) {
 
     // Sync theme to any popped-out panel windows
     syncThemeToPopOuts();
+
+    // Update live coding mode transparent theme if active
+    LiveCodingMode.onThemeChange(theme);
 }
 
 /**
