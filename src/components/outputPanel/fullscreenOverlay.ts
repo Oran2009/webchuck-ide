@@ -9,6 +9,7 @@
 //-----------------------------------------------------------
 
 import { visual } from "@/host";
+import { isPopOut } from "@/utils/popOut";
 
 export default class FullscreenOverlay {
     // DOM references
@@ -102,6 +103,9 @@ export default class FullscreenOverlay {
      */
     static open(source: "visualizer" | "canvas") {
         if (FullscreenOverlay.isOpen) return;
+
+        // Don't open fullscreen if the source panel is popped out to a separate window
+        if (isPopOut(source)) return;
 
         FullscreenOverlay.activeSource = source;
         FullscreenOverlay.isOpen = true;
