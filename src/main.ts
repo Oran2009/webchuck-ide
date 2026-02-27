@@ -25,6 +25,7 @@ import GUI from "@/components/inputPanel/gui/gui";
 import BottomSheet from "@/components/mobile/bottomSheet";
 import Pet from "@/components/pet";
 import PopOutButtons from "@/components/popOutButtons";
+import LiveCodingMode from "@/components/liveCodingMode";
 
 import { initChuck } from "@/host";
 import { initAppSplitters } from "@utils/appLayout";
@@ -56,6 +57,7 @@ class Main {
     public static bottomSheet: BottomSheet;
     public static pet: Pet;
     public static popOutButtons: PopOutButtons;
+    public static liveCodingMode: LiveCodingMode;
 
     constructor() {
         initTheme(); // Set color scheme
@@ -84,6 +86,7 @@ class Main {
         Main.bottomSheet = new BottomSheet();
         Main.pet = new Pet();
         Main.popOutButtons = new PopOutButtons();
+        Main.liveCodingMode = new LiveCodingMode();
     }
 
     init() {

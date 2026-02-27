@@ -11,6 +11,7 @@ import Editor from "@/components/editor/monaco/editor";
 import Console from "@/components/outputPanel/console";
 import FindInProject from "@/components/fileExplorer/findInProject";
 import FullscreenOverlay from "@/components/outputPanel/fullscreenOverlay";
+import LiveCodingMode from "@/components/liveCodingMode";
 import OutputPanelHeader from "@/components/outputPanel/outputPanelHeader";
 import GUI from "@/components/inputPanel/gui/gui";
 import Toast from "@/components/toast";
@@ -211,6 +212,11 @@ function cloneStyles(targetDoc: Document): Promise<void> {
  * Pop a panel out into a separate browser window.
  */
 export function popOut(panelId: PanelId): void {
+    // Block pop-out if panel is reparented into live coding mode
+    if (LiveCodingMode.active && (panelId === "canvas" || panelId === "visualizer")) {
+        return;
+    }
+
     // Guard: already popped out
     if (popOuts.has(panelId)) return;
 

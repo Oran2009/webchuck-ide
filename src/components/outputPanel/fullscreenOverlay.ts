@@ -10,6 +10,7 @@
 
 import { visual } from "@/host";
 import { isPopOut } from "@/utils/popOut";
+import LiveCodingMode from "@/components/liveCodingMode";
 
 export default class FullscreenOverlay {
     // DOM references
@@ -103,6 +104,11 @@ export default class FullscreenOverlay {
      */
     static open(source: "visualizer" | "canvas") {
         if (FullscreenOverlay.isOpen) return;
+
+        // Close live coding mode if active
+        if (LiveCodingMode.active) {
+            LiveCodingMode.close();
+        }
 
         // Don't open fullscreen if the source panel is popped out to a separate window
         if (isPopOut(source)) return;
