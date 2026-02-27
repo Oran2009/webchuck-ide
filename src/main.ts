@@ -23,6 +23,7 @@ import MoreExamples from "@/components/examples/moreExamples";
 import Settings from "@/components/settings";
 import GUI from "@/components/inputPanel/gui/gui";
 import BottomSheet from "@/components/mobile/bottomSheet";
+import Pet from "@/components/pet";
 
 import { initChuck } from "@/host";
 import { initAppSplitters } from "@utils/appLayout";
@@ -51,6 +52,7 @@ class Main {
     public static fpsCounter: FpsCounter;
     public static GUI: GUI;
     public static bottomSheet: BottomSheet;
+    public static pet: Pet;
 
     constructor() {
         initTheme(); // Set color scheme
@@ -77,6 +79,7 @@ class Main {
         Main.settings = new Settings();
         Main.GUI = new GUI();
         Main.bottomSheet = new BottomSheet();
+        Main.pet = new Pet();
     }
 
     init() {
@@ -98,6 +101,7 @@ class Main {
         initExportWebChuGL();
         initShareCode();
         initParseURLParams();
+        Pet.init();
 
         // Init WebChucK
         window.addEventListener("load", async () => {
