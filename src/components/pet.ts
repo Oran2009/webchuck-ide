@@ -23,6 +23,9 @@ const IDLE_CHANCE = 0.003; // ~0.3% chance per frame to enter idle
 const IDLE_MIN_MS = 1000;
 const IDLE_MAX_MS = 4000;
 
+// Layout — must match #fileExplorerFooter h-[30px]
+const FOOTER_HEIGHT = 30;
+
 // Click reaction
 const BOUNCE_DURATION = 400; // ms
 const BOUNCE_HEIGHT = 12; // px
@@ -63,12 +66,12 @@ export default class Pet {
 
     constructor() {
         Pet.container =
-            document.querySelector<HTMLDivElement>("#editorPanel")!;
+            document.querySelector<HTMLDivElement>("#fileExplorerPanel")!;
 
         // Create canvas
         Pet.canvas = document.createElement("canvas");
         Pet.canvas.style.position = "absolute";
-        Pet.canvas.style.bottom = "0";
+        Pet.canvas.style.bottom = `${FOOTER_HEIGHT}px`;
         Pet.canvas.style.left = "0";
         Pet.canvas.style.width = "100%";
         Pet.canvas.style.height = `${RENDERED_SIZE + BOUNCE_HEIGHT}px`;
@@ -347,7 +350,7 @@ export default class Pet {
         const heart = document.createElement("div");
         heart.textContent = "\u2764\uFE0F";
         heart.style.position = "absolute";
-        heart.style.bottom = `${RENDERED_SIZE + BOUNCE_HEIGHT + 4}px`;
+        heart.style.bottom = `${RENDERED_SIZE + BOUNCE_HEIGHT + FOOTER_HEIGHT + 4}px`;
         heart.style.left = `${Pet.x + RENDERED_SIZE / 2}px`;
         heart.style.transform = "translateX(-50%)";
         heart.style.fontSize = "18px";
