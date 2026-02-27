@@ -260,7 +260,7 @@ export default class LiveCodingMode {
             cursorBlinking: "smooth",
             stickyScroll: { enabled: false },
             lineNumbers: "on",
-            renderLineHighlight: "line",
+            renderLineHighlight: "none",
             scrollbar: {
                 vertical: "hidden",
                 horizontal: "hidden",
