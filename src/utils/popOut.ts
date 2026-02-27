@@ -11,6 +11,7 @@
 
 import Editor from "@/components/editor/monaco/editor";
 import Console from "@/components/outputPanel/console";
+import FullscreenOverlay from "@/components/outputPanel/fullscreenOverlay";
 import OutputPanelHeader from "@/components/outputPanel/outputPanelHeader";
 import GUI from "@/components/inputPanel/gui/gui";
 import Toast from "@/components/toast";
@@ -153,6 +154,11 @@ const DOCK_BACK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height
 export function popOut(panelId: PanelId): void {
     // Guard: already popped out
     if (popOuts.has(panelId)) return;
+
+    // Close fullscreen overlay if it's showing the same element we're about to pop out
+    if ((panelId === "visualizer" || panelId === "canvas") && FullscreenOverlay.opened) {
+        FullscreenOverlay.close();
+    }
 
     const config = PANEL_CONFIGS[panelId];
     const element = document.getElementById(config.elementId);
@@ -313,10 +319,14 @@ function dockBackInternal(panelId: PanelId, closeWindow: boolean): void {
     state.window.removeEventListener("beforeunload", state.onBeforeUnload);
 
     // Reparent element back to its original parent (preserve DOM order)
-    state.originalParent.insertBefore(
-        state.reparentedElement,
-        state.nextSibling
-    );
+    try {
+        state.originalParent.insertBefore(
+            state.reparentedElement,
+            state.nextSibling
+        );
+    } catch {
+        state.originalParent.appendChild(state.reparentedElement);
+    }
 
     // Restore the panel layout in the main window
     restorePanel(panelId, savedLayoutWidths, wasLeftPanelOpen);
@@ -371,6 +381,27 @@ export function closeAll(): void {
 }
 
 //-----------------------------------------------------------
+// Output tab count helper
+//-----------------------------------------------------------
+
+function getActiveOutputTabCount(): number {
+    const containers = [
+        { id: "consoleContainer", panelId: "console" as PanelId },
+        { id: "vmMonitorContainer", panelId: "vmMonitor" as PanelId },
+        { id: "visualizerContainer", panelId: "visualizer" as PanelId },
+        { id: "canvasContainer", panelId: "canvas" as PanelId },
+    ];
+    let count = 0;
+    for (const { id, panelId } of containers) {
+        const el = document.getElementById(id);
+        if (el && !el.classList.contains("hidden") && !popOuts.has(panelId)) {
+            count++;
+        }
+    }
+    return count;
+}
+
+//-----------------------------------------------------------
 // Collapse / Restore helpers
 //-----------------------------------------------------------
 
@@ -411,28 +442,18 @@ function collapsePanel(panelId: PanelId): void {
             deactivateSplitter(2); // splitV2
             break;
         }
-        case "console": {
-            document.getElementById("consoleTab")?.classList.add("hidden");
-            break;
-        }
-        case "vmMonitor": {
-            document.getElementById("vmMonitorTab")?.classList.add("hidden");
-            break;
-        }
-        case "visualizer": {
-            document.getElementById("visualizerTab")?.classList.add("hidden");
-            // Hide fullscreen button if canvas is also popped out
-            if (isPopOut("canvas")) {
-                OutputPanelHeader.fullscreenButton?.classList.add("hidden");
-            }
-            break;
-        }
+        case "console":
+        case "vmMonitor":
+        case "visualizer":
         case "canvas": {
-            document.getElementById("canvasTab")?.classList.add("hidden");
-            // Hide fullscreen button if visualizer is also popped out
-            if (isPopOut("visualizer")) {
-                OutputPanelHeader.fullscreenButton?.classList.add("hidden");
-            }
+            const tabMap: Record<string, string> = {
+                console: "consoleTab",
+                vmMonitor: "vmMonitorTab",
+                visualizer: "visualizerTab",
+                canvas: "canvasTab",
+            };
+            document.getElementById(tabMap[panelId])?.classList.add("hidden");
+            OutputPanelHeader.updateOutputPanel(getActiveOutputTabCount());
             break;
         }
     }
@@ -477,30 +498,18 @@ function restorePanel(
             setAppColumnWidths(savedWidths);
             break;
         }
-        case "console": {
-            document
-                .getElementById("consoleTab")
-                ?.classList.remove("hidden");
-            break;
-        }
-        case "vmMonitor": {
-            document
-                .getElementById("vmMonitorTab")
-                ?.classList.remove("hidden");
-            break;
-        }
-        case "visualizer": {
-            document
-                .getElementById("visualizerTab")
-                ?.classList.remove("hidden");
-            OutputPanelHeader.fullscreenButton?.classList.remove("hidden");
-            break;
-        }
+        case "console":
+        case "vmMonitor":
+        case "visualizer":
         case "canvas": {
-            document
-                .getElementById("canvasTab")
-                ?.classList.remove("hidden");
-            OutputPanelHeader.fullscreenButton?.classList.remove("hidden");
+            const tabMap: Record<string, string> = {
+                console: "consoleTab",
+                vmMonitor: "vmMonitorTab",
+                visualizer: "visualizerTab",
+                canvas: "canvasTab",
+            };
+            document.getElementById(tabMap[panelId])?.classList.remove("hidden");
+            OutputPanelHeader.updateOutputPanel(getActiveOutputTabCount());
             break;
         }
     }
