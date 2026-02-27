@@ -156,6 +156,7 @@ export default class Pet {
     static resize(): void {
         if (!Pet.container) return;
         const width = Pet.container.clientWidth;
+        if (width === Pet.canvas.width) return;
         Pet.canvas.width = width;
         Pet.canvas.height = RENDERED_SIZE + BOUNCE_HEIGHT;
         Pet.ctx.imageSmoothingEnabled = false;
