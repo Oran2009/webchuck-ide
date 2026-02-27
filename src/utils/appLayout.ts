@@ -50,9 +50,6 @@ let right_width: number = RIGHT_WIDTH;
 
 // App State (Open Panels)
 let left_open = true;
-// let middle_open = true;
-// let right_open = true;
-//let editor_open = true;
 let input_panel_open = false;
 
 // App Layout Splitters
@@ -77,9 +74,6 @@ export function initAppSplitters() {
     // Collapsible panel toggles
     document.getElementById("inputPanelToggle")?.addEventListener("click", () => {
         openInputPanel(!input_panel_open);
-    });
-    document.getElementById("outputPanelToggle")?.addEventListener("click", () => {
-        openOutputPanel(!output_panel_open);
     });
 }
 
@@ -120,12 +114,9 @@ export function setContainerRowHeights(
     bottom: number | string
 ) {
     let heights: string[];
-    // If a percent is passed in, the bottom panel is open
-    // if a string is passed in, that is to mean the closed height of the bottom panel
-    let isBottomOpen: boolean;
     if (typeof bottom === "number") {
         heights = [`1fr`, `${SPLITTER_THICKNESS}px`, `${bottom}%`];
-        isBottomOpen = true;
+        input_panel_open = true;
     } else {
         heights = [`1fr`, `${SPLITTER_THICKNESS}px`, bottom];
         isBottomOpen = false;

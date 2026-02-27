@@ -11,7 +11,7 @@ import { Terminal, ILinkProvider, ILink } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@styles/xterm.css";
 
-import { theChuck } from "@/host";
+import { theChuck, engineMode } from "@/host";
 import { getActiveTheme } from "@/utils/themes";
 
 // Define a custom regular expression that matches blob URIs
@@ -106,11 +106,17 @@ export default class Console {
         document.getElementById("consoleFontDown")?.addEventListener("click", () => Console.changeFontSize(-1));
         document.getElementById("consoleFontUp")?.addEventListener("click", () => Console.changeFontSize(1));
 
+        // Print startup message so the console isn't blank
+        const engine = engineMode === "webchugl" ? "WebChuGL" : "WebChucK";
+        Console.print(`[${engine} IDE console]`);
+
         (window as any).Console = Console;
     }
 
     /**
-     * Resize the console and set the TTY_WIDTH
+     * Resize the console and set the TTY_WIDTH.
+     * Skips resize when the console container is hidden (display: none)
+     * to prevent xterm from accumulating rows against stale dimensions.
      */
     static resizeConsole() {
         const container = Console.terminalElement?.parentElement;
