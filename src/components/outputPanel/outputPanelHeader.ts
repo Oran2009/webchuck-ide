@@ -8,6 +8,7 @@ import { getAppColumnWidths, setAppColumnWidths } from "@/utils/appLayout";
 const OUTPUT_HEADER_HEIGHT: number = 1.75; // rem
 
 export default class OutputPanelHeader {
+    public static vmMonitorContainer: HTMLDivElement;
     public static consoleContainer: HTMLDivElement;
     public static vmMonitorContainer: HTMLDivElement;
     public static visualizerContainer: HTMLDivElement;
@@ -17,6 +18,11 @@ export default class OutputPanelHeader {
 
     constructor() {
         // Setup Output Panel Header Tabs
+        // VM Monitor
+        const vmMonitorButton =
+            document.querySelector<HTMLButtonElement>("#vmMonitorTab")!;
+        OutputPanelHeader.vmMonitorContainer =
+            document.querySelector<HTMLDivElement>("#vmMonitorContainer")!;
         // Console
         const consoleButton =
             document.querySelector<HTMLButtonElement>("#consoleTab")!;
@@ -45,11 +51,18 @@ export default class OutputPanelHeader {
             OutputPanelHeader.openFullscreen();
         });
 
-        // Build toggles
+        // Build toggles — defaults depend on engine mode
+        const isChuGL = engineMode === "webchugl";
+
+        new OutputHeaderToggle(
+            vmMonitorButton,
+            OutputPanelHeader.vmMonitorContainer,
+            !isChuGL // active by default in WebChucK mode
+        );
         new OutputHeaderToggle(
             consoleButton,
             OutputPanelHeader.consoleContainer,
-            true
+            true // always active by default
         );
         new OutputHeaderToggle(
             vmMonitorButton,
@@ -62,12 +75,12 @@ export default class OutputPanelHeader {
         );
 
         // Canvas tab — only visible in WebChuGL mode
-        if (engineMode === "webchugl") {
+        if (isChuGL) {
             canvasButton.classList.remove("hidden");
             new OutputHeaderToggle(
                 canvasButton,
                 OutputPanelHeader.canvasContainer,
-                true // default active in ChuGL mode
+                true // active by default in ChuGL mode
             );
         }
 
@@ -141,8 +154,30 @@ export default class OutputPanelHeader {
         OutputPanelHeader.visualizerContainer.style.height = splitHeight;
         OutputPanelHeader.canvasContainer.style.height = splitHeight;
 
-        Console.resizeConsole();
-        visual?.resize();
+        // Add border-top between visible panels, skip the first one
+        const panels = [
+            OutputPanelHeader.consoleContainer,
+            OutputPanelHeader.vmMonitorContainer,
+            OutputPanelHeader.visualizerContainer,
+            OutputPanelHeader.canvasContainer,
+        ];
+        let first = true;
+        for (const panel of panels) {
+            if (panel.classList.contains("hidden")) {
+                panel.style.borderTop = "";
+                continue;
+            }
+            panel.style.borderTop = first
+                ? "none"
+                : "1px solid var(--ide-border, #C9E0F7)";
+            first = false;
+        }
+
+        // Defer resize to next frame so layout is settled
+        requestAnimationFrame(() => {
+            Console.resizeConsole();
+            visual?.resize();
+        });
     }
 
 }

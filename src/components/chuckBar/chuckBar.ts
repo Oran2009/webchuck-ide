@@ -26,6 +26,9 @@ import { getAndClearLoadedExample, onExampleRun } from "@/components/suggestions
 // detect operating system
 const isWindows = navigator.userAgent.includes("Windows");
 const metaKey = isWindows ? "Ctrl" : "⌘";
+function getEngineLabel(): string {
+    return engineMode === "webchugl" ? "WebChuGL" : "WebChucK";
+}
 
 export default class ChuckBar {
     public static webchuckButton: HTMLButtonElement;
@@ -53,7 +56,7 @@ export default class ChuckBar {
             document.querySelector<HTMLButtonElement>("#recordButton")!;
 
         // Add tooltips
-        ChuckBar.webchuckButton.title = `Start ChucK VM [${metaKey} + .]`;
+        ChuckBar.webchuckButton.title = `Start ${getEngineLabel()} [${metaKey} + .]`;
         ChuckBar.micButton.title = `Connect Microphone`;
         ChuckBar.playButton.title = `Run [${metaKey} + Enter]`;
         ChuckBar.replaceButton.title = `Replace [${metaKey} + \\]`;
@@ -161,7 +164,7 @@ export default class ChuckBar {
 
         // Start WebChuck Host
         await startChuck();
-        ChuckBar.webchuckButton.innerText = "VM running...";
+        ChuckBar.webchuckButton.innerText = `${getEngineLabel()} running...`;
         ChuckBar.running = true;
 
         const status = document.getElementById("a11y-status");

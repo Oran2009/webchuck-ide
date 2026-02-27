@@ -509,12 +509,19 @@
               </div>
               <canvas id="visualizer" class="absolute inset-0 w-full h-full" aria-label="Audio visualizer"></canvas>
             </div>
-            <div id="canvasContainer" class="flex-1 hidden relative" style="background-color: var(--ide-editor-bg, #fff)" role="tabpanel" aria-labelledby="canvasTab">
+            <!-- Canvas Tab Panel (ChuGL) -->
+            <div id="canvasContainer" class="hidden relative" style="background-color: var(--ide-editor-bg, #fff)" role="tabpanel" aria-labelledby="canvasTab">
               <canvas id="canvas" class="w-full h-full" aria-label="ChuGL graphics canvas"></canvas>
               <div id="fpsCounter" class="absolute top-1 left-2 text-xs font-mono text-white bg-black/50 px-1.5 py-0.5 rounded pointer-events-none select-none" style="display: none;"></div>
             </div>
           </div>
-          </div><!-- /app-right-grid -->
+          <!-- VM Status Bar (always visible) -->
+          <div id="vmMonitorStatusBar" class="flex-none flex items-center justify-end px-2 h-[30px] text-s border-t-2">
+            <div id="chuckNowStatus" class="opacity-70 pointer-events-none whitespace-nowrap h-6 flex items-center gap-1" style="display: none;">
+              <span class="text-orange font-mono"><b>now:</b></span>
+              <span id="chuckNowTime" class="font-mono text-dark-4 dark:text-light">00:00:00.00000</span>
+            </div>
+          </div>
         </div>
 
       </main>
