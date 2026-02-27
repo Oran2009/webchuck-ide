@@ -4,7 +4,7 @@
 //        canvas to fill the viewport, with floating toolbar
 //        for close and fullscreen controls.
 //
-// author: terry feng
+// author: ben hoang
 // date:   February 2026
 //-----------------------------------------------------------
 

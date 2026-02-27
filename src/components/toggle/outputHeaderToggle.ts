@@ -44,6 +44,8 @@ export default class OutputHeaderToggle extends HeaderToggle {
     }
 
     setActive(open: boolean) {
+        const isPopped = this.contentContainer.ownerDocument !== document;
+
         this.button.setAttribute("aria-selected", String(open));
 
 
@@ -55,7 +57,7 @@ export default class OutputHeaderToggle extends HeaderToggle {
             this.button.classList.remove(HOVER_COLOR_CLASS);
             this.button.classList.remove(DARK_TEXT_HOVER_CLASS);
             this.button.classList.remove(DARK_HOVER_COLOR_CLASS);
-            this.contentContainer.classList.remove("hidden");
+            if (!isPopped) this.contentContainer.classList.remove("hidden");
 
             this.open = true;
         } else {
@@ -66,7 +68,7 @@ export default class OutputHeaderToggle extends HeaderToggle {
             this.button.classList.add(HOVER_COLOR_CLASS);
             this.button.classList.add(DARK_TEXT_HOVER_CLASS);
             this.button.classList.add(DARK_HOVER_COLOR_CLASS);
-            this.contentContainer.classList.add("hidden");
+            if (!isPopped) this.contentContainer.classList.add("hidden");
 
             this.open = false;
         }

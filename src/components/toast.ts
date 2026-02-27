@@ -1,12 +1,10 @@
 //-------------------------------------------------------------------
 // title: Toast
-// desc:  Toast notification component for WebChucK IDE.
+// desc:  Notification component for WebChucK IDE.
 //        Displays IDE-level messages (errors, status) inline
-//        in the chuck bar's right side. When idle, shows
-//        random tips about ChucK, WebChucK IDE, CCRMA, and more.
-//        API: Toast.error("msg") | Toast.info("msg")
+//        in the chuck bar's left side.
 //
-// author: terry feng
+// author: ben hoang
 // date:   February 2026
 //-------------------------------------------------------------------
 

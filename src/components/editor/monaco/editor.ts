@@ -107,7 +107,7 @@ export default class Editor {
             GUI.generateGUI();
         });
         // Keybindings
-        this.initMonacoKeyBindings();
+        Editor.initMonacoKeyBindings();
     }
 
     /**
@@ -167,6 +167,85 @@ export default class Editor {
     }
 
     /**
+     * Destroy and recreate the Monaco editor instance in its current
+     * document context.  Used when the editor container is reparented
+     * to a pop-out window (or back) so that Monaco rebinds its
+     * internal DOM elements and event listeners to the new document.
+     */
+    static recreateEditor() {
+        // Save state
+        const model = Editor.editor.getModel();
+        const viewState = Editor.editor.saveViewState();
+        const fontSize = Editor.editor.getOption(
+            monaco.editor.EditorOption.fontSize
+        );
+
+        // Dispose vim mode before disposing editor
+        if (Editor.vimMode) {
+            Editor.vimModule?.dispose();
+        }
+
+        // Dispose old editor (externally-created model survives)
+        Editor.editor.dispose();
+
+        // Create new editor in the (possibly reparented) container
+        Editor.editor = monaco.editor.create(Editor.editorContainer, {
+            language: "chuck",
+            minimap: { enabled: false },
+            model: model,
+            automaticLayout: false,
+            scrollBeyondLastLine: false,
+            fontSize: fontSize,
+            cursorBlinking: "smooth",
+            stickyScroll: { enabled: false },
+            fixedOverflowWidgets: true,
+        });
+
+        // Apply current theme
+        Editor.applyDynamicTheme(getActiveTheme());
+
+        // Restore cursor position and scroll
+        if (viewState) {
+            Editor.editor.restoreViewState(viewState);
+        }
+
+        // Re-register content change handler
+        Editor.editor.onDidChangeModelContent(() => {
+            if (WelcomeTab.isVisible()) {
+                WelcomeTab.dismiss();
+            }
+            ProjectSystem.updateActiveFile(Editor.getEditorCode());
+            if (Editor.saveTimer) clearTimeout(Editor.saveTimer);
+            Editor.saveTimer = setTimeout(() => Editor.saveCode(), 300);
+        });
+
+        // Re-register keybindings and command palette actions
+        Editor.initMonacoKeyBindings();
+
+        // Restore vim mode
+        if (Editor.vimMode) {
+            Editor.vimModule = initVimMode(Editor.editor, Editor.vimStatus);
+        }
+
+        Editor.resizeEditor();
+        Editor.editor.focus();
+    }
+
+    /**
+     * Focus the editor
+     */
+    static focusEditor() {
+        Editor.editor?.focus();
+    }
+
+    /**
+     * Force a synchronous render of the editor.
+     */
+    static forceRender() {
+        Editor.editor?.render(true);
+    }
+
+    /**
      * Change the editor font size by delta
      */
     static changeEditorFontSize(delta: number) {
@@ -214,7 +293,7 @@ export default class Editor {
     /**
      * Add custom keybindings to the editor
      */
-    initMonacoKeyBindings() {
+    static initMonacoKeyBindings() {
         // Experimental shortcut
         Editor.editor.addCommand(
             monaco.KeyMod.CtrlCmd | monaco.KeyCode.Period,

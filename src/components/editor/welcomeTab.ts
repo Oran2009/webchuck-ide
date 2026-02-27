@@ -2,7 +2,6 @@ import { loadChuckFileFromURL, loadDataFileFromURL } from "@components/fileExplo
 import ProjectSystem from "@components/fileExplorer/projectSystem";
 import InputPanelHeader from "@/components/inputPanel/inputPanelHeader";
 import { engineMode } from "@/host";
-import { setLoadedExample } from "@/components/suggestions";
 import {
     fetchTextFile,
     fetchDataFile,
@@ -492,7 +491,6 @@ export default class WelcomeTab {
             <div class="text-xs text-dark-5 dark:text-dark-a mt-1">${featured.blurb || featured.description}</div>
         `;
         featuredCard.addEventListener("click", () => {
-            setLoadedExample(featured.filename);
             featured.load();
             WelcomeTab.dismiss();
         });
@@ -505,7 +503,6 @@ export default class WelcomeTab {
         for (const ex of gridExamples) {
             grid.appendChild(
                 buildCard(ex, () => {
-                    setLoadedExample(ex.filename);
                     ex.load();
                     WelcomeTab.dismiss();
                 })
@@ -528,7 +525,6 @@ export default class WelcomeTab {
         surpriseCard.addEventListener("click", () => {
             const random =
                 allExamples[Math.floor(Math.random() * allExamples.length)];
-            setLoadedExample(random.filename);
             random.load();
             WelcomeTab.dismiss();
         });

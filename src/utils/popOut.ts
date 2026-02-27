@@ -1,16 +1,15 @@
 //-----------------------------------------------------------
 // title: PopOutManager
 // desc:  Manages popping IDE panels out into separate browser
-//        windows and docking them back. Each panel is reparented
-//        into a new window with cloned styles, and restored to
-//        its original parent on dock-back or window close.
+//        windows and docking them back.
 //
-// author: terry feng
+// author: ben hoang
 // date:   February 2026
 //-----------------------------------------------------------
 
 import Editor from "@/components/editor/monaco/editor";
 import Console from "@/components/outputPanel/console";
+import FindInProject from "@/components/fileExplorer/findInProject";
 import FullscreenOverlay from "@/components/outputPanel/fullscreenOverlay";
 import OutputPanelHeader from "@/components/outputPanel/outputPanelHeader";
 import GUI from "@/components/inputPanel/gui/gui";
@@ -43,6 +42,7 @@ interface PopOutState {
     nextSibling: ChildNode | null;
     savedLayoutWidths: [number, number, number];
     wasLeftPanelOpen: boolean;
+    wasHidden: boolean;
     onBeforeUnload: () => void;
     heartbeat: ReturnType<typeof setInterval>;
 }
@@ -98,6 +98,28 @@ const PANEL_CONFIGS: Record<PanelId, PanelConfig> = {
 };
 
 //-----------------------------------------------------------
+// Shared constants
+//-----------------------------------------------------------
+
+const OUTPUT_PANEL_IDS: PanelId[] = [
+    "console",
+    "vmMonitor",
+    "visualizer",
+    "canvas",
+];
+
+const OUTPUT_TAB_MAP: Record<string, string> = {
+    console: "consoleTab",
+    vmMonitor: "vmMonitorTab",
+    visualizer: "visualizerTab",
+    canvas: "canvasTab",
+};
+
+function isOutputPanel(panelId: PanelId): boolean {
+    return OUTPUT_PANEL_IDS.includes(panelId);
+}
+
+//-----------------------------------------------------------
 // Registry of active pop-outs
 //-----------------------------------------------------------
 
@@ -108,10 +130,49 @@ const popOuts = new Map<PanelId, PopOutState>();
 //-----------------------------------------------------------
 
 /**
- * Clone all stylesheets and inline styles from the main document
- * into the target document so the reparented element looks correct.
+ * Clone all <style> elements from the main document into a target
+ * document, capturing rules added dynamically via insertRule()
+ * (Monaco uses this for cursor, theme, and widget styles whose
+ * textContent is empty).  Previous clones are removed first so
+ * this function can be called repeatedly to re-sync.
  */
-function cloneStyles(targetDoc: Document): void {
+function syncStyleElements(targetDoc: Document): void {
+    // Remove previously synced clones
+    targetDoc
+        .querySelectorAll<HTMLStyleElement>("style[data-pop-out-clone]")
+        .forEach((el) => el.remove());
+
+    document.querySelectorAll<HTMLStyleElement>("style").forEach((style) => {
+        const clone = targetDoc.createElement("style");
+        clone.setAttribute("data-pop-out-clone", "");
+        if (style.media) clone.media = style.media;
+
+        // Build CSS text from cssRules so we capture rules added via
+        // insertRule() (whose textContent is empty).  We set textContent
+        // on the clone instead of using insertRule because pop-out
+        // windows (about:blank) may not expose clone.sheet immediately.
+        let cssText = "";
+        if (style.sheet) {
+            try {
+                const rules = style.sheet.cssRules;
+                for (let i = 0; i < rules.length; i++) {
+                    cssText += rules[i].cssText + "\n";
+                }
+            } catch {
+                cssText = style.textContent || "";
+            }
+        } else {
+            cssText = style.textContent || "";
+        }
+
+        clone.textContent = cssText;
+        targetDoc.head.appendChild(clone);
+    });
+}
+
+function cloneStyles(targetDoc: Document): Promise<void> {
+    const linkPromises: Promise<void>[] = [];
+
     // Clone <link rel="stylesheet"> elements
     document.querySelectorAll<HTMLLinkElement>("link[rel='stylesheet']").forEach(
         (link) => {
@@ -119,16 +180,18 @@ function cloneStyles(targetDoc: Document): void {
             clone.rel = "stylesheet";
             clone.href = link.href;
             if (link.media) clone.media = link.media;
+            linkPromises.push(
+                new Promise((resolve) => {
+                    clone.onload = () => resolve();
+                    clone.onerror = () => resolve(); // don't block on failure
+                })
+            );
             targetDoc.head.appendChild(clone);
         }
     );
 
-    // Clone <style> elements
-    document.querySelectorAll<HTMLStyleElement>("style").forEach((style) => {
-        const clone = targetDoc.createElement("style");
-        clone.textContent = style.textContent;
-        targetDoc.head.appendChild(clone);
-    });
+    // Clone <style> elements (initial sync)
+    syncStyleElements(targetDoc);
 
     // Copy className from <html> (for Tailwind dark class)
     targetDoc.documentElement.className = document.documentElement.className;
@@ -136,13 +199,9 @@ function cloneStyles(targetDoc: Document): void {
     // Copy inline style (CSS custom properties / theme vars)
     targetDoc.documentElement.style.cssText =
         document.documentElement.style.cssText;
+
+    return Promise.all(linkPromises).then(() => {});
 }
-
-//-----------------------------------------------------------
-// Dock-back button SVG (arrow-down-left icon)
-//-----------------------------------------------------------
-
-const DOCK_BACK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><polyline points="15 18 6 18 6 9"></polyline></svg>`;
 
 //-----------------------------------------------------------
 // Pop Out
@@ -197,7 +256,7 @@ export function popOut(panelId: PanelId): void {
 
     // Set up the pop-out document
     popOutWindow.document.title = `${config.title} \u2014 WebChucK IDE`;
-    cloneStyles(popOutWindow.document);
+    const stylesReady = cloneStyles(popOutWindow.document);
 
     // Body styles
     popOutWindow.document.body.style.margin = "0";
@@ -211,42 +270,20 @@ export function popOut(panelId: PanelId): void {
     wrapper.style.color = "var(--ide-text, #000)";
     wrapper.style.overflow = "auto";
 
-    // Create dock-back button (fixed, top-right corner)
-    const dockBtn = popOutWindow.document.createElement("button");
-    dockBtn.innerHTML = DOCK_BACK_SVG;
-    dockBtn.title = "Dock back to main window";
-    dockBtn.style.position = "fixed";
-    dockBtn.style.top = "8px";
-    dockBtn.style.right = "8px";
-    dockBtn.style.zIndex = "9999";
-    dockBtn.style.background = "none";
-    dockBtn.style.border = "none";
-    dockBtn.style.cursor = "pointer";
-    dockBtn.style.color = "inherit";
-    dockBtn.style.opacity = "0.6";
-    dockBtn.style.padding = "4px";
-    dockBtn.style.borderRadius = "4px";
-    dockBtn.style.display = "flex";
-    dockBtn.style.alignItems = "center";
-    dockBtn.style.justifyContent = "center";
-    dockBtn.addEventListener("mouseenter", () => {
-        dockBtn.style.opacity = "1";
-    });
-    dockBtn.addEventListener("mouseleave", () => {
-        dockBtn.style.opacity = "0.6";
-    });
-    dockBtn.addEventListener("click", () => {
-        dockBack(panelId);
-    });
+    // If the element is hidden (e.g. an inactive output tab), reveal it
+    // in the pop-out window. We'll restore the class on dock-back.
+    const wasHidden = element.classList.contains("hidden");
+    if (wasHidden) {
+        element.classList.remove("hidden");
+    }
 
     // Reparent the element into the pop-out wrapper
-    wrapper.appendChild(dockBtn);
     wrapper.appendChild(element);
     popOutWindow.document.body.appendChild(wrapper);
 
     // beforeunload handler — auto re-dock when pop-out window closes
     const onBeforeUnload = () => {
-        dockBackInternal(panelId, false);
+        dockBack(panelId, false);
     };
     popOutWindow.addEventListener("beforeunload", onBeforeUnload);
 
@@ -255,13 +292,37 @@ export function popOut(panelId: PanelId): void {
         triggerResize(panelId);
     });
 
+    // Register keyboard shortcuts that should work in the pop-out.
+    if (panelId === "fileExplorer") {
+        popOutWindow.document.addEventListener("keydown", (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === "F") {
+                e.preventDefault();
+                FindInProject.toggle();
+            }
+        });
+    }
+    if (panelId === "editor") {
+        popOutWindow.document.addEventListener("keydown", (e: KeyboardEvent) => {
+            // Ctrl/Cmd + Shift + P — Command Palette
+            if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === "P") {
+                e.preventDefault();
+                Editor.openCommandPalette();
+            }
+            // Ctrl/Cmd + Shift + F — Find in Files
+            if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === "F") {
+                e.preventDefault();
+                FindInProject.toggle();
+            }
+        });
+    }
+
     // Heartbeat: poll for pop-out window closure (beforeunload is unreliable)
     const heartbeat = setInterval(() => {
         const s = popOuts.get(panelId);
         if (!s || s.window.closed) {
             clearInterval(heartbeat);
             if (popOuts.has(panelId)) {
-                dockBackInternal(panelId, false);
+                dockBack(panelId, false);
             }
         }
     }, 500);
@@ -274,22 +335,57 @@ export function popOut(panelId: PanelId): void {
         nextSibling,
         savedLayoutWidths,
         wasLeftPanelOpen,
+        wasHidden,
         onBeforeUnload,
         heartbeat,
     });
 
-    // Collapse the panel in the main window to reclaim space
+    // Collapse the panel in the main window to reclaim space.
+    // IMPORTANT: this must run BEFORE applying inline styles below,
+    // because collapsePanel → OutputPanelHeader.updateOutputPanel()
+    // clears inline heights on all output containers.
     collapsePanel(panelId);
 
-    // Trigger resize in the pop-out after layout settles
-    requestAnimationFrame(() => {
-        triggerResize(panelId);
-        // Monaco needs font remeasure after reparenting to a new document
-        if (panelId === "editor") {
-            import("monaco-editor").then((monaco) => {
-                monaco.editor.remeasureFonts();
-            });
-        }
+    // Apply inline styles to guarantee correct dimensions in the
+    // pop-out window. Placed AFTER collapsePanel() because
+    // updateOutputPanel() clears inline heights on output containers.
+    element.style.width = "100%";
+    element.style.height = "100%";
+    if (isOutputPanel(panelId)) {
+        element.classList.add("pop-out-output");
+    }
+
+    // Wait for stylesheets to load in the pop-out window so that
+    // CSS classes are applied before we measure dimensions.
+    stylesReady.then(() => {
+        popOutWindow.requestAnimationFrame(() => {
+            triggerResize(panelId);
+            // Monaco must be recreated after reparenting so its internal
+            // DOM elements and event listeners bind to the new document.
+            if (panelId === "editor") {
+                Editor.recreateEditor();
+                // Sync styles to capture <style> elements injected by
+                // editor.create() into mainWindow.document.head
+                syncStyleElements(popOutWindow.document);
+
+                // One-time layout + focus after styles settle
+                popOutWindow.requestAnimationFrame(() => {
+                    if (!popOuts.has("editor")) return;
+                    Editor.resizeEditor();
+                    Editor.focusEditor();
+
+                    // Continuous render pump — Monaco's View schedules
+                    // its first rAF on the main window (where the DOM
+                    // was created), not the pop-out window.
+                    const renderPump = () => {
+                        if (!popOuts.has("editor")) return;
+                        Editor.forceRender();
+                        popOutWindow.requestAnimationFrame(renderPump);
+                    };
+                    popOutWindow.requestAnimationFrame(renderPump);
+                });
+            }
+        });
     });
 }
 
@@ -302,12 +398,12 @@ export function popOut(panelId: PanelId): void {
  * @param panelId   Panel to dock back
  * @param closeWindow  Whether to close the pop-out window
  */
-function dockBackInternal(panelId: PanelId, closeWindow: boolean): void {
+function dockBack(panelId: PanelId, closeWindow: boolean): void {
     const state = popOuts.get(panelId);
     if (!state) return;
 
     // Extract fields we need after deleting from the map
-    const { savedLayoutWidths, wasLeftPanelOpen } = state;
+    const { savedLayoutWidths, wasLeftPanelOpen, wasHidden } = state;
 
     // Clear the heartbeat polling interval
     clearInterval(state.heartbeat);
@@ -328,6 +424,16 @@ function dockBackInternal(panelId: PanelId, closeWindow: boolean): void {
         state.originalParent.appendChild(state.reparentedElement);
     }
 
+    // Restore the hidden class if the panel was hidden before pop-out
+    if (wasHidden) {
+        state.reparentedElement.classList.add("hidden");
+    }
+
+    // Remove inline styles added for pop-out
+    state.reparentedElement.style.width = "";
+    state.reparentedElement.style.height = "";
+    state.reparentedElement.classList.remove("pop-out-output");
+
     // Restore the panel layout in the main window
     restorePanel(panelId, savedLayoutWidths, wasLeftPanelOpen);
 
@@ -339,25 +445,12 @@ function dockBackInternal(panelId: PanelId, closeWindow: boolean): void {
     // Trigger resize after layout settles
     requestAnimationFrame(() => {
         triggerResize(panelId);
-        // Monaco needs font remeasure after reparenting to a new document
+        // Monaco must be recreated after reparenting so its internal
+        // DOM elements and event listeners bind to the main document.
         if (panelId === "editor") {
-            import("monaco-editor").then((monaco) => {
-                monaco.editor.remeasureFonts();
-            });
+            Editor.recreateEditor();
         }
     });
-}
-
-//-----------------------------------------------------------
-// Dock Back (exported)
-//-----------------------------------------------------------
-
-/**
- * Dock a popped-out panel back into the main window and close
- * the pop-out window.
- */
-export function dockBack(panelId: PanelId): void {
-    dockBackInternal(panelId, true);
 }
 
 //-----------------------------------------------------------
@@ -376,7 +469,7 @@ export function isPopOut(panelId: PanelId): boolean {
  */
 export function closeAll(): void {
     for (const id of Array.from(popOuts.keys())) {
-        dockBackInternal(id, true);
+        dockBack(id, true);
     }
 }
 
@@ -385,20 +478,24 @@ export function closeAll(): void {
 //-----------------------------------------------------------
 
 function getActiveOutputTabCount(): number {
-    const containers = [
-        { id: "consoleContainer", panelId: "console" as PanelId },
-        { id: "vmMonitorContainer", panelId: "vmMonitor" as PanelId },
-        { id: "visualizerContainer", panelId: "visualizer" as PanelId },
-        { id: "canvasContainer", panelId: "canvas" as PanelId },
-    ];
     let count = 0;
-    for (const { id, panelId } of containers) {
-        const el = document.getElementById(id);
+    for (const panelId of OUTPUT_PANEL_IDS) {
+        const el = document.getElementById(PANEL_CONFIGS[panelId].elementId);
         if (el && !el.classList.contains("hidden") && !popOuts.has(panelId)) {
             count++;
         }
     }
     return count;
+}
+
+//-----------------------------------------------------------
+// Layout helpers
+//-----------------------------------------------------------
+
+function resizeAllPanels(): void {
+    Editor.resizeEditor();
+    Console.resizeConsole();
+    GUI.onResize();
 }
 
 //-----------------------------------------------------------
@@ -421,7 +518,6 @@ function collapsePanel(panelId: PanelId): void {
         }
         case "editor": {
             const appMiddle = document.getElementById("app-middle");
-            const splitV1 = document.getElementById("splitV1");
             const splitV2 = document.getElementById("splitV2");
 
             // Redistribute middle column width to left and right
@@ -434,11 +530,10 @@ function collapsePanel(panelId: PanelId): void {
             ]);
 
             appMiddle?.classList.add("hidden");
-            splitV1?.classList.add("hidden");
+            // Keep splitV1 visible as a resizer between file explorer and output
             splitV2?.classList.add("hidden");
 
-            // Deactivate splitters flanking the editor column
-            deactivateSplitter(0); // splitV1
+            // Only deactivate splitV2; splitV1 remains active
             deactivateSplitter(2); // splitV2
             break;
         }
@@ -446,21 +541,13 @@ function collapsePanel(panelId: PanelId): void {
         case "vmMonitor":
         case "visualizer":
         case "canvas": {
-            const tabMap: Record<string, string> = {
-                console: "consoleTab",
-                vmMonitor: "vmMonitorTab",
-                visualizer: "visualizerTab",
-                canvas: "canvasTab",
-            };
-            document.getElementById(tabMap[panelId])?.classList.add("hidden");
+            document.getElementById(OUTPUT_TAB_MAP[panelId])?.classList.add("hidden");
             OutputPanelHeader.updateOutputPanel(getActiveOutputTabCount());
             break;
         }
     }
 
-    Editor.resizeEditor();
-    Console.resizeConsole();
-    GUI.onResize();
+    resizeAllPanels();
 }
 
 /**
@@ -484,15 +571,13 @@ function restorePanel(
         }
         case "editor": {
             const appMiddle = document.getElementById("app-middle");
-            const splitV1 = document.getElementById("splitV1");
             const splitV2 = document.getElementById("splitV2");
 
             appMiddle?.classList.remove("hidden");
-            splitV1?.classList.remove("hidden");
+            // splitV1 was kept visible — no need to unhide
             splitV2?.classList.remove("hidden");
 
-            // Re-activate splitters flanking the editor column
-            activateSplitter(0); // splitV1
+            // Re-activate splitV2 (splitV1 was never deactivated)
             activateSplitter(2); // splitV2
 
             setAppColumnWidths(savedWidths);
@@ -502,21 +587,13 @@ function restorePanel(
         case "vmMonitor":
         case "visualizer":
         case "canvas": {
-            const tabMap: Record<string, string> = {
-                console: "consoleTab",
-                vmMonitor: "vmMonitorTab",
-                visualizer: "visualizerTab",
-                canvas: "canvasTab",
-            };
-            document.getElementById(tabMap[panelId])?.classList.remove("hidden");
+            document.getElementById(OUTPUT_TAB_MAP[panelId])?.classList.remove("hidden");
             OutputPanelHeader.updateOutputPanel(getActiveOutputTabCount());
             break;
         }
     }
 
-    Editor.resizeEditor();
-    Console.resizeConsole();
-    GUI.onResize();
+    resizeAllPanels();
 }
 
 //-----------------------------------------------------------

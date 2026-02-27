@@ -1,10 +1,9 @@
 //-----------------------------------------------------------
 // title: Pet
-// desc:  Animated pixel-art chicken pet that walks along the
-//        bottom of the editor panel. Toggleable from the
-//        View menu, persisted to localStorage.
+// desc:  Eggscavate chicken that walks along the
+//        bottom of the file explorer.
 //
-// author: terry feng
+// author: ben hoang
 // date:   February 2026
 //-----------------------------------------------------------
 

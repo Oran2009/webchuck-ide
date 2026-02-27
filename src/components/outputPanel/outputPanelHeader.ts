@@ -139,7 +139,8 @@ export default class OutputPanelHeader {
         // Show console font size buttons only when console is visible
         const consoleFontSize = document.getElementById("consoleFontSize");
         if (consoleFontSize) {
-            const consoleVisible = !OutputPanelHeader.consoleContainer.classList.contains("hidden");
+            const consoleInMain = OutputPanelHeader.consoleContainer.ownerDocument === document;
+            const consoleVisible = consoleInMain && !OutputPanelHeader.consoleContainer.classList.contains("hidden");
             consoleFontSize.classList.toggle("hidden", !consoleVisible);
         }
 
@@ -161,8 +162,15 @@ export default class OutputPanelHeader {
             OutputPanelHeader.visualizerContainer,
             OutputPanelHeader.canvasContainer,
         ];
+        for (const c of allContainers) {
+            if (c.ownerDocument === document) {
+                c.style.height = "";
+            }
+        }
+
         let first = true;
-        for (const panel of panels) {
+        for (const panel of allContainers) {
+            if (panel.ownerDocument !== document) continue;
             if (panel.classList.contains("hidden")) {
                 panel.style.borderTop = "";
                 continue;

@@ -44,7 +44,7 @@ export default class ProjectSystem {
         ProjectSystem.uploadFilesButton =
             document.querySelector<HTMLButtonElement>("#uploadFiles")!;
         ProjectSystem.uploadFilesButton.addEventListener("click", () => {
-            ProjectSystem.fileUploader.click();
+            ProjectSystem.triggerFileUpload();
         });
         ProjectSystem.fileUploader.addEventListener(
             "change",
@@ -87,6 +87,32 @@ export default class ProjectSystem {
 
     static size(): number {
         return ProjectSystem.projectFiles.size;
+    }
+
+    /**
+     * Trigger the file upload dialog in the correct window context.
+     * When the file explorer is popped out, the main-document input
+     * won't open a dialog in the pop-out window, so we create a
+     * temporary input in the pop-out's document instead.
+     */
+    private static triggerFileUpload() {
+        const doc = ProjectSystem.fileExplorer.ownerDocument;
+        if (doc === document) {
+            // Still in main window — use the persistent input
+            ProjectSystem.fileUploader.click();
+            return;
+        }
+        // Pop-out window — create a temporary file input there
+        const tmp = doc.createElement("input");
+        tmp.type = "file";
+        tmp.multiple = true;
+        tmp.style.display = "none";
+        doc.body.appendChild(tmp);
+        tmp.addEventListener("change", () => {
+            ProjectSystem.uploadFiles(tmp.files);
+            tmp.remove();
+        });
+        tmp.click();
     }
 
     /**
@@ -370,7 +396,12 @@ export default class ProjectSystem {
     static showContextMenu(x: number, y: number, filename: string) {
         ProjectSystem.hideContextMenu();
 
-        const menu = document.createElement("div");
+        // Use the file explorer's ownerDocument so the menu appears in
+        // the correct window (main or pop-out).
+        const doc = ProjectSystem.fileExplorer.ownerDocument;
+        const win = doc.defaultView ?? window;
+
+        const menu = doc.createElement("div");
         menu.className = "fileContextMenu";
         menu.setAttribute("role", "menu");
 
@@ -385,7 +416,7 @@ export default class ProjectSystem {
             }],
         ];
         for (const [label, cls, handler] of actions) {
-            const btn = document.createElement("button");
+            const btn = doc.createElement("button");
             btn.className = cls;
             btn.textContent = label;
             btn.setAttribute("role", "menuitem");
@@ -396,12 +427,12 @@ export default class ProjectSystem {
         // Position, clamped to viewport
         menu.style.left = `${x}px`;
         menu.style.top = `${y}px`;
-        document.body.appendChild(menu);
+        doc.body.appendChild(menu);
         const rect = menu.getBoundingClientRect();
-        if (rect.right > window.innerWidth)
-            menu.style.left = `${window.innerWidth - rect.width - 4}px`;
-        if (rect.bottom > window.innerHeight)
-            menu.style.top = `${window.innerHeight - rect.height - 4}px`;
+        if (rect.right > win.innerWidth)
+            menu.style.left = `${win.innerWidth - rect.width - 4}px`;
+        if (rect.bottom > win.innerHeight)
+            menu.style.top = `${win.innerHeight - rect.height - 4}px`;
 
         ProjectSystem.activeContextMenu = menu;
 
@@ -410,15 +441,15 @@ export default class ProjectSystem {
         ProjectSystem.contextMenuAbort = ac;
         const close = () => ProjectSystem.hideContextMenu();
         requestAnimationFrame(() => {
-            document.addEventListener("mousedown", (e) => {
+            doc.addEventListener("mousedown", (e) => {
                 if (!menu.contains(e.target as Node)) close();
             }, { signal: ac.signal });
-            document.addEventListener("touchend", (e) => {
+            doc.addEventListener("touchend", (e) => {
                 const t = e.changedTouches[0];
-                const target = document.elementFromPoint(t.clientX, t.clientY);
+                const target = doc.elementFromPoint(t.clientX, t.clientY);
                 if (!target || !menu.contains(target)) close();
             }, { signal: ac.signal, passive: true } as AddEventListenerOptions);
-            document.addEventListener("keydown", (e) => {
+            doc.addEventListener("keydown", (e) => {
                 if (e.key === "Escape") close();
             }, { signal: ac.signal });
         });
