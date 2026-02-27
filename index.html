@@ -884,8 +884,18 @@
     <!-- Live Coding Mode Overlay -->
     <div id="liveCodingOverlay" class="live-coding-overlay hidden">
       <div id="liveCodingBg" class="live-coding-bg"></div>
-      <div id="liveCodingEditor" class="live-coding-editor"></div>
-      <div id="liveCodingTopBar" class="live-coding-topbar"></div>
+      <div id="liveCodingFg" class="live-coding-fg">
+        <div id="liveCodingTopBar" class="live-coding-topbar"></div>
+        <div class="live-coding-body">
+          <div id="liveCodingEditor" class="live-coding-editor"></div>
+          <div id="liveCodingRight" class="live-coding-right">
+            <div class="live-coding-right-label">Console</div>
+            <div id="liveCodingConsole" class="live-coding-right-panel"></div>
+            <div class="live-coding-right-label">Shreds</div>
+            <div id="liveCodingVmMonitor" class="live-coding-right-panel"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
       <!-- Custom Theme Editor Modal -->
