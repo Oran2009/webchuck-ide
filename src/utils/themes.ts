@@ -12,6 +12,7 @@ import Console from "@/components/outputPanel/console";
 import GUI from "@/components/inputPanel/gui/gui";
 import Pet from "@/components/pet";
 import { visual } from "@/host";
+import { syncThemeToPopOuts } from "@/utils/popOut";
 
 /**
  * The shape of every IDE theme — preset or custom.
@@ -503,6 +504,9 @@ export function applyTheme(theme: IDETheme) {
     localStorage.setItem("ideTheme", theme.id);
     // Keep legacy key in sync for the inline <script> in index.html
     localStorage.setItem("theme", theme.isDark ? "dark" : "light");
+
+    // Sync theme to any popped-out panel windows
+    syncThemeToPopOuts();
 }
 
 /**
