@@ -269,10 +269,10 @@ export async function startChuck() {
 
     // HID/Sensors — only for WebChucK mode (WebChuGL has built-in support)
     if (engineMode === "webchuck") {
-        new HidPanel(await HID.init(theChuck as any));
+        new HidPanel(await HID.init(theChuck.rawRuntime));
         new SensorPanel(
-            await Gyro.init(theChuck as any, false),
-            await Accel.init(theChuck as any, false)
+            await Gyro.init(theChuck.rawRuntime, false),
+            await Accel.init(theChuck.rawRuntime, false)
         );
     }
 
