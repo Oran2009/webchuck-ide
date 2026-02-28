@@ -196,11 +196,6 @@ body {
         justify-content: center;
     }
 
-    /* Let Monaco handle its own touch scrolling */
-    #monacoEditor {
-        touch-action: none;
-    }
-
     #app.output-collapsed {
         grid-template-rows: 1fr 2px auto;
     }
