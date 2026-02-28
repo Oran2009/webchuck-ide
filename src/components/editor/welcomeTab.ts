@@ -456,7 +456,7 @@ export default class WelcomeTab {
             "absolute inset-0 z-10 flex flex-col items-center justify-center",
             "overflow-auto p-6",
         ].join(" ");
-        overlay.style.top = "3rem"; // below editor header
+        overlay.style.top = "2.5rem"; // below editor header
         overlay.style.backgroundColor = "var(--ide-editor-bg, #FEFEFF)";
 
         // Deterministic daily shuffle (curated pool for featured + grid)
