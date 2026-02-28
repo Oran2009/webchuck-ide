@@ -40,22 +40,41 @@ const nativeRequestAnimationFrame =
 const nativeCancelAnimationFrame =
     window.cancelAnimationFrame.bind(window);
 
+// Track ALL pending rAF callbacks dispatched to the pop-out window
+// so we can re-schedule them on the main window if the pop-out
+// closes before they fire (which breaks Emscripten's MainLoop chain).
+// Keyed by the pop-out rAF ID so cancelAnimationFrame still works.
+const pendingRAFCallbacks = new Map<number, FrameRequestCallback>();
+
 function redirectRAFToPopOut(popOutWindow: Window): void {
+    pendingRAFCallbacks.clear();
+
     window.requestAnimationFrame = (cb: FrameRequestCallback) => {
         // Self-heal: if the pop-out was closed before dockBack ran,
         // restore native rAF so the Emscripten loop doesn't break.
         if (popOutWindow.closed) {
             restoreRAF();
+            pendingRAFCallbacks.clear();
             return nativeRequestAnimationFrame(cb);
         }
-        return popOutWindow.requestAnimationFrame(cb);
+        const id = popOutWindow.requestAnimationFrame((time: DOMHighResTimeStamp) => {
+            // If dockBack already re-scheduled this callback on the
+            // main window, skip the pop-out copy to avoid double exec.
+            if (!pendingRAFCallbacks.has(id)) return;
+            pendingRAFCallbacks.delete(id);
+            cb(time);
+        });
+        pendingRAFCallbacks.set(id, cb);
+        return id;
     };
     window.cancelAnimationFrame = (id: number) => {
         if (popOutWindow.closed) {
             restoreRAF();
+            pendingRAFCallbacks.clear();
             nativeCancelAnimationFrame(id);
             return;
         }
+        pendingRAFCallbacks.delete(id);
         popOutWindow.cancelAnimationFrame(id);
     };
 }
@@ -63,6 +82,18 @@ function redirectRAFToPopOut(popOutWindow: Window): void {
 function restoreRAF(): void {
     window.requestAnimationFrame = nativeRequestAnimationFrame;
     window.cancelAnimationFrame = nativeCancelAnimationFrame;
+}
+
+/**
+ * Re-schedule all pending rAF callbacks on the main window.
+ * Called from dockBack to keep Emscripten's MainLoop alive when
+ * the pop-out window closes before the queued callbacks fire.
+ */
+function rescheduleRAF(): void {
+    for (const [id, cb] of pendingRAFCallbacks) {
+        pendingRAFCallbacks.delete(id);
+        nativeRequestAnimationFrame(cb);
+    }
 }
 
 //-----------------------------------------------------------
@@ -461,16 +492,23 @@ function dockBack(panelId: PanelId, closeWindow: boolean): void {
     // Clear the heartbeat polling interval
     clearInterval(state.heartbeat);
 
-    // Restore native rAF before the pop-out window is gone
+    // Restore native rAF and re-schedule the pending callback so
+    // Emscripten's MainLoop chain doesn't break when the pop-out
+    // window closes before the queued rAF callback fires.
     if (panelId === "canvas") {
         restoreRAF();
+        rescheduleRAF();
     }
 
     // Remove from map FIRST to prevent re-entrance from beforeunload
     popOuts.delete(panelId);
 
-    // Remove the beforeunload listener from the pop-out window
-    state.window.removeEventListener("beforeunload", state.onBeforeUnload);
+    // Remove the beforeunload listener from the pop-out window.
+    // Wrapped in try-catch because accessing a closed window can
+    // throw in some browsers.
+    try {
+        state.window.removeEventListener("beforeunload", state.onBeforeUnload);
+    } catch { /* pop-out window already destroyed */ }
 
     // Reparent element back to its original parent (preserve DOM order)
     try {
