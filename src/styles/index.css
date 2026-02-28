@@ -513,6 +513,7 @@ span>.monaco-tokenized-source {
 
 #shredTable thead {
     border-color: var(--ide-border, #C9E0F7);
+    border-bottom-width: 1px;
 }
 
 #shredTable thead tr th {
