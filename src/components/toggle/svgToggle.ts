@@ -59,4 +59,26 @@ export default class SVGToggle {
         this.button.classList.remove(DARK_HOVER_COLOR_CLASS);
         this.button.setAttribute("aria-expanded", "false");
     }
+
+    /** Set to open/toggled state without invoking the callback */
+    activate() {
+        if (this.open) return;
+        this.open = true;
+        this.button.classList.remove(ACCENT_COLOR_CLASS);
+        this.button.classList.add(TEXT_COLOR_CLASS);
+        this.button.classList.add(HOVER_COLOR_CLASS);
+        this.button.classList.add(DARK_HOVER_COLOR_CLASS);
+        this.button.setAttribute("aria-expanded", "true");
+    }
+
+    /** Set to closed state without invoking the callback */
+    reset() {
+        if (!this.open) return;
+        this.open = false;
+        this.button.classList.add(ACCENT_COLOR_CLASS);
+        this.button.classList.remove(TEXT_COLOR_CLASS);
+        this.button.classList.remove(HOVER_COLOR_CLASS);
+        this.button.classList.remove(DARK_HOVER_COLOR_CLASS);
+        this.button.setAttribute("aria-expanded", "false");
+    }
 }
