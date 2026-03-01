@@ -74,6 +74,6 @@ export default class OutputHeaderToggle extends HeaderToggle {
         }
 
         // Update the CSS
-        OutputPanelHeader.updateOutputPanel(OutputHeaderToggle.numActive);
+        OutputPanelHeader.updateOutputPanel();
     }
 }

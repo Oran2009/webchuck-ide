@@ -24,7 +24,7 @@ const IDLE_MIN_MS = 1000;
 const IDLE_MAX_MS = 4000;
 
 // Layout — must match #fileExplorerFooter h-[30px]
-const FOOTER_HEIGHT = 30;
+const FOOTER_HEIGHT = 0;
 
 // Click reaction
 const BOUNCE_DURATION = 400; // ms

@@ -15,13 +15,12 @@ import { initVimMode, VimMode } from "monaco-vim";
 import { miniAudicleLight, miniAudicleDark } from "./miniAudicleTheme";
 import EditorPanelHeader from "@/components/editor/editorPanelHeader";
 import WelcomeTab from "@/components/editor/welcomeTab";
-import Toast from "@/components/toast";
 import ProjectSystem from "../../fileExplorer/projectSystem";
 import FindInProject from "../../fileExplorer/findInProject";
 import GUI from "@/components/inputPanel/gui/gui";
-import { getActiveTheme, PRESET_THEMES, applyTheme } from "@/utils/themes";
+import { getActiveTheme } from "@/utils/themes";
 import Pet from "@/components/pet";
-import LiveCodingMode from "@/components/liveCodingMode";
+import Console from "@/components/outputPanel/console";
 
 
 // Constants
@@ -134,13 +133,9 @@ export default class Editor {
         }
         ProjectSystem.addNewFile(filename, code);
 
-        if (isSettingsReload) {
-            Toast.info("Settings applied!");
-        } else {
-            Toast.info(
-                `loaded autosave: ${Editor.filename} (${localStorage.getItem("editorCodeTime")})`
-            );
-        }
+        Console.print(
+            `loaded autosave: ${Editor.filename} (${localStorage.getItem("editorCodeTime")})`
+        );
     }
 
     static async loadDefault() {
@@ -402,16 +397,6 @@ export default class Editor {
     }
 
     /**
-     * Change the editor font size by delta
-     */
-    static changeEditorFontSize(delta: number) {
-        const current = Editor.editor.getOption(monaco.editor.EditorOption.fontSize);
-        const next = Math.max(10, Math.min(24, current + delta));
-        Editor.editor.updateOptions({ fontSize: next });
-        localStorage.setItem("editorFontSize", String(next));
-    }
-
-    /**
      * Toggle Vim mode
      */
     toggleVimMode() {
@@ -452,8 +437,6 @@ export default class Editor {
         });
         Editor.vimToggle.innerText = "Vim Mode: Off";
         Editor.vimStatus?.setAttribute("style", "display: none !important");
-        Editor.editorContainer.style.top = HEADER_HEIGHT;
-        Editor.resizeEditor();
 
         localStorage.setItem("vimMode", "false");
         Editor.vimMode = false;

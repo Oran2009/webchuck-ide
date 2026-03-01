@@ -10,6 +10,12 @@
 
 import { getColorScheme } from "@/utils/theme";
 
+// Capture native rAF before pop-out system can redirect it.
+// When the ChuGL canvas is popped out, window.requestAnimationFrame
+// is globally redirected to the pop-out window. The visualizer must
+// keep using the main window's rAF so draws trigger repaints here.
+const nativeRAF = window.requestAnimationFrame.bind(window);
+
 const MIN_DBFS: number = -120;
 
 function clamp(value: number, min: number, max: number): number {
@@ -132,7 +138,7 @@ export default class Visualizer {
      */
     drawVisualization_() {
         if (!this.running) return;
-        requestAnimationFrame((timestamp) => {
+        nativeRAF((timestamp) => {
             if (!this.running) return;
             if (timestamp - this.lastFrameTime < Visualizer.FRAME_INTERVAL) {
                 this.drawVisualization_();

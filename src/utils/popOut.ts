@@ -570,21 +570,6 @@ export function closeAll(): void {
 }
 
 //-----------------------------------------------------------
-// Output tab count helper
-//-----------------------------------------------------------
-
-function getActiveOutputTabCount(): number {
-    let count = 0;
-    for (const panelId of OUTPUT_PANEL_IDS) {
-        const el = document.getElementById(PANEL_CONFIGS[panelId].elementId);
-        if (el && !el.classList.contains("hidden") && !popOuts.has(panelId)) {
-            count++;
-        }
-    }
-    return count;
-}
-
-//-----------------------------------------------------------
 // Layout helpers
 //-----------------------------------------------------------
 
@@ -638,7 +623,7 @@ function collapsePanel(panelId: PanelId): void {
         case "visualizer":
         case "canvas": {
             document.getElementById(OUTPUT_TAB_MAP[panelId])?.classList.add("hidden");
-            OutputPanelHeader.updateOutputPanel(getActiveOutputTabCount());
+            OutputPanelHeader.updateOutputPanel();
             break;
         }
     }
@@ -684,7 +669,7 @@ function restorePanel(
         case "visualizer":
         case "canvas": {
             document.getElementById(OUTPUT_TAB_MAP[panelId])?.classList.remove("hidden");
-            OutputPanelHeader.updateOutputPanel(getActiveOutputTabCount());
+            OutputPanelHeader.updateOutputPanel();
             break;
         }
     }
