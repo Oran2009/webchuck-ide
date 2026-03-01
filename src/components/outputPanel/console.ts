@@ -233,14 +233,4 @@ export default class Console {
         return Console.terminal.rows;
     }
 
-    /**
-     * Change the console font size by delta
-     */
-    static changeFontSize(delta: number) {
-        const current = Console.terminal.options.fontSize ?? Console.DEFAULT_FONT_SIZE;
-        const next = Math.max(Console.MIN_FONT_SIZE, Math.min(Console.MAX_FONT_SIZE, current + delta));
-        Console.terminal.options.fontSize = next;
-        localStorage.setItem("consoleFontSize", String(next));
-        Console.fit();
-    }
 }

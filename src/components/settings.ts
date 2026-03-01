@@ -43,8 +43,6 @@ export default class Settings {
     public static versionGroup: HTMLDivElement;
     public static engineSelect: HTMLSelectElement;
     public static engineDescription: HTMLParagraphElement;
-    public static sampleRateSelect: HTMLSelectElement;
-    public static sampleRateDescription: HTMLParagraphElement;
 
     constructor() {
         Settings.openButton =

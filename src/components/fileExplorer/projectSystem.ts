@@ -16,6 +16,7 @@ import {
 } from "@/utils/fileLoader";
 import Editor from "@/components/editor/monaco/editor";
 import Console from "../outputPanel/console";
+import Toast from "@/components/toast";
 import ProjectFile from "./projectFile";
 
 export default class ProjectSystem {

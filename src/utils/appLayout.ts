@@ -114,15 +114,14 @@ export function setContainerRowHeights(
     bottom: number | string
 ) {
     let heights: string[];
-    if (typeof bottom === "number") {
+    const bottomOpen = typeof bottom === "number";
+    if (bottomOpen) {
         heights = [`1fr`, `${SPLITTER_THICKNESS}px`, `${bottom}%`];
-        input_panel_open = true;
     } else {
         heights = [`1fr`, `${SPLITTER_THICKNESS}px`, bottom];
-        isBottomOpen = false;
     }
     if (container.id == "app-middle") {
-        input_panel_open = isBottomOpen;
+        input_panel_open = bottomOpen;
     }
     container.style.gridTemplateRows = heights.join(" ");
 }

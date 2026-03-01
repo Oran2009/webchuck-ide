@@ -403,7 +403,7 @@
                   <path stroke="currentColor" d="M3 0C1.35862 0 0 1.35862 0 3V21C0 22.6414 1.35862 24 3 24H27C28.6414 24 30 22.6414 30 21V6C30 4.35862 28.6414 3 27 3H15L12 0H3ZM3 3H10.7578L13.7578 6H27V21H3V3Z" fill="currentColor"/>
                 </svg>
               </button>
-              <div id="filename" class="px-2 text-base font-bold truncate min-w-0">untitled.ck</div>
+              <div id="filename" class="header-item">untitled.ck</div>
               <div class="ml-auto flex items-center gap-0.5 text-xs flex-shrink-0" style="color: var(--ide-text-muted, #888)">
                 <button id="editorFontDown" type="button" class="px-1 hover:text-dark dark:hover:text-light focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 rounded" title="Decrease font size" aria-label="Decrease editor font size">A-</button>
                 <button id="editorFontUp" type="button" class="px-1 hover:text-dark dark:hover:text-light focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 rounded" title="Increase font size" aria-label="Increase editor font size">A+</button>
@@ -519,13 +519,6 @@
             <div id="canvasContainer" class="hidden relative" style="background-color: var(--ide-editor-bg, #fff)" role="tabpanel" aria-labelledby="canvasTab">
               <canvas id="canvas" class="absolute inset-0 w-full h-full" aria-label="ChuGL graphics canvas"></canvas>
               <div id="fpsCounter" class="absolute top-1 left-2 text-xs font-mono text-white bg-black/50 px-1.5 py-0.5 rounded pointer-events-none select-none" style="display: none;"></div>
-            </div>
-          </div>
-          <!-- VM Status Bar (always visible) -->
-          <div id="vmMonitorStatusBar" class="flex-none flex items-center justify-end px-2 h-[30px] text-s border-t-2">
-            <div id="chuckNowStatus" class="opacity-70 pointer-events-none whitespace-nowrap h-6 flex items-center gap-1" style="display: none;">
-              <span class="text-orange font-mono"><b>now:</b></span>
-              <span id="chuckNowTime" class="font-mono text-dark-4 dark:text-light">00:00:00.00000</span>
             </div>
           </div>
         </div>

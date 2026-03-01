@@ -12,7 +12,6 @@ export default class OutputPanelHeader {
     public static outputPanelHeader: HTMLDivElement;
     public static vmMonitorContainer: HTMLDivElement;
     public static consoleContainer: HTMLDivElement;
-    public static vmMonitorContainer: HTMLDivElement;
     public static visualizerContainer: HTMLDivElement;
     public static canvasContainer: HTMLDivElement;
     public static fullscreenButton: HTMLButtonElement;
@@ -35,11 +34,6 @@ export default class OutputPanelHeader {
             document.querySelector<HTMLButtonElement>("#consoleTab")!;
         OutputPanelHeader.consoleContainer =
             document.querySelector<HTMLDivElement>("#consoleContainer")!;
-        // VM Monitor
-        const vmMonitorButton =
-            document.querySelector<HTMLButtonElement>("#vmMonitorTab")!;
-        OutputPanelHeader.vmMonitorContainer =
-            document.querySelector<HTMLDivElement>("#vmMonitorContainer")!;
         // Visualizer
         const visualizerButton =
             document.querySelector<HTMLButtonElement>("#visualizerTab")!;
@@ -72,11 +66,6 @@ export default class OutputPanelHeader {
             true // always active by default
         );
         new OutputHeaderToggle(
-            vmMonitorButton,
-            OutputPanelHeader.vmMonitorContainer,
-            true
-        );
-        new OutputHeaderToggle(
             visualizerButton,
             OutputPanelHeader.visualizerContainer
         );
@@ -93,9 +82,7 @@ export default class OutputPanelHeader {
 
         // Recalculate split heights on window resize
         window.addEventListener("resize", () => {
-            OutputPanelHeader.updateOutputPanel(
-                OutputHeaderToggle.numActive
-            );
+            OutputPanelHeader.updateOutputPanel();
         });
     }
 
@@ -120,9 +107,20 @@ export default class OutputPanelHeader {
      * Update the Output Panel after a tab toggle or resize.
      * Content uses absolute-inset-0 containment so CSS flex: 1 1 0%
      * handles equal sizing; we only need to re-fit xterm and the visualizer.
-     * @param tabsActive number of tabs active
      */
-    static updateOutputPanel(tabsActive: number) {
+    static updateOutputPanel() {
+        const panels = [
+            OutputPanelHeader.vmMonitorContainer,
+            OutputPanelHeader.consoleContainer,
+            OutputPanelHeader.visualizerContainer,
+            OutputPanelHeader.canvasContainer,
+        ];
+
+        // Count only panels visible in the main document (skip popped-out)
+        const tabsActive = panels.filter(
+            (p) => p.ownerDocument === document && !p.classList.contains("hidden")
+        ).length;
+
         const collapsed = tabsActive === 0;
         document.getElementById("app")?.classList.toggle(
             "output-collapsed",
@@ -156,27 +154,18 @@ export default class OutputPanelHeader {
             return;
         }
 
-        // Split the container heights evenly
+        // Split the container heights evenly, add border-top between visible panels
         const splitHeight: string = `calc((100% - ${OUTPUT_HEADER_HEIGHT}rem)/${tabsActive})`;
-        OutputPanelHeader.consoleContainer.style.height = splitHeight;
-        OutputPanelHeader.visualizerContainer.style.height = splitHeight;
-        OutputPanelHeader.canvasContainer.style.height = splitHeight;
-
-        // Add border-top between visible panels, skip the first one
-        const panels = [
-            OutputPanelHeader.consoleContainer,
-            OutputPanelHeader.vmMonitorContainer,
-            OutputPanelHeader.visualizerContainer,
-            OutputPanelHeader.canvasContainer,
-        ];
 
         let first = true;
-        for (const panel of allContainers) {
+        for (const panel of panels) {
             if (panel.ownerDocument !== document) continue;
             if (panel.classList.contains("hidden")) {
+                panel.style.height = "";
                 panel.style.borderTop = "";
                 continue;
             }
+            panel.style.height = splitHeight;
             panel.style.borderTop = first
                 ? "none"
                 : "1px solid var(--ide-border, #C9E0F7)";
