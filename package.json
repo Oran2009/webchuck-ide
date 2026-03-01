@@ -9,9 +9,11 @@
         "build": "tsc && vite build",
         "preview": "vite preview",
         "lint": "eslint --fix --ext .js,.ts src",
-        "format": "prettier --write src"
+        "format": "prettier --write src",
+        "a11y": "axe http://localhost:5173 --chromedriver-path %USERPROFILE%/.browser-driver-manager/chromedriver/win64-146.0.7680.31/chromedriver-win64/chromedriver.exe"
     },
     "devDependencies": {
+        "@axe-core/cli": "^4.11.1",
         "@types/js-search": "^1.4.4",
         "@types/pako": "^2.0.3",
         "@typescript-eslint/eslint-plugin": "^6.19.0",
