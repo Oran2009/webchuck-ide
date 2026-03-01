@@ -104,6 +104,16 @@ export default class Editor {
      * Load the autosave from local storage
      */
     static loadAutoSave() {
+        // Try loading full project first
+        if (ProjectSystem.loadProject()) {
+            const count = ProjectSystem.size();
+            Console.print(
+                `loaded autosave: ${count} file${count !== 1 ? "s" : ""} (${localStorage.getItem("editorCodeTime")})`
+            );
+            return;
+        }
+
+        // Fall back to legacy single-file autosave
         const filename =
             localStorage.getItem("editorFilename") || "untitled.ck";
         const code = localStorage.getItem("editorCode") || "";
@@ -130,6 +140,7 @@ export default class Editor {
         localStorage.setItem("editorCode", Editor.getEditorCode());
         localStorage.setItem("editorFilename", Editor.getFileName());
         localStorage.setItem("editorCodeTime", new Date().toLocaleString());
+        ProjectSystem.saveProject();
     }
 
     /**
