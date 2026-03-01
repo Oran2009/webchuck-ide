@@ -20,6 +20,8 @@ export default class Settings {
     public static applyButton: HTMLButtonElement;
     public static versionSelect: HTMLSelectElement;
     public static versionDescription: HTMLParagraphElement;
+    public static sampleRateSelect: HTMLSelectElement;
+    public static sampleRateDescription: HTMLParagraphElement;
 
     constructor() {
         Settings.openButton =
@@ -37,6 +39,10 @@ export default class Settings {
             document.querySelector<HTMLParagraphElement>(
                 "#chuck-version-desc"
             )!;
+        Settings.sampleRateSelect =
+            document.querySelector<HTMLSelectElement>("#sample-rate-select")!;
+        Settings.sampleRateDescription =
+            document.querySelector<HTMLParagraphElement>("#sample-rate-desc")!;
 
         // Open settings
         Settings.openButton.addEventListener("click", () => {
@@ -63,6 +69,16 @@ export default class Settings {
         this.selectChucKVersion(
             localStorage.getItem("chuckVersion") || versionString.stable
         );
+
+        // Sample rate select
+        const storedRate = localStorage.getItem("sampleRate") || "default";
+        Settings.sampleRateSelect.value = storedRate;
+        this.updateSampleRateDescription(storedRate);
+        Settings.sampleRateSelect.addEventListener("change", () => {
+            this.updateSampleRateDescription(
+                Settings.sampleRateSelect.value
+            );
+        });
     }
 
     /**
@@ -78,6 +94,19 @@ export default class Settings {
                 "Bleeding edge version of ChucK. Built from the tip of <a href='https://github.com/ccrma/chuck' target='_blank' class='text-orange-light underline'>main</a>";
         }
         Settings.versionSelect.value = version;
+    }
+
+    /**
+     * Update sample rate description text
+     */
+    updateSampleRateDescription(value: string) {
+        if (value === "default") {
+            Settings.sampleRateDescription.textContent =
+                "Use the system default sample rate (usually 44100 or 48000 Hz).";
+        } else {
+            Settings.sampleRateDescription.textContent =
+                `Audio will run at ${value} Hz.`;
+        }
     }
 
     // TODO: Set the audio context sink
@@ -96,6 +125,9 @@ export default class Settings {
             "chuckVersion",
             version ? versionString.stable : versionString.dev
         );
+
+        // Save sample rate
+        localStorage.setItem("sampleRate", Settings.sampleRateSelect.value);
 
         // TODO: Reload the page for now, but should be able to just change the AudioWorkletNode/AudioContext
         location.reload();

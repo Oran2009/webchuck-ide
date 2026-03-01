@@ -54,14 +54,18 @@
     <div id="webchuck-ide" class="grid w-full h-screen bg-sky-blue dark:bg-dark
     text-base text-dark dark:text-light">
 
+      <!-- Skip to main content (accessibility) -->
+      <a href="#monacoEditor" class="sr-only focus:not-sr-only focus:absolute focus:z-[99999] focus:bg-orange focus:text-white focus:px-4 focus:py-2 focus:rounded-md">Skip to editor</a>
+
       <!-- NAVBAR -->
-      <div id="navbarWrapper" class="w-full relative">
+      <header id="navbarWrapper" class="w-full relative">
+        <h1 class="sr-only">WebChucK IDE</h1>
         <nav id="navbar" class="flex h-full items-center justify-between md:px-2 px-4 overflow-x-auto">
 
           <!-- Left -->
           <div class="flex justify-left items-center">
             <!-- ChucK Logo -->
-            <a href="https://chuck.stanford.edu" class="w-10 md:w-8" target="_blank">
+            <a href="https://chuck.stanford.edu" class="w-10 md:w-8" target="_blank" rel="noopener noreferrer" aria-label="Visit ChucK website (opens in new tab)">
               <img src="img/ChonK.svg" class="h-10 md:h-8" alt="ChucK Logo" />
             </a>
 
@@ -77,47 +81,47 @@
                   </svg>
                 </button>
                 <div id="fileDropdown" class="hidden dropdown w-40">
-                  <ul class="py-2 text-base text-gray-700 dark:text-light" aria-labelledby="dropdownDefaultButton">
-                    <li>
-                      <button id="newFile" type="button" class="dropdownItem">
+                  <ul class="py-2 text-base text-gray-700 dark:text-light" aria-labelledby="fileButton" role="menu">
+                    <li role="separator">
+                      <button id="newFile" type="button" class="dropdownItem" role="menuitem">
                         New
                       </button>
                     </li>
-                    <li>
-                      <input id="fileUploader" type="file" multiple hidden />
-                      <button id="uploadFiles" type="button" class="dropdownItem disabled:opacity-50" disabled>
+                    <li role="separator">
+                      <input id="fileUploader" type="file" multiple hidden aria-label="Upload files" />
+                      <button id="uploadFiles" type="button" class="dropdownItem disabled:opacity-50" role="menuitem" disabled>
                         Upload Files
                       </button>
                     </li>
-                    <li>
-                      <button id="newProject" type="button" class="dropdownItem">
+                    <li role="separator">
+                      <button id="newProject" type="button" class="dropdownItem" role="menuitem">
                         New Project
                       </button>
                     </li>
-                    <li id="exportToContainer" class="relative">
-                      <button id="exportToButton" type="button" class="dropdownItem nestedDropdownButton">
+                    <li id="exportToContainer" class="relative" role="separator">
+                      <button id="exportToButton" type="button" class="dropdownItem nestedDropdownButton" role="menuitem">
                         Export to
                         <svg class="w-2.5 h-2.5 ml-3 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                           <path stroke="currentColor" stroke-linecap="" stroke-linejoin="round" stroke-width="1.5" d="m1 9 4-4-4-4"/>
                         </svg>
                       </button>
                       <div id="exportToDropdown" class="nestedDropdown w-36 hidden">
-                        <ul class="py-2 text-base text-gray-700 dark:text-gray-200">
-                          <li>
-                            <button id="exportChuck" type="button" class="dropdownItem">
+                        <ul class="py-2 text-base text-gray-700 dark:text-gray-200" role="menu" aria-labelledby="exportToButton">
+                          <li role="separator">
+                            <button id="exportChuck" type="button" class="dropdownItem" role="menuitem">
                               ChucK
                             </button>
                           </li>
-                          <li>
-                            <button id="exportWebchuck" type="button" class="dropdownItem">
+                          <li role="separator">
+                            <button id="exportWebchuck" type="button" class="dropdownItem" role="menuitem">
                               WebChucK
                             </button>
                           </li>
                         </ul>
                       </div>
                     </li>
-                    <li>
-                      <button id="openSettings" type="button" class="dropdownItem">
+                    <li role="separator">
+                      <button id="openSettings" type="button" class="dropdownItem" role="menuitem">
                         Settings
                       </button>
                     </li>
@@ -133,9 +137,9 @@
                   </svg>
                 </button>
                 <div id="editDropdown" class="hidden dropdown w-40">
-                  <ul class="py-2 text-base text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
-                    <li>
-                      <button id="vimToggle" type="button" class="dropdownItem">
+                  <ul class="py-2 text-base text-gray-700 dark:text-gray-200" aria-labelledby="editButton" role="menu">
+                    <li role="separator">
+                      <button id="vimToggle" type="button" class="dropdownItem" role="menuitem">
                         Vim Mode: Off
                       </button>
                     </li>
@@ -151,20 +155,20 @@
                   </svg>
                 </button>
                 <div id="viewDropdown" class="hidden dropdown w-40">
-                  <ul class="py-2 text-base text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
-                    <li>
-                      <button id="chuckNowToggle" type="button" class="dropdownItem">
+                  <ul class="py-2 text-base text-gray-700 dark:text-gray-200" aria-labelledby="viewButton" role="menu">
+                    <li role="separator">
+                      <button id="chuckNowToggle" type="button" class="dropdownItem" role="menuitem">
                         ChucK Time: Off
                       </button>
                     </li>
-                    <li class="divider dark:border-t-gray-400" data-content="THEME"></li>
-                    <li>
-                      <button id="darkModeToggle" type="button" class="dropdownItem disabled:opacity-50">
+                    <li class="divider dark:border-t-gray-400" data-content="THEME" role="separator"></li>
+                    <li role="separator">
+                      <button id="darkModeToggle" type="button" class="dropdownItem disabled:opacity-50" role="menuitem">
                         Mode: Light
                       </button>
                     </li>
-                    <li>
-                      <button id="colorPreferenceToggle" type="button" class="dropdownItem">
+                    <li role="separator">
+                      <button id="colorPreferenceToggle" type="button" class="dropdownItem" role="menuitem">
                         System: On
                       </button>
                     </li>
@@ -180,7 +184,7 @@
                   </svg>
                 </button>
                 <div id="examplesDropdown" class="hidden dropdown w-48">
-                  <ul id="examplesDropdownContainer" class="py-2 text-base text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+                  <ul id="examplesDropdownContainer" class="py-2 text-base text-gray-700 dark:text-gray-200" aria-labelledby="examplesButton" role="menu">
                   </ul>
                 </div>
               </div>
@@ -193,28 +197,31 @@
                   </svg>
                 </button>
                 <div id="helpDropdown" class="hidden dropdown w-52">
-                  <ul class="py-2 text-base text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
-                    <li>
-                      <a href="https://chuck.stanford.edu/doc/reference" target="_blank" class="dropdownItem">ChucK API Reference</a>
+                  <ul class="py-2 text-base text-gray-700 dark:text-gray-200" aria-labelledby="helpButton" role="menu">
+                    <li role="separator">
+                      <a href="https://chuck.stanford.edu/doc/reference" target="_blank" rel="noopener noreferrer" class="dropdownItem" role="menuitem">ChucK API Reference</a>
                     </li>
-                    <li>
-                      <a href="https://chuck.stanford.edu/webchuck/" target="_blank" class="dropdownItem">Learn WebChucK</a>
+                    <li role="separator">
+                      <a href="https://chuck.stanford.edu/webchuck/" target="_blank" rel="noopener noreferrer" class="dropdownItem" role="menuitem">Learn WebChucK</a>
                     </li>
-                    <li>
-                      <a href="https://discord.gg/ENr3nurrx8" target="_blank" class="dropdownItem">Discord Community</a>
+                    <li role="separator">
+                      <a href="https://discord.gg/ENr3nurrx8" target="_blank" rel="noopener noreferrer" class="dropdownItem" role="menuitem">Discord Community</a>
                     </li>
-
-                    <li class="divider dark:border-t-gray-400" data-content="GITHUB"></li>
-                    <li>
-                      <a href="https://github.com/ccrma/webchuck-ide" target="_blank" class="dropdownItem">GitHub Repo</a>
-                    </li>
-                    <li>
-                      <a href="https://github.com/ccrma/webchuck-ide/issues/new" target="_blank" class="dropdownItem">Report an Issue</a>
+                    <li role="separator">
+                      <button id="keyboard-shortcuts" type="button" class="dropdownItem" role="menuitem">Keyboard Shortcuts</button>
                     </li>
 
-                    <li class="divider dark:border-t-gray-400" data-content="ABOUT"></li>
-                    <li>
-                      <button id="about-ide" class="dropdownItem">About IDE...</button>
+                    <li class="divider dark:border-t-gray-400" data-content="GITHUB" role="separator"></li>
+                    <li role="separator">
+                      <a href="https://github.com/ccrma/webchuck-ide" target="_blank" rel="noopener noreferrer" class="dropdownItem" role="menuitem">GitHub Repo</a>
+                    </li>
+                    <li role="separator">
+                      <a href="https://github.com/ccrma/webchuck-ide/issues/new" target="_blank" rel="noopener noreferrer" class="dropdownItem" role="menuitem">Report an Issue</a>
+                    </li>
+
+                    <li class="divider dark:border-t-gray-400" data-content="ABOUT" role="separator"></li>
+                    <li role="separator">
+                      <button id="about-ide" type="button" class="dropdownItem" role="menuitem">About IDE...</button>
                     </li>
 
                   </ul>
@@ -229,12 +236,12 @@
             <button id="shareCode" class="button border-2 border-blue-600 dark:border-blue-200 px-3 py-1 rounded-md font-medium ml-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 dark:focus-visible:ring-blue-200">Share</button>
           </div>
         </nav>
-      </div>
+      </header>
 
 
       <!-- CHUCK BAR -->
-      <div id="chuckBar" class="bg-orange-peach dark:bg-dark-4 flex items-center justify-start px-2 py-1 gap-2">
-          <div class="flex items-center gap-2 flex-shrink-0">
+      <nav id="chuckBar" class="bg-orange-peach dark:bg-dark-4 flex items-center justify-start px-2 py-1 gap-2" aria-label="ChucK controls">
+          <div class="flex items-center gap-2 flex-shrink-0" role="toolbar" aria-label="ChucK controls">
             <button id="webchuckButton" type="button" class="chuck-button h-10 font-semibold bg-orange text-white text-base px-3 enabled:hover:bg-orange-400 transition-all overflow-hidden truncate disabled:opacity-50" disabled>Loading...</button>
             <button id="micButton" type="button" class="chuck-button bg-[#CF68FF] disabled:opacity-50" title="Enable Microphone" aria-label="Enable Microphone" disabled>
               <svg viewBox="13 9 24 33" fill="none" class="w-5 h-5"><path d="M25 10.1667C22.3764 10.1667 20.25 12.2931 20.25 14.9167V24.4167C20.25 27.0402 22.3764 29.1667 25 29.1667C27.6236 29.1667 29.75 27.0402 29.75 24.4167V14.9167C29.75 12.2931 27.6236 10.1667 25 10.1667ZM15.6392 24.4167C14.6797 24.4167 13.9069 25.2681 14.062 26.2165C14.8377 30.966 18.6368 34.6909 23.4167 35.3763V38.6667C23.4167 39.5407 24.126 40.25 25 40.25C25.874 40.25 26.5834 39.5407 26.5834 38.6667V35.3763C31.3632 34.6909 35.1624 30.966 35.938 26.2165C36.0932 25.2681 35.3204 24.4167 34.3609 24.4167C33.5787 24.4167 32.9337 24.9923 32.8023 25.765C32.161 29.4937 28.9124 32.3333 25 32.3333C21.0876 32.3333 17.839 29.4937 17.1978 25.765C17.0664 24.9923 16.4229 24.4167 15.6392 24.4167Z" fill="white"/></svg>
@@ -252,17 +259,56 @@
               <svg viewBox="13 13 24 24" fill="none" class="w-5 h-5"><circle cx="25" cy="25" r="10" fill="#FF6868"/></svg>
             </button>
           </div>
-      </div>
+      </nav>
 
 
       <!-- APP -->
-      <div id="app">
+      <main id="app">
 
         <!-- Left -->
         <div id="app-left">
-          <div id="fileExplorerPanel" class="h-full flex flex-col justify-start">
-            <div id="fileExplorerHeader" class="header h-10 justify-start flex-none border-b border-dark-d dark:border-dark-a drop-shadow-sm font-bold overflow-hidden whitespace-nowrap">
-              <div class="px-2">File Explorer</div>
+          <div id="fileExplorerPanel" class="h-full flex flex-col justify-start relative overflow-hidden">
+            <div id="fileExplorerHeader" class="header h-10 justify-start flex-none border-b drop-shadow-sm font-bold overflow-hidden whitespace-nowrap">
+              <h2 class="px-2 text-base font-bold">File Explorer</h2>
+              <div class="ml-auto flex items-center gap-0.5" style="color: var(--ide-text-muted, #888)">
+                <button id="newFileIcon" type="button" class="px-1 hover:text-dark dark:hover:text-light focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 rounded" title="New file" aria-label="New file">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                  </svg>
+                </button>
+                <button id="uploadFilesIcon" type="button" class="px-1 hover:text-dark dark:hover:text-light focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 rounded disabled:opacity-50" title="Upload files" aria-label="Upload files" disabled>
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                </button>
+                <button id="searchToggleBtn" type="button" class="px-1 hover:text-dark dark:hover:text-light focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 rounded" title="Find in files (Ctrl+Shift+F)" aria-label="Find in files">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <!-- Find in Files Panel (hidden by default, replaces file explorer) -->
+            <div id="searchPanel" class="hidden flex-1 flex flex-col overflow-hidden" style="background-color: var(--ide-bg-alt, #fff)">
+              <div class="header h-10 justify-start flex-none border-b drop-shadow-sm font-bold overflow-hidden whitespace-nowrap">
+                <h2 class="px-2 text-base font-bold">Find in Files</h2>
+                <button id="searchCloseBtn" type="button" class="ml-auto px-2 hover:text-dark dark:hover:text-light focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 rounded" title="Close search" aria-label="Close search">
+                  <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+              <div class="px-2 py-2">
+                <input id="searchInput" type="text" class="w-full px-2 py-1 text-sm rounded focus:outline-none focus:ring-1" style="background-color: var(--ide-editor-bg); color: var(--ide-text); border: 1px solid var(--ide-border, #ccc); --tw-ring-color: var(--ide-accent)" placeholder="Search..." aria-label="Search in files">
+              </div>
+              <div id="searchResults" class="flex-1 overflow-y-auto text-sm px-1"></div>
             </div>
             <div id="fileExplorerContainer">
               <div id="fileExplorer" class="absolute w-full h-full overflow-y-auto overflow-x-hidden"></div>
@@ -278,60 +324,66 @@
                 </div>
               </div>
             </div>
+
           </div>
         </div>
 
-        <div id="splitV1" class="resizer vSplit"></div>
+        <div id="splitV1" class="resizer vSplit" role="separator" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Resize file explorer"></div>
 
         <!-- Middle -->
         <div id="app-middle">
           <!-- Editor Panel -->
           <div id="editorPanel" class="h-full flex flex-col justify-start">
             <!-- Monaco -->
-            <div id="editorPanelHeader" class="header h-10 justify-start flex-none">
+            <h2 class="sr-only">Code Editor</h2>
+            <div id="editorPanelHeader" class="header h-10 justify-start flex-none overflow-hidden">
               <button id="fileToggle" type="button" class="header-item icon px-1 mr-1" aria-label="Toggle File Explorer">
                 <svg class="w-6 h-5" aria-hidden="true" viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path stroke="currentColor" d="M3 0C1.35862 0 0 1.35862 0 3V21C0 22.6414 1.35862 24 3 24H27C28.6414 24 30 22.6414 30 21V6C30 4.35862 28.6414 3 27 3H15L12 0H3ZM3 3H10.7578L13.7578 6H27V21H3V3Z" fill="currentColor"/>
                 </svg>
               </button>
-              <div id="filename" class="header-item">untitled.ck</div>
+              <div id="filename" class="px-2 text-base font-bold truncate min-w-0">untitled.ck</div>
+              <div class="ml-auto flex items-center gap-0.5 text-xs flex-shrink-0" style="color: var(--ide-text-muted, #888)">
+                <button id="editorFontDown" type="button" class="px-1 hover:text-dark dark:hover:text-light focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 rounded" title="Decrease font size" aria-label="Decrease editor font size">A-</button>
+                <button id="editorFontUp" type="button" class="px-1 hover:text-dark dark:hover:text-light focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 rounded" title="Increase font size" aria-label="Increase editor font size">A+</button>
+              </div>
             </div>
             <div id="monacoEditor"></div>
             <div id=vimStatus class="border-none bg-gray-200 dark:bg-dark-4 w-full h-7 px-0.5 text-sm items-center flex-none hidden"></div>
           </div>
-          <div id="splitH1" class="resizer hSplit"></div>
+          <div id="splitH1" class="resizer hSplit" role="separator" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Resize editor and input panel"></div>
           <!-- Input Panel -->
           <div id="inputPanel" class="flex flex-col dark:bg-dark">
-            <div id="inputPanelHeader" class="header h-7 justify-start flex-none drop-shadow-sm">
-              <button id="GUITab" type="button" class="header-item flex items-center justify-center relative">
+            <div id="inputPanelHeader" class="header h-7 justify-start flex-none drop-shadow-sm" role="tablist" aria-label="Input panels">
+              <button id="GUITab" type="button" class="header-item flex items-center justify-center relative" role="tab" aria-selected="false" aria-controls="GUIContainer">
                 GUI
-                <span id="GUIPing" class="animate-ping absolute top-0 right-0 h-2 w-2 rounded-full bg-orange opacity-75 hidden"></span>
+                <span id="GUIPing" class="animate-ping absolute top-0 right-0 h-2 w-2 rounded-full bg-orange opacity-75 hidden" aria-hidden="true"></span>
               </button>
-              <button id="HIDTab" type="button" class="header-item flex items-center justify-center relative">
+              <button id="HIDTab" type="button" class="header-item flex items-center justify-center relative" role="tab" aria-selected="false" aria-controls="HIDContainer">
                 HID
-                <span id="HIDPing" class="animate-ping absolute top-0 right-0 h-2 w-2 rounded-full bg-orange opacity-75 hidden"></span>
+                <span id="HIDPing" class="animate-ping absolute top-0 right-0 h-2 w-2 rounded-full bg-orange opacity-75 hidden" aria-hidden="true"></span>
               </button>
-              <button id="SensorTab" type="button" class="header-item flex items-center justify-center relative">
+              <button id="SensorTab" type="button" class="header-item flex items-center justify-center relative" role="tab" aria-selected="false" aria-controls="SensorContainer">
                 SENSOR
-                <span id="SensorPing" class="animate-ping absolute top-0 right-0 h-2 w-2 rounded-full bg-orange opacity-75 hidden"></span>
+                <span id="SensorPing" class="animate-ping absolute top-0 right-0 h-2 w-2 rounded-full bg-orange opacity-75 hidden" aria-hidden="true"></span>
               </button>
             </div>
-            <div id="GUIContainer" class="dark:bg-dark-2 w-full h-full">
+            <div id="GUIContainer" class="dark:bg-dark-2 w-full h-full" role="tabpanel" aria-labelledby="GUITab">
               <div id="GUIPanel" class="w-full h-full relative overflow-hidden">
               </div>
             </div>
-            <div id="HIDContainer" class="relative dark:bg-dark-2 w-full h-full overflow-auto md:overflow-hidden">
+            <div id="HIDContainer" class="relative dark:bg-dark-2 w-full h-full overflow-auto md:overflow-hidden" role="tabpanel" aria-labelledby="HIDTab">
               <div id="HIDPanel" class="absolute w-full h-full p-2">
                 <button id="mouseHIDButton" class="toggle-button w-32" disabled>Mouse: Off</button>
                 <button id="keyboardHIDButton" class="toggle-button w-32" disabled>Keyboard: Off</button>
                 <div id="hidLog" class="log-container opacity-50 text-sm"></div>
               </div>
             </div>
-            <div id="SensorContainer" class="relative dark:bg-dark-2 w-full h-full overflow-auto md:overflow-hidden">
+            <div id="SensorContainer" class="relative dark:bg-dark-2 w-full h-full overflow-auto md:overflow-hidden" role="tabpanel" aria-labelledby="SensorTab">
               <div id="SensorPanel" class="absolute w-full h-full p-2 pt-1">
                 <div class="pb-2 font-bold text-md">Mobile Only</div>
                 <div class="flex flex-wrap pb-1">
-                  <button id="gyroButton" class="toggle-button w-32 mr-2" disabled>Gryo: Off</button>
+                  <button id="gyroButton" class="toggle-button w-32 mr-2" disabled>Gyro: Off</button>
                   <div id="gyroLog" class="log-container sensorLog opacity-50 text-sm"></div>
                 </div>
                 <div class="flex flex-wrap pb-1">
@@ -344,18 +396,25 @@
           </div>
         </div>
 
-        <div id="splitV2" class="resizer vSplit"></div>
+        <div id="splitV2" class="resizer vSplit" role="separator" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Resize editor and output panel"></div>
 
         <!-- Right -->
         <div id="app-right" class="flex flex-col">
           <!-- Output Panel -->
           <div id="outputPanel" class="flex flex-col flex-1 min-h-0">
+            <h2 class="sr-only">Output</h2>
             <div id="outputPanelHeader" class="header h-10 justify-start flex-none drop-shadow-sm">
-              <button id="vmMonitorTab"  type="button" class="header-item text-dark-5">VM MONITOR</button>
-              <button id="consoleTab"    type="button" class="header-item text-dark-5">CONSOLE</button>
-              <button id="visualizerTab" type="button" class="header-item text-dark-5">VISUALIZER</button>
+              <div role="tablist" aria-label="Output panels" class="flex items-center">
+                <button id="vmMonitorTab"  type="button" class="header-item text-dark-5" role="tab" aria-selected="false" aria-controls="vmMonitorContainer">VM MONITOR</button>
+                <button id="consoleTab"    type="button" class="header-item text-dark-5" role="tab" aria-selected="false" aria-controls="consoleContainer">CONSOLE</button>
+                <button id="visualizerTab" type="button" class="header-item text-dark-5" role="tab" aria-selected="false" aria-controls="visualizerContainer">VISUALIZER</button>
+              </div>
+              <div id="consoleFontSize" class="ml-auto flex items-center gap-0.5 text-xs hidden" style="color: var(--ide-text-muted, #888)">
+                <button id="consoleFontDown" type="button" class="px-1 hover:text-dark dark:hover:text-light focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 rounded" title="Decrease font size" aria-label="Decrease console font size">A-</button>
+                <button id="consoleFontUp" type="button" class="px-1 hover:text-dark dark:hover:text-light focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 rounded" title="Increase font size" aria-label="Increase console font size">A+</button>
+              </div>
             </div>
-            <div id="vmMonitorContainer" role="tabpanel" class="hidden flex flex-col">
+            <div id="vmMonitorContainer" class="hidden flex flex-col" role="tabpanel" aria-labelledby="vmMonitorTab">
               <div class="flex-1 min-h-0 overflow-auto">
                 <table id="shredTable" class="w-full table-auto text-left">
                   <thead class="h-12 align-middle font-medium sticky top-0 z-10">
@@ -375,24 +434,24 @@
                 <span id="chuckNowTime" class="font-mono text-dark-4 dark:text-light">00:00:00.00000</span>
               </div>
             </div>
-            <div id="consoleContainer" role="tabpanel" class="hidden relative">
+            <div id="consoleContainer" class="hidden relative" role="tabpanel" aria-labelledby="consoleTab">
               <div id="console" class="absolute inset-0"></div>
             </div>
-            <div id="visualizerContainer" role="tabpanel" class="hidden relative bg-white dark:bg-dark-2">
+            <div id="visualizerContainer" class="hidden relative bg-white dark:bg-dark-2" role="tabpanel" aria-labelledby="visualizerTab">
               <div id="visualizer-help" class="absolute inset-0 flex items-center justify-center text-[#666] dark:text-[#bbb] transition">
                 <b>Start WebChucK for visualizer</b>
               </div>
-              <canvas id="visualizer" class="absolute inset-0 w-full h-full"></canvas>
+              <canvas id="visualizer" class="absolute inset-0 w-full h-full" aria-label="Audio visualizer"></canvas>
             </div>
           </div>
         </div>
 
-      </div>
+      </main>
 
       <!-- MODALS -->
       <!-- More Examples Modal -->
-      <dialog class="modal modal-lg" id="more-examples-modal">
-        <h1 class="text-xl font-medium pb-2">ChucK Example Library</h1>
+      <dialog class="modal modal-lg" id="more-examples-modal" aria-labelledby="more-examples-heading">
+        <h2 id="more-examples-heading" class="text-xl font-medium pb-2">ChucK Example Library</h2>
         <div class="w-full p-2 border border-gray-200 bg-gray-50 rounded-t-xl dark:border-gray-600 dark:bg-dark-4 flex flex-col-reverse md:flex-row">
           <!-- Breadcrumbs -->
           <nav class="flex justify-left w-1/2 pl-2 pt-2 md:pt-0">
@@ -440,8 +499,8 @@
       </dialog>
 
       <!-- Settings Modal -->
-      <dialog class="modal" id="settings-modal">
-        <h1 class="text-xl font-medium pb-2">Settings</h1>
+      <dialog class="modal" id="settings-modal" aria-labelledby="settings-heading">
+        <h2 id="settings-heading" class="text-xl font-medium pb-2">Settings</h2>
         <!-- Setting Options-->
         <form class="flex flex-col gap-2 py-2 pr-7" method="dialog">
           <label class="form-label" for="chuck-version-select">ChucK version</label>
@@ -450,19 +509,113 @@
             <option value="dev">Development</option>
           </select>
           <p id="chuck-version-desc" class="text-sm text-dark-8 dark:text-gray-400 mt-1"></p>
+
+          <label class="form-label" for="sample-rate-select">Sample Rate</label>
+          <select id="sample-rate-select" class="form-select">
+            <option value="default">Default</option>
+            <option value="44100">44100 Hz</option>
+            <option value="48000">48000 Hz</option>
+            <option value="96000">96000 Hz</option>
+          </select>
+          <p id="sample-rate-desc" class="text-sm text-dark-8 dark:text-gray-400 mt-1"></p>
         </form>
+        <!-- Experimental -->
+        <div class="pt-4 mt-2" style="border-top: 1px solid var(--ide-border, #C9E0F7)">
+          <a href="https://ccrma.stanford.edu/~hoangben/webchuck-ide/"
+             target="_blank" rel="noopener noreferrer"
+             class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+            Try Experimental Mode &rarr;
+          </a>
+          <p class="text-xs text-dark-8 dark:text-gray-400 mt-1">
+            Bleeding-edge build with upcoming features. Expect bugs!
+          </p>
+        </div>
+
         <!-- Close Settings -->
         <div class="flex gap-4 justify-end pt-4">
-          <button id="settings-close" class="button secondary">Cancel</button>
-          <button id="settings-apply" class="button primary">Reload</button>
+          <button id="settings-close" type="button" class="button secondary">Cancel</button>
+          <button id="settings-apply" type="button" class="button primary">Reload</button>
         </div>
       </dialog>
 
+      <!-- Keyboard Shortcuts Modal -->
+      <dialog class="modal" id="shortcuts-modal" aria-labelledby="shortcuts-heading">
+        <h2 id="shortcuts-heading" class="text-xl font-medium pb-2">Keyboard Shortcuts</h2>
+
+        <section class="shortcuts-section">
+          <h3 class="shortcuts-category">ChucK Controls</h3>
+          <div class="shortcuts-grid">
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>.</kbd></div>
+            <div>Start WebChucK</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Enter</kbd></div>
+            <div>Run code</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>\</kbd></div>
+            <div>Replace shred</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Backspace</kbd></div>
+            <div>Remove shred</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>S</kbd></div>
+            <div>Generate GUI</div>
+          </div>
+        </section>
+
+        <section class="shortcuts-section">
+          <h3 class="shortcuts-category">Editor</h3>
+          <div class="shortcuts-grid">
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Z</kbd></div>
+            <div>Undo</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd></div>
+            <div>Redo</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>D</kbd></div>
+            <div>Select next occurrence</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>/</kbd></div>
+            <div>Toggle line comment</div>
+            <div class="shortcuts-keys"><kbd>Alt</kbd> + <kbd>&uarr;</kbd>/<kbd>&darr;</kbd></div>
+            <div>Move line up/down</div>
+          </div>
+        </section>
+
+        <section class="shortcuts-section">
+          <h3 class="shortcuts-category">Navigation</h3>
+          <div class="shortcuts-grid">
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd></div>
+            <div>Find in files</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>F</kbd></div>
+            <div>Find in editor</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>H</kbd></div>
+            <div>Find and replace</div>
+            <div class="shortcuts-keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd></div>
+            <div>Command palette</div>
+          </div>
+        </section>
+
+        <div class="flex justify-end pt-4">
+          <button id="shortcuts-close" type="button" class="button secondary">Close</button>
+        </div>
+      </dialog>
+
+      <!-- Mobile Bottom Sheet: File Explorer -->
+      <div id="bottomSheet" class="bottom-sheet-overlay hidden" aria-modal="true" role="dialog" aria-label="File Explorer">
+        <div id="bottomSheetBackdrop" class="bottom-sheet-backdrop"></div>
+        <div id="bottomSheetContent" class="bottom-sheet-content">
+          <div class="bottom-sheet-handle" aria-hidden="true">
+            <div class="bottom-sheet-handle-bar"></div>
+          </div>
+          <div class="flex justify-end flex-none">
+            <button id="bottomSheetClose" type="button" class="p-1.5 mr-1" style="color: var(--ide-text-muted, #888)" aria-label="Close file explorer">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <div id="bottomSheetFiles" class="overflow-hidden" style="height: 50vh;"></div>
+        </div>
+      </div>
 
       <!-- Export to WebChucK Modal -->
-      <dialog class="modal" id="export-webchuck-modal">
+      <dialog class="modal" id="export-webchuck-modal" aria-labelledby="export-wc-heading">
         <form class="flex flex-col gap-2 py-2" method="dialog">
-          <h1 class="text-xl font-medium pb-2">Export to WebChucK</h1>
+          <h2 id="export-wc-heading" class="text-xl font-medium pb-2">Export to WebChucK</h2>
 
           <div>
             <label class="form-label" for="export-title">Title</label>
@@ -493,15 +646,16 @@
       </dialog>
 
       <!-- Share Code Modal -->
-      <dialog class="modal modal-sm" id="share-code-modal">
+      <dialog class="modal modal-sm" id="share-code-modal" aria-labelledby="share-code-heading">
         <form class="flex flex-col gap-2 py-2" method="dialog">
           <!-- display url to copy -->
+          <h2 id="share-code-heading" class="sr-only">Share Code</h2>
           <label class="form-label" for="share-code-url">Shareable URL</label>
           <input type="text" id="share-code-url" class="border px-2 py-1 rounded-md" readonly>
         </form>
         <div class="flex gap-4 justify-end pt-4">
-          <button id="share-code-close" class="button secondary">Close</button>
-          <button id="share-code-copy" class="button primary">Copy</button>
+          <button id="share-code-close" type="button" class="button secondary">Close</button>
+          <button id="share-code-copy" type="button" class="button primary">Copy</button>
         </div>
       </dialog>
     </div>
