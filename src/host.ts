@@ -59,7 +59,11 @@ export async function selectChuckSrc(production: boolean) {
  * Audio Context will be suspended until the user presses "Start WebChucK"
  */
 export async function initChuck() {
-    audioContext = new AudioContext();
+    const storedRate = localStorage.getItem("sampleRate");
+    audioContext =
+        storedRate && storedRate !== "default"
+            ? new AudioContext({ sampleRate: Number(storedRate) })
+            : new AudioContext();
     audioContext.suspend();
     sampleRate = audioContext.sampleRate;
     calculateDisplayDigits(sampleRate);
@@ -131,6 +135,7 @@ export async function onChuckReady() {
     ChuckBar.webchuckButton.disabled = false;
     ChuckBar.webchuckButton.innerText = "Start WebChucK";
     ProjectSystem.uploadFilesButton.disabled = false;
+    ProjectSystem.uploadFilesIcon.disabled = false;
     ProjectSystem.initDragUpload();
     theChuck.getParamString("VERSION").then((value: string) => {
         chuckVersion = value;
