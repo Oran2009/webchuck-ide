@@ -90,6 +90,84 @@ export default class ProjectSystem {
     }
 
     /**
+     * Save all plaintext project files to localStorage
+     */
+    static saveProject() {
+        const files: Record<string, string> = {};
+        let activeFilename = "";
+
+        ProjectSystem.projectFiles.forEach((file) => {
+            if (file.isPlaintextFile()) {
+                const content = file.isActive()
+                    ? Editor.getEditorCode()
+                    : (file.getData() as string);
+                files[file.getFilename()] = content;
+            }
+            if (file.isActive()) {
+                activeFilename = file.getFilename();
+            }
+        });
+
+        localStorage.setItem(
+            "projectFiles",
+            JSON.stringify({ activeFile: activeFilename, files })
+        );
+        localStorage.setItem("editorCodeTime", new Date().toLocaleString());
+    }
+
+    /**
+     * Load all project files from localStorage
+     * @returns true if a saved project was restored
+     */
+    static loadProject(): boolean {
+        const saved = localStorage.getItem("projectFiles");
+        if (!saved) return false;
+
+        try {
+            const { activeFile, files } = JSON.parse(saved);
+            if (!files || Object.keys(files).length === 0) return false;
+
+            for (const [filename, content] of Object.entries(files)) {
+                const file = new ProjectFile(filename, content as string);
+                ProjectSystem.projectFiles.set(filename, file);
+            }
+
+            // Sort files (.ck first)
+            const sortedFiles = Array.from(ProjectSystem.projectFiles).sort(
+                (a, b) => {
+                    if (a[0].endsWith(".ck") && !b[0].endsWith(".ck"))
+                        return -1;
+                    if (!a[0].endsWith(".ck") && b[0].endsWith(".ck")) return 1;
+                    return 0;
+                }
+            );
+            ProjectSystem.projectFiles = new Map(sortedFiles);
+
+            // Set active file
+            const active =
+                activeFile && ProjectSystem.projectFiles.get(activeFile);
+            if (active && active.isPlaintextFile()) {
+                ProjectSystem.activeFile = active;
+                active.loadFile();
+            } else {
+                // Fall back to first .ck file
+                for (const file of ProjectSystem.projectFiles.values()) {
+                    if (file.isChuckFile()) {
+                        ProjectSystem.activeFile = file;
+                        file.loadFile();
+                        break;
+                    }
+                }
+            }
+
+            ProjectSystem.updateFileExplorerUI();
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    /**
      * Create a new file via inline rename
      */
     static createNewFile() {
@@ -120,6 +198,7 @@ export default class ProjectSystem {
             ProjectSystem.setActiveFile(newFile);
         }
         ProjectSystem.addFileToExplorer(newFile);
+        ProjectSystem.saveProject();
     }
 
     /**
@@ -200,6 +279,7 @@ export default class ProjectSystem {
             }
         }
         ProjectSystem.updateFileExplorerUI();
+        ProjectSystem.saveProject();
     }
 
     /**
@@ -220,6 +300,7 @@ export default class ProjectSystem {
             Editor.setFileName(newName);
         }
         ProjectSystem.updateFileExplorerUI();
+        ProjectSystem.saveProject();
     }
 
     /**
@@ -511,6 +592,7 @@ export default class ProjectSystem {
         const newFile = new ProjectFile("untitled.ck", "");
         ProjectSystem.setActiveFile(newFile);
         ProjectSystem.addFileToExplorer(newFile);
+        ProjectSystem.saveProject();
     }
 
     /**
