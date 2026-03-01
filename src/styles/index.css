@@ -286,6 +286,11 @@
     user-select: none;
 }
 
+#outputPanel>[role=tabpanel]:not(.hidden)+[role=tabpanel]:not(.hidden),
+#outputPanel>[role=tabpanel]:not(.hidden)+.hidden+[role=tabpanel]:not(.hidden) {
+    border-top: 1px solid rgb(68 68 68 / var(--tw-border-opacity, 1));
+}
+
 /* EDITOR */
 #monacoEditor {
     position: absolute;
@@ -320,6 +325,10 @@ span>.monaco-tokenized-source {
 }
 
 #vimStatus {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
     min-width: 64px;
     overflow: hidden;
 }

@@ -33,7 +33,8 @@ export default class OutputPanelHeader {
         );
         new OutputHeaderToggle(
             vmMonitorButton,
-            OutputPanelHeader.vmMonitorContainer
+            OutputPanelHeader.vmMonitorContainer,
+            true
         );
         new OutputHeaderToggle(
             visualizerButton,
