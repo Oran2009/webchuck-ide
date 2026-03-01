@@ -21,40 +21,99 @@ export default class Resizer {
     private split: HTMLElement;
     private readonly splitContainer: HTMLElement;
 
-    // Function References
+    // RAF throttle
+    private rafId: number = 0;
+
+    // Mouse handler references
     private readonly onDragHandler: (event: MouseEvent) => void;
-    private readonly onEndDragHandler: (event: MouseEvent) => void;
+    private readonly onEndDragHandler: () => void;
+
+    // Touch handler references
+    private readonly onTouchDragHandler: (event: TouchEvent) => void;
+    private readonly onTouchEndDragHandler: () => void;
 
     constructor(split: HTMLElement, isHorizDrag: boolean) {
         this.split = split;
         this.isHorizDrag = isHorizDrag;
         this.splitContainer = split.parentNode as HTMLElement;
 
-        // Function References
-        this.onDragHandler = this.onDrag.bind(this); // to preserve the 'this' context
+        // RAF-throttled drag handler
+        this.onDragHandler = (event: MouseEvent) => {
+            if (this.rafId) return;
+            this.rafId = requestAnimationFrame(() => {
+                this.onDrag(event);
+                this.rafId = 0;
+            });
+        };
         this.onEndDragHandler = this.onEndDrag.bind(this);
 
+        // Touch handlers that delegate to the mouse path
+        this.onTouchDragHandler = (e: TouchEvent) => {
+            e.preventDefault();
+            this.onDragHandler(e.touches[0] as unknown as MouseEvent);
+        };
+        this.onTouchEndDragHandler = () => this.onEndDrag();
+
+        // Mouse events
         this.split.addEventListener("mousedown", () => {
             this.onStartDrag();
             this.activate();
         });
+
+        // Touch events
+        this.split.addEventListener("touchstart", (e: TouchEvent) => {
+            e.preventDefault();
+            this.onStartDrag();
+            this.activate();
+        }, { passive: false });
+
+        // Keyboard support for resizing
+        this.split.setAttribute("tabindex", "0");
+        this.split.addEventListener("keydown", (e: KeyboardEvent) => {
+            const step = 20; // px per keypress
+            if (this.isHorizDrag) {
+                if (e.key === "ArrowLeft") { e.preventDefault(); this.nudge(-step); }
+                if (e.key === "ArrowRight") { e.preventDefault(); this.nudge(step); }
+            } else {
+                if (e.key === "ArrowUp") { e.preventDefault(); this.nudge(-step); }
+                if (e.key === "ArrowDown") { e.preventDefault(); this.nudge(step); }
+            }
+        });
+    }
+
+    /**
+     * Nudge the splitter by a given delta (keyboard resizing)
+     */
+    nudge(delta: number) {
+        const rect = this.split.getBoundingClientRect();
+        const fakeEvent = {
+            clientX: rect.left + rect.width / 2 + (this.isHorizDrag ? delta : 0),
+            clientY: rect.top + rect.height / 2 + (!this.isHorizDrag ? delta : 0),
+        } as MouseEvent;
+        this.onDrag(fakeEvent);
     }
 
     onStartDrag() {
+        // Mouse listeners
         this.splitContainer.addEventListener("mousemove", this.onDragHandler);
-        // this.splitContainer.addEventListener(
-        //     "mouseleave",
-        //     this.onEndDragHandler
-        // );
         this.splitContainer.addEventListener("mouseup", this.onEndDragHandler);
+        // Touch listeners
+        this.splitContainer.addEventListener("touchmove", this.onTouchDragHandler, { passive: false });
+        this.splitContainer.addEventListener("touchend", this.onTouchEndDragHandler);
     }
 
     onDrag(event: MouseEvent) {
-        // get adjacent elements, whether horizontal or vertical
-        const topLeft: HTMLElement = this.split
-            .previousElementSibling as HTMLElement;
-        const bottomRight: HTMLElement = this.split
-            .nextElementSibling as HTMLElement;
+        // get adjacent visible elements, whether horizontal or vertical
+        // (skip hidden siblings so the resizer works correctly)
+        let topLeft = this.split.previousElementSibling as HTMLElement | null;
+        while (topLeft && topLeft.classList.contains("hidden")) {
+            topLeft = topLeft.previousElementSibling as HTMLElement | null;
+        }
+        let bottomRight = this.split.nextElementSibling as HTMLElement | null;
+        while (bottomRight && bottomRight.classList.contains("hidden")) {
+            bottomRight = bottomRight.nextElementSibling as HTMLElement | null;
+        }
+        if (!topLeft || !bottomRight) return;
 
         // Get container offset
         const topLeftStart: number = this.isHorizDrag
@@ -132,9 +191,9 @@ export default class Resizer {
         } else {
             // HORIZONTAL DRAG EVENT, more complicated calculation
             // Figure out which column is not being resized
-            const leftID = this.split.previousElementSibling!.id;
             const colWidths: [number, number, number] = sortColWidths(
-                leftID,
+                topLeft.id,
+                bottomRight.id,
                 newTopLeftSize,
                 newBotRightSize
             );
@@ -170,15 +229,17 @@ export default class Resizer {
     }
 
     onEndDrag() {
-        // remove all event listeners
-        this.splitContainer.removeEventListener(
-            "mousemove",
-            this.onDragHandler
-        );
-        this.splitContainer.removeEventListener(
-            "mouseup",
-            this.onEndDragHandler
-        );
+        // Cancel pending RAF
+        if (this.rafId) {
+            cancelAnimationFrame(this.rafId);
+            this.rafId = 0;
+        }
+        // Remove mouse listeners
+        this.splitContainer.removeEventListener("mousemove", this.onDragHandler);
+        this.splitContainer.removeEventListener("mouseup", this.onEndDragHandler);
+        // Remove touch listeners
+        this.splitContainer.removeEventListener("touchmove", this.onTouchDragHandler);
+        this.splitContainer.removeEventListener("touchend", this.onTouchEndDragHandler);
         this.deactivate();
     }
 
@@ -198,31 +259,35 @@ export default class Resizer {
 //-----------------------------------------------------------
 
 /**
- * Given the left element id, put the sizes into the correct order
+ * Given the left and right element ids, put the sizes into the correct order
  * left width, middle width, right width
  *
- * @param leftID id of the left element
+ * @param leftID id of the left element being resized
+ * @param rightID id of the right element being resized
  * @param newLeftTopSize size of left/top element
  * @param newRightBotSize size of right/bottom element
  * @returns returns sizes corresponding to app left middle and right
  */
 function sortColWidths(
     leftID: string,
+    rightID: string,
     newLeftTopSize: number,
     newRightBotSize: number
 ): [number, number, number] {
-    if (leftID === "app-left") {
+    if (leftID === "app-left" && rightID === "app-middle") {
         return [
             newLeftTopSize,
             newRightBotSize,
             document.getElementById("app-right")!.clientWidth,
         ];
-    } else if (leftID === "app-middle") {
+    } else if (leftID === "app-middle" && rightID === "app-right") {
         return [
             document.getElementById("app-left")!.clientWidth,
             newLeftTopSize,
             newRightBotSize,
         ];
+    } else if (leftID === "app-left" && rightID === "app-right") {
+        return [newLeftTopSize, 0, newRightBotSize];
     }
 
     // this would be an error
