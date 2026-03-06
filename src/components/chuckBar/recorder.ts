@@ -131,6 +131,7 @@ export default class Recorder {
         Recorder.state = RecordState.recording;
         Toast.info("recording...");
         Recorder.setRecordButton(RecordButtonIcon.stop, "#FF6868");
+        Recorder.recordButton.classList.remove("ring-2", "ring-red-500");
         Recorder.recordButton.setAttribute("aria-label", "Stop recording");
 
         Recorder.playButton.removeEventListener(
@@ -144,6 +145,7 @@ export default class Recorder {
         Recorder.state = RecordState.stopped;
         Toast.info("recording stopped...");
         Recorder.setRecordButton(RecordButtonIcon.record, "white");
+        Recorder.recordButton.classList.remove("ring-2", "ring-red-500");
         Recorder.recordButton.setAttribute("aria-label", "Record");
 
         Recorder.recorder.stop();
@@ -152,7 +154,7 @@ export default class Recorder {
     static armRecorder() {
         Recorder.state = RecordState.armed;
         Toast.info("armed for recording...");
-        Recorder.setRecordButton(RecordButtonIcon.armed, "#FF6868");
+        Recorder.recordButton.classList.add("ring-2", "ring-red-500");
         Recorder.recordButton.setAttribute("aria-label", "Armed for recording, click to disarm");
 
         Recorder.playButton.addEventListener("click", Recorder.startRecording);
@@ -161,6 +163,7 @@ export default class Recorder {
     static disarmRecorder() {
         Recorder.state = RecordState.stopped;
         Recorder.setRecordButton(RecordButtonIcon.record, "white");
+        Recorder.recordButton.classList.remove("ring-2", "ring-red-500");
         Recorder.recordButton.setAttribute("aria-label", "Record");
         Recorder.playButton.removeEventListener(
             "click",
