@@ -15,6 +15,7 @@ export default class OutputPanelHeader {
     public static visualizerContainer: HTMLDivElement;
     public static canvasContainer: HTMLDivElement;
     public static fullscreenButton: HTMLButtonElement;
+    private static fullscreenWrap: HTMLDivElement;
     private static savedColumnWidths: [number, number, number] | null = null;
 
     constructor() {
@@ -46,6 +47,8 @@ export default class OutputPanelHeader {
             document.querySelector<HTMLDivElement>("#canvasContainer")!;
 
         // Fullscreen button
+        OutputPanelHeader.fullscreenWrap =
+            document.querySelector<HTMLDivElement>("#fullscreenBtnWrap")!;
         OutputPanelHeader.fullscreenButton =
             document.querySelector<HTMLButtonElement>("#fullscreenBtn")!;
         OutputPanelHeader.fullscreenButton.addEventListener("click", () => {
@@ -143,11 +146,21 @@ export default class OutputPanelHeader {
 
         // Show console font size buttons only when console is visible
         const consoleFontSize = document.getElementById("consoleFontSize");
+        const consoleInMain = OutputPanelHeader.consoleContainer.ownerDocument === document;
+        const consoleVisible = consoleInMain && !OutputPanelHeader.consoleContainer.classList.contains("hidden");
         if (consoleFontSize) {
-            const consoleInMain = OutputPanelHeader.consoleContainer.ownerDocument === document;
-            const consoleVisible = consoleInMain && !OutputPanelHeader.consoleContainer.classList.contains("hidden");
             consoleFontSize.classList.toggle("hidden", !consoleVisible);
         }
+
+        // Show fullscreen button when visualizer or canvas is visible
+        const visInMain = OutputPanelHeader.visualizerContainer.ownerDocument === document;
+        const visVisible = visInMain && !OutputPanelHeader.visualizerContainer.classList.contains("hidden");
+        const canvasInMain = OutputPanelHeader.canvasContainer.ownerDocument === document;
+        const canvasVisible = canvasInMain && !OutputPanelHeader.canvasContainer.classList.contains("hidden");
+        const fsVisible = visVisible || canvasVisible;
+        OutputPanelHeader.fullscreenWrap.classList.toggle("hidden", !fsVisible);
+        // If font size buttons are hidden, fullscreen wrapper needs ml-auto to stay right-aligned
+        OutputPanelHeader.fullscreenWrap.classList.toggle("ml-auto", fsVisible && !consoleVisible);
 
         if (collapsed) {
             requestAnimationFrame(() => Editor.resizeEditor());

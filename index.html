@@ -468,16 +468,18 @@
                 <button id="visualizerTab" type="button" class="header-item text-dark-5" role="tab" aria-selected="false" aria-controls="visualizerContainer">VISUALIZER</button>
                 <button id="canvasTab"     type="button" class="header-item text-dark-5 hidden" role="tab" aria-selected="false" aria-controls="canvasContainer">CANVAS</button>
               </div>
-              <button id="fullscreenBtn" type="button" class="header-item ml-auto text-dark-5 dark:text-dark-a hover:text-dark-8 dark:hover:text-dark-c hidden" title="Fullscreen" aria-label="Fullscreen">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="15 3 21 3 21 9"></polyline>
-                  <line x1="10" y1="14" x2="21" y2="3"></line>
-                  <path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2 2h6"></path>
-                </svg>
-              </button>
               <div id="consoleFontSize" class="ml-auto flex items-center gap-0.5 text-xs hidden" style="color: var(--ide-text-muted, #888)">
                 <button id="consoleFontDown" type="button" class="px-1 hover:text-dark dark:hover:text-light focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 rounded" title="Decrease font size" aria-label="Decrease console font size">A-</button>
                 <button id="consoleFontUp" type="button" class="px-1 hover:text-dark dark:hover:text-light focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 rounded" title="Increase font size" aria-label="Increase console font size">A+</button>
+              </div>
+              <div id="fullscreenBtnWrap" class="flex items-center hidden" style="color: var(--ide-text-muted, #888)">
+                <button id="fullscreenBtn" type="button" class="px-1 text-xs hover:text-dark dark:hover:text-light focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 rounded" title="Fullscreen" aria-label="Fullscreen">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                    <path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2 2h6"></path>
+                  </svg>
+                </button>
               </div>
             </div>
             <div id="vmMonitorContainer" class="hidden flex flex-col" role="tabpanel" aria-labelledby="vmMonitorTab">
