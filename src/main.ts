@@ -23,6 +23,7 @@ import MoreExamples from "@/components/examples/moreExamples";
 import Settings from "@/components/settings";
 import GUI from "@/components/inputPanel/gui/gui";
 import BottomSheet from "@/components/mobile/bottomSheet";
+import Toast from "@/components/toast";
 import Pet from "@/components/pet";
 import PopOutButtons from "@/components/popOutButtons";
 import LiveCodingMode from "@/components/liveCodingMode";
@@ -56,6 +57,7 @@ class Main {
     public static GUI: GUI;
     public static bottomSheet: BottomSheet;
     public static pet: Pet;
+    public static toast: Toast;
     public static popOutButtons: PopOutButtons;
     public static liveCodingMode: LiveCodingMode;
 
@@ -65,6 +67,7 @@ class Main {
         // CONSTRUCT IDE COMPONENTS
         Main.navBar = new NavBar();
         Main.chuckBar = new ChuckBar();
+        Main.toast = new Toast();
         Main.projectSystem = new ProjectSystem();
         Main.findInProject = new FindInProject();
 
