@@ -792,6 +792,20 @@ kbd {
     }
 }
 
+/* File toggle icon colors driven by aria-expanded */
+#fileToggle[aria-expanded="true"] {
+    @apply text-orange;
+}
+#fileToggle[aria-expanded="false"] {
+    @apply text-dark-5 hover:text-dark-8 dark:hover:text-dark-c;
+}
+
+/* File Explorer: toggle between file list and search panel */
+#fileExplorerPanel #searchPanel { display: none; }
+#fileExplorerPanel[data-mode="search"] #searchPanel { display: flex; }
+#fileExplorerPanel[data-mode="search"] #fileExplorerHeader,
+#fileExplorerPanel[data-mode="search"] #fileExplorerContainer { display: none; }
+
 .header {
     @apply w-full flex items-center px-1 border-b;
 }

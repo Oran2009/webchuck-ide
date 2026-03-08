@@ -140,6 +140,7 @@ export function toggleLeft() {
         splitters[0].deactivate(); // Deactive the left resizer
         left_panel.classList.add("hidden"); // Hide the left panel
         left_open = false;
+        document.querySelector("#fileToggle")?.setAttribute("aria-expanded", "false");
     } else {
         // show left
         const widths = getAppColumnWidths();
@@ -151,6 +152,7 @@ export function toggleLeft() {
         left_panel.classList.remove("hidden");
         splitters[0].activate();
         left_open = true;
+        document.querySelector("#fileToggle")?.setAttribute("aria-expanded", "true");
     }
     Editor.resizeEditor();
     Console.resizeConsole();

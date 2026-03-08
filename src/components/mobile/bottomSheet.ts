@@ -11,7 +11,6 @@ export default class BottomSheet {
     private static content: HTMLDivElement;
     private static backdrop: HTMLDivElement;
     private static filesContainer: HTMLDivElement;
-    private static isOpen: boolean = false;
     private static startY: number = 0;
     private static currentY: number = 0;
 
@@ -62,15 +61,16 @@ export default class BottomSheet {
         );
     }
 
+    static get isOpen(): boolean {
+        return !BottomSheet.overlay.classList.contains("hidden");
+    }
+
     static open(): void {
         if (BottomSheet.isOpen) return;
 
-        // Reparent entire file explorer panel (header + tree + search) into bottom sheet
         BottomSheet.filesContainer.appendChild(BottomSheet.fileExplorerPanel);
-
         BottomSheet.overlay.classList.remove("hidden");
         BottomSheet.content.classList.remove("closing");
-        BottomSheet.isOpen = true;
     }
 
     static close(): void {
@@ -79,21 +79,13 @@ export default class BottomSheet {
         BottomSheet.content.classList.add("closing");
         BottomSheet.content.style.transform = "";
 
-        const onAnimEnd = () => {
-            BottomSheet.content.removeEventListener("animationend", onAnimEnd);
+        BottomSheet.content.addEventListener("animationend", () => {
             BottomSheet.overlay.classList.add("hidden");
             BottomSheet.content.classList.remove("closing");
-
-            // Reparent file explorer panel back to original location
             BottomSheet.originalParent.appendChild(
                 BottomSheet.fileExplorerPanel
             );
-            BottomSheet.isOpen = false;
-
-            // Notify toggle icon to reset
-            document.dispatchEvent(new Event("bottomsheet:close"));
-        };
-        BottomSheet.content.addEventListener("animationend", onAnimEnd);
+        }, { once: true });
     }
 
     // ----- Touch handling for swipe-to-dismiss -----

@@ -405,25 +405,19 @@ export default class ProjectSystem {
         const menu = doc.createElement("div");
         menu.className = "fileContextMenu";
         menu.setAttribute("role", "menu");
+        menu.innerHTML =
+            `<button class="fileContextMenuItem" role="menuitem">Rename</button>` +
+            `<button class="fileContextMenuItem fileContextMenuItem--delete" role="menuitem">Delete</button>`;
 
-        const actions: [string, string, () => void][] = [
-            ["Rename", "fileContextMenuItem", () => {
-                ProjectSystem.hideContextMenu();
-                ProjectSystem.startInlineRename(filename);
-            }],
-            ["Delete", "fileContextMenuItem fileContextMenuItem--delete", () => {
-                ProjectSystem.hideContextMenu();
-                ProjectSystem.removeFileFromExplorer(filename);
-            }],
-        ];
-        for (const [label, cls, handler] of actions) {
-            const btn = doc.createElement("button");
-            btn.className = cls;
-            btn.textContent = label;
-            btn.setAttribute("role", "menuitem");
-            btn.addEventListener("click", handler);
-            menu.appendChild(btn);
-        }
+        const [renameBtn, deleteBtn] = Array.from(menu.querySelectorAll("button"));
+        renameBtn.addEventListener("click", () => {
+            ProjectSystem.hideContextMenu();
+            ProjectSystem.startInlineRename(filename);
+        });
+        deleteBtn.addEventListener("click", () => {
+            ProjectSystem.hideContextMenu();
+            ProjectSystem.removeFileFromExplorer(filename);
+        });
 
         // Position, clamped to viewport
         menu.style.left = `${x}px`;
@@ -441,30 +435,26 @@ export default class ProjectSystem {
         const ac = new AbortController();
         ProjectSystem.contextMenuAbort = ac;
         const close = () => ProjectSystem.hideContextMenu();
-        requestAnimationFrame(() => {
-            doc.addEventListener("mousedown", (e) => {
-                if (!menu.contains(e.target as Node)) close();
-            }, { signal: ac.signal });
-            doc.addEventListener("touchend", (e) => {
-                const t = e.changedTouches[0];
-                const target = doc.elementFromPoint(t.clientX, t.clientY);
-                if (!target || !menu.contains(target)) close();
-            }, { signal: ac.signal, passive: true } as AddEventListenerOptions);
-            doc.addEventListener("keydown", (e) => {
-                if (e.key === "Escape") close();
-            }, { signal: ac.signal });
-        });
+        doc.addEventListener("mousedown", (e) => {
+            if (!menu.contains(e.target as Node)) close();
+        }, { signal: ac.signal });
+        doc.addEventListener("touchend", (e) => {
+            const t = e.changedTouches[0];
+            const target = doc.elementFromPoint(t.clientX, t.clientY);
+            if (!target || !menu.contains(target)) close();
+        }, { signal: ac.signal, passive: true } as AddEventListenerOptions);
+        doc.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") close();
+        }, { signal: ac.signal });
 
-        menu.querySelector("button")?.focus();
+        renameBtn.focus();
     }
 
     static hideContextMenu() {
         ProjectSystem.contextMenuAbort?.abort();
         ProjectSystem.contextMenuAbort = null;
-        if (ProjectSystem.activeContextMenu) {
-            ProjectSystem.activeContextMenu.remove();
-            ProjectSystem.activeContextMenu = null;
-        }
+        ProjectSystem.activeContextMenu?.remove();
+        ProjectSystem.activeContextMenu = null;
     }
 
     /**
@@ -473,44 +463,14 @@ export default class ProjectSystem {
      * @param isNewFile true when creating a new file
      */
     static startInlineRename(filename: string, isNewFile: boolean = false) {
-        let fileEntry: HTMLDivElement | null = null;
-        let fileItem: HTMLDivElement | null = null;
-
-        if (isNewFile) {
-            // Create a temporary DOM entry for the new file
-            fileEntry = document.createElement("div");
-            fileEntry.className = "fileExplorerEntry";
-            fileEntry.setAttribute("tabindex", "0");
-            fileEntry.setAttribute("role", "option");
-            fileEntry.setAttribute("aria-selected", "false");
-
-            fileItem = document.createElement("div");
-            fileItem.className = "fileExplorerItem";
-            fileItem.setAttribute("type", "ck");
-            fileEntry.appendChild(fileItem);
-
-            // Insert at the top of the file explorer
-            ProjectSystem.fileExplorer.prepend(fileEntry);
-        } else {
-            // Find the existing entry by matching filename text
-            const entries = Array.from(
-                ProjectSystem.fileExplorer.querySelectorAll(
-                    ".fileExplorerEntry"
-                )
-            );
-            for (const entry of entries) {
-                const item = entry.querySelector(".fileExplorerItem");
-                if (item && item.textContent?.trim() === filename) {
-                    fileEntry = entry as HTMLDivElement;
-                    fileItem = item as HTMLDivElement;
-                    break;
-                }
-            }
-        }
+        // Find or create the file entry
+        const { fileEntry, fileItem } = isNewFile
+            ? ProjectSystem.createTempEntry()
+            : ProjectSystem.findEntry(filename);
 
         if (!fileEntry || !fileItem) return;
 
-        // Replace text content with an input
+        // Replace text with input
         fileItem.textContent = "";
         const input = document.createElement("input");
         input.type = "text";
@@ -518,7 +478,7 @@ export default class ProjectSystem {
         input.value = filename;
         fileItem.appendChild(input);
 
-        // Select the filename stem (before the last dot)
+        // Select filename stem (before the last dot)
         input.focus();
         const dotIndex = filename.lastIndexOf(".");
         if (dotIndex > 0) {
@@ -528,6 +488,10 @@ export default class ProjectSystem {
         }
 
         let done = false;
+        const revert = () => {
+            if (isNewFile) fileEntry.remove();
+            else fileItem.textContent = filename;
+        };
 
         const commit = () => {
             if (done) return;
@@ -536,69 +500,61 @@ export default class ProjectSystem {
             const newName = input.value.trim();
 
             if (isNewFile) {
-                if (!newName) {
-                    fileEntry!.remove();
-                    return;
-                }
-                const hasExtension = newName.includes(".");
-                const finalName = hasExtension ? newName : newName + ".ck";
+                if (!newName) { fileEntry.remove(); return; }
+                const finalName = newName.includes(".") ? newName : newName + ".ck";
                 if (ProjectSystem.projectFiles.has(finalName)) {
                     Toast.error(`${finalName} already exists`);
-                    fileEntry!.remove();
+                    fileEntry.remove();
                     return;
                 }
                 const newFile = new ProjectFile(finalName, "");
-                if (newFile.isChuckFile()) {
-                    ProjectSystem.setActiveFile(newFile);
-                }
+                if (newFile.isChuckFile()) ProjectSystem.setActiveFile(newFile);
                 ProjectSystem.addFileToExplorer(newFile);
             } else {
-                if (!newName || newName === filename) {
-                    // No change — restore original text
-                    fileItem!.textContent = filename;
-                    return;
-                }
+                if (!newName || newName === filename) { revert(); return; }
                 if (ProjectSystem.projectFiles.has(newName)) {
                     Toast.error(`"${newName}" already exists`);
-                    fileItem!.textContent = filename;
+                    revert();
                     return;
                 }
                 ProjectSystem.renameFile(filename, newName);
             }
         };
 
-        const cancel = () => {
-            if (done) return;
-            done = true;
-            if (isNewFile) {
-                fileEntry!.remove();
-            } else {
-                fileItem!.textContent = filename;
-            }
-        };
-
         input.addEventListener("keydown", (e: KeyboardEvent) => {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                commit();
-            } else if (e.key === "Escape") {
-                e.preventDefault();
-                cancel();
+            if (e.key === "Enter") { e.preventDefault(); commit(); }
+            else if (e.key === "Escape") { e.preventDefault(); if (!done) { done = true; revert(); } }
+            e.stopPropagation();
+        });
+        input.addEventListener("blur", () => commit());
+        input.addEventListener("click", (e) => e.stopPropagation());
+        input.addEventListener("mousedown", (e) => e.stopPropagation());
+    }
+
+    private static createTempEntry() {
+        const fileEntry = document.createElement("div");
+        fileEntry.className = "fileExplorerEntry";
+        fileEntry.setAttribute("tabindex", "0");
+        fileEntry.setAttribute("role", "option");
+        fileEntry.setAttribute("aria-selected", "false");
+
+        const fileItem = document.createElement("div");
+        fileItem.className = "fileExplorerItem";
+        fileItem.setAttribute("type", "ck");
+        fileEntry.appendChild(fileItem);
+
+        ProjectSystem.fileExplorer.prepend(fileEntry);
+        return { fileEntry, fileItem };
+    }
+
+    private static findEntry(filename: string) {
+        for (const entry of Array.from(ProjectSystem.fileExplorer.querySelectorAll(".fileExplorerEntry"))) {
+            const item = entry.querySelector(".fileExplorerItem");
+            if (item?.textContent?.trim() === filename) {
+                return { fileEntry: entry as HTMLDivElement, fileItem: item as HTMLDivElement };
             }
-            e.stopPropagation();
-        });
-
-        input.addEventListener("blur", () => {
-            commit();
-        });
-
-        // Prevent clicks on the input from triggering file selection
-        input.addEventListener("click", (e) => {
-            e.stopPropagation();
-        });
-        input.addEventListener("mousedown", (e) => {
-            e.stopPropagation();
-        });
+        }
+        return { fileEntry: null, fileItem: null };
     }
 
     /**
@@ -793,25 +749,28 @@ function onLongPress(
 ) {
     let timer: ReturnType<typeof setTimeout> | null = null;
     let fired = false;
+    let moveAc: AbortController | null = null;
 
     el.addEventListener("touchstart", (e: TouchEvent) => {
         fired = false;
+        moveAc?.abort();
+        moveAc = new AbortController();
         const { clientX, clientY } = e.touches[0];
         timer = setTimeout(() => { fired = true; callback(clientX, clientY); }, 500);
 
-        const onMove = (me: TouchEvent) => {
+        el.addEventListener("touchmove", (me: TouchEvent) => {
             if (Math.abs(me.touches[0].clientX - clientX) > 10 ||
                 Math.abs(me.touches[0].clientY - clientY) > 10) {
                 clearTimeout(timer!);
                 timer = null;
-                el.removeEventListener("touchmove", onMove);
+                moveAc!.abort();
             }
-        };
-        el.addEventListener("touchmove", onMove, { passive: true });
+        }, { passive: true, signal: moveAc.signal });
     }, { passive: true });
 
     el.addEventListener("touchend", () => {
         if (timer) { clearTimeout(timer); timer = null; }
+        moveAc?.abort();
     });
 
     // Suppress click after long-press

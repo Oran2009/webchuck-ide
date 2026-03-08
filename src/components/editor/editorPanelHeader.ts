@@ -1,6 +1,7 @@
 import { toggleLeft } from "@utils/appLayout";
-import SVGToggle from "@components/toggle/svgToggle";
 import BottomSheet from "@components/mobile/bottomSheet";
+
+const isMobile = () => window.matchMedia("(max-width: 640px)").matches;
 
 /**
  * Editor Header class
@@ -10,7 +11,6 @@ import BottomSheet from "@components/mobile/bottomSheet";
 export default class EditorPanelHeader {
     public static fileToggle: HTMLButtonElement;
     public static filenameElement: HTMLDivElement;
-    private static fileToggleSVG: SVGToggle;
 
     constructor() {
         EditorPanelHeader.fileToggle =
@@ -18,27 +18,12 @@ export default class EditorPanelHeader {
         EditorPanelHeader.filenameElement =
             document.querySelector<HTMLDivElement>("#filename")!;
 
-        // Build SVG Folder Toggle
-        EditorPanelHeader.fileToggleSVG = new SVGToggle(
-            EditorPanelHeader.fileToggle,
-            () => {
-                if (window.matchMedia("(max-width: 640px)").matches) {
-                    BottomSheet.open();
-                } else {
-                    toggleLeft();
-                }
-            },
-            false
-        );
-
-        // On mobile, file explorer starts closed — icon should be gray
-        if (window.matchMedia("(max-width: 640px)").matches) {
-            EditorPanelHeader.fileToggleSVG.activate();
-        }
-
-        // When bottom sheet closes, set icon back to gray (closed)
-        document.addEventListener("bottomsheet:close", () => {
-            EditorPanelHeader.fileToggleSVG.activate();
+        EditorPanelHeader.fileToggle.addEventListener("click", () => {
+            if (isMobile()) {
+                BottomSheet.open();
+            } else {
+                toggleLeft();
+            }
         });
     }
 

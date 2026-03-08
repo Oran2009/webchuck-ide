@@ -1,8 +1,8 @@
 import ProjectSystem from "./projectSystem";
 import Editor from "@/components/editor/monaco/editor";
 
-const searchPanel =
-    document.querySelector<HTMLDivElement>("#searchPanel")!;
+const fileExplorerPanel =
+    document.querySelector<HTMLDivElement>("#fileExplorerPanel")!;
 const searchInput =
     document.querySelector<HTMLInputElement>("#searchInput")!;
 const searchResults =
@@ -11,17 +11,13 @@ const searchToggleBtn =
     document.querySelector<HTMLButtonElement>("#searchToggleBtn")!;
 const searchCloseBtn =
     document.querySelector<HTMLButtonElement>("#searchCloseBtn")!;
-const fileExplorerHeader =
-    document.querySelector<HTMLDivElement>("#fileExplorerHeader")!;
-const fileExplorerContainer =
-    document.querySelector<HTMLDivElement>("#fileExplorerContainer")!;
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 export default class FindInProject {
     constructor() {
         searchToggleBtn.addEventListener("click", () => {
-            FindInProject.toggle();
+            FindInProject.show();
         });
 
         searchCloseBtn.addEventListener("click", () => {
@@ -43,25 +39,21 @@ export default class FindInProject {
     }
 
     static toggle() {
-        if (searchPanel.classList.contains("hidden")) {
-            FindInProject.show();
-        } else {
+        if (fileExplorerPanel.dataset.mode === "search") {
             FindInProject.hide();
+        } else {
+            FindInProject.show();
         }
     }
 
     static show() {
-        fileExplorerHeader.classList.add("hidden");
-        fileExplorerContainer.classList.add("hidden");
-        searchPanel.classList.remove("hidden");
+        fileExplorerPanel.dataset.mode = "search";
         searchInput.focus();
         searchInput.select();
     }
 
     static hide() {
-        searchPanel.classList.add("hidden");
-        fileExplorerHeader.classList.remove("hidden");
-        fileExplorerContainer.classList.remove("hidden");
+        fileExplorerPanel.dataset.mode = "";
         searchInput.value = "";
         searchResults.innerHTML = "";
     }
@@ -80,7 +72,6 @@ export default class FindInProject {
         for (const file of files) {
             if (!file.isPlaintextFile()) continue;
 
-            // Use live editor content for the active file
             const data = file.isActive()
                 ? Editor.getEditorCode()
                 : file.getData();
@@ -98,44 +89,16 @@ export default class FindInProject {
 
             if (matches.length === 0) continue;
 
-            // File header
-            const fileHeader = document.createElement("div");
-            fileHeader.className =
-                "px-1 py-0.5 font-semibold text-dark-5 dark:text-dark-a text-xs mt-1";
-            fileHeader.textContent = `${file.getFilename()} (${matches.length})`;
-            fragment.appendChild(fileHeader);
+            fragment.appendChild(
+                createFileHeader(`${file.getFilename()} (${matches.length})`)
+            );
 
-            // Match entries
             for (const match of matches) {
-                const entry = document.createElement("button");
-                entry.className =
-                    "w-full text-left px-2 py-0.5 hover:bg-gray-100 dark:hover:bg-dark-4 " +
-                    "rounded cursor-pointer flex items-baseline gap-1 focus:outline-none " +
-                    "focus-visible:ring-1 focus-visible:ring-blue-600";
-
-                const lineNum = document.createElement("span");
-                lineNum.className =
-                    "text-dark-5 dark:text-dark-a text-xs flex-none";
-                lineNum.textContent = String(match.line);
-
-                const lineText = document.createElement("span");
-                lineText.className = "truncate";
-                lineText.innerHTML = highlightMatch(
-                    match.text,
-                    query
-                );
-
-                entry.appendChild(lineNum);
-                entry.appendChild(lineText);
-
+                const entry = createMatchEntry(match, query);
                 entry.addEventListener("click", () => {
                     ProjectSystem.setActiveFile(file);
-                    // Jump to line after a brief delay for the file to load
-                    setTimeout(() => {
-                        Editor.revealLine(match.line);
-                    }, 50);
+                    setTimeout(() => Editor.revealLine(match.line), 50);
                 });
-
                 fragment.appendChild(entry);
             }
 
@@ -143,15 +106,34 @@ export default class FindInProject {
         }
 
         if (fragment.children.length === 0) {
-            const noResults = document.createElement("div");
-            noResults.className =
-                "px-2 py-2 text-dark-5 dark:text-dark-a text-xs";
-            noResults.textContent = "No results found";
-            fragment.appendChild(noResults);
+            fragment.appendChild(createFileHeader("No results found"));
         }
 
         searchResults.appendChild(fragment);
     }
+}
+
+function createFileHeader(text: string): HTMLDivElement {
+    const el = document.createElement("div");
+    el.className =
+        "px-1 py-0.5 font-semibold text-dark-5 dark:text-dark-a text-xs mt-1";
+    el.textContent = text;
+    return el;
+}
+
+function createMatchEntry(
+    match: { line: number; text: string },
+    query: string
+): HTMLButtonElement {
+    const entry = document.createElement("button");
+    entry.className =
+        "w-full text-left px-2 py-0.5 hover:bg-gray-100 dark:hover:bg-dark-4 " +
+        "rounded cursor-pointer flex items-baseline gap-1 focus:outline-none " +
+        "focus-visible:ring-1 focus-visible:ring-blue-600";
+    entry.innerHTML =
+        `<span class="text-dark-5 dark:text-dark-a text-xs flex-none">${match.line}</span>` +
+        `<span class="truncate">${highlightMatch(match.text, query)}</span>`;
+    return entry;
 }
 
 function highlightMatch(text: string, query: string): string {
