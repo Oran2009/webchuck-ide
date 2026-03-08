@@ -20,7 +20,6 @@ import ProjectSystem from "@/components/fileExplorer/projectSystem";
 import VmMonitor from "@/components/vmMonitor";
 import Recorder, { RecordState } from "./recorder";
 import Console from "@/components/outputPanel/console";
-import Toast from "@/components/toast";
 
 // detect operating system
 const isWindows = navigator.userAgent.includes("Windows");
@@ -108,11 +107,9 @@ export default class ChuckBar {
                 );
                 const status = document.getElementById("a11y-status");
                 if (status) status.textContent = `Shred ${shredID} is running`;
-                Toast.onRunSuccess(VmMonitor.getNumShreds());
             },
             () => {
-                Toast.error("error compiling code...");
-                Toast.onRunError();
+                Console.print("\x1b[31merror compiling code...\x1b[0m");
             }
         );
     }
@@ -125,8 +122,7 @@ export default class ChuckBar {
                 VmMonitor.addShredRow(shreds.newShred);
             },
             () => {
-                Toast.error("error replacing code...");
-                Toast.onRunError();
+                Console.print("\x1b[31merror replacing code...\x1b[0m");
             }
         );
     }
@@ -145,7 +141,7 @@ export default class ChuckBar {
                 }
             },
             () => {
-                Toast.error("no shreds to remove");
+                Console.print("\x1b[31mno shreds to remove\x1b[0m");
             }
         );
     }

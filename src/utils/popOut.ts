@@ -14,7 +14,6 @@ import FullscreenOverlay from "@/components/outputPanel/fullscreenOverlay";
 import LiveCodingMode from "@/components/liveCodingMode";
 import OutputPanelHeader from "@/components/outputPanel/outputPanelHeader";
 import GUI from "@/components/inputPanel/gui/gui";
-import Toast from "@/components/toast";
 import { visual } from "@/host";
 import {
     getAppColumnWidths,
@@ -326,8 +325,8 @@ export function popOut(panelId: PanelId): void {
     const popOutWindow = window.open("", "", features);
 
     if (!popOutWindow) {
-        Toast.error(
-            "Pop-up blocked. Please allow pop-ups for this site."
+        Console.print(
+            "\x1b[31mPop-up blocked. Please allow pop-ups for this site.\x1b[0m"
         );
         return;
     }

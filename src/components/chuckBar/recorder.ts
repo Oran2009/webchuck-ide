@@ -11,7 +11,6 @@
 //--------------------------------------------------------
 
 import Console from "@components/outputPanel/console";
-import Toast from "@/components/toast";
 import ProjectSystem from "@components/fileExplorer/projectSystem";
 import VmMonitor from "@components/vmMonitor";
 
@@ -73,34 +72,42 @@ export default class Recorder {
 
         // When stop recording, convert buffer to wav blob
         Recorder.recorder.onstop = async () => {
-            // Convert buffer to wav blob
-            const blob = new Blob(Recorder.buffer, {
-                type: Recorder.recorder.mimeType,
-            });
-            const arrayBuffer = await blob.arrayBuffer();
-            const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-            const wavBlob = await convertAudioBufferToWavBlob(audioBuffer);
+            try {
+                // Convert buffer to wav blob
+                const blob = new Blob(Recorder.buffer, {
+                    type: Recorder.recorder.mimeType,
+                });
+                const arrayBuffer = await blob.arrayBuffer();
+                const audioBuffer =
+                    await audioContext.decodeAudioData(arrayBuffer);
+                const wavBlob =
+                    await convertAudioBufferToWavBlob(audioBuffer);
 
-            // Get current filename and local date_time
-            const filename = ProjectSystem.activeFile
-                .getFilename()
-                .slice(0, -3);
-            const now = new Date();
-            const date = now.toLocaleDateString().replace(/\//g, "-");
-            const time = now
-                .toLocaleTimeString()
-                .replace(/:/g, "-")
-                .replace(/\s/g, "");
-            const dateTime = `${date}_${time}`;
+                // Get current filename and local date_time
+                const filename = ProjectSystem.activeFile
+                    .getFilename()
+                    .slice(0, -3);
+                const now = new Date();
+                const date = now.toLocaleDateString().replace(/\//g, "-");
+                const time = now
+                    .toLocaleTimeString()
+                    .replace(/:/g, "-")
+                    .replace(/\s/g, "");
+                const dateTime = `${date}_${time}`;
 
-            // Save file
-            const blobLink = getBlobLink(
-                wavBlob,
-                filename + "_" + dateTime + ".wav"
-            );
-            Console.print(
-                `download recording here: \x1b[38;2;34;178;254m${blobLink}\x1b[0m`
-            );
+                // Save file
+                const blobLink = getBlobLink(
+                    wavBlob,
+                    filename + "_" + dateTime + ".wav"
+                );
+                Console.print(
+                    `download recording here: \x1b[38;2;34;178;254m${blobLink}\x1b[0m`
+                );
+            } catch (err: any) {
+                Console.print(
+                    `\x1b[31mrecording error: ${err.message}\x1b[0m`
+                );
+            }
 
             Recorder.buffer = [];
         };
@@ -129,7 +136,7 @@ export default class Recorder {
 
     static startRecording() {
         Recorder.state = RecordState.recording;
-        Toast.info("recording...");
+        Console.print("recording...");
         Recorder.setRecordButton(RecordButtonIcon.stop, "#FF6868");
         Recorder.recordButton.classList.remove("ring-2", "ring-red-500");
         Recorder.recordButton.setAttribute("aria-label", "Stop recording");
@@ -143,7 +150,7 @@ export default class Recorder {
 
     static stopRecording() {
         Recorder.state = RecordState.stopped;
-        Toast.info("recording stopped...");
+        Console.print("recording stopped...");
         Recorder.setRecordButton(RecordButtonIcon.record, "white");
         Recorder.recordButton.classList.remove("ring-2", "ring-red-500");
         Recorder.recordButton.setAttribute("aria-label", "Record");
@@ -153,7 +160,7 @@ export default class Recorder {
 
     static armRecorder() {
         Recorder.state = RecordState.armed;
-        Toast.info("armed for recording...");
+        Console.print("armed for recording...");
         Recorder.recordButton.classList.add("ring-2", "ring-red-500");
         Recorder.recordButton.setAttribute("aria-label", "Armed for recording, click to disarm");
 

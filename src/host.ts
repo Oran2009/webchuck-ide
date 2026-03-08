@@ -17,7 +17,6 @@ import VmMonitor, { ChuckNow } from "@/components/vmMonitor";
 import { loadWebChugins } from "@/utils/webChugins";
 import Console from "@/components/outputPanel/console";
 import OutputPanelHeader from "@/components/outputPanel/outputPanelHeader";
-import Toast from "@/components/toast";
 import Visualizer from "@/components/outputPanel/visualizer";
 import HidPanel from "@/components/inputPanel/hidPanel";
 import SensorPanel from "@/components/inputPanel/sensorPanel";
@@ -154,7 +153,7 @@ async function initWebChucK() {
 
     theChuck = new WebChucKAdapter(rawChuck);
     theChuck.connect(audioContext.destination);
-    Toast.info("WebChucK is ready!");
+    Console.print("WebChucK is ready!");
 
     onChuckReady();
 }
@@ -185,7 +184,7 @@ async function initChuGL() {
     });
 
     if (!ck) {
-        Toast.error("WebChuGL failed to initialize. Check browser WebGPU support.");
+        Console.print("\x1b[31mWebChuGL failed to initialize. Check browser WebGPU support.\x1b[0m");
         console.error("[WebChuGL] Init returned null");
         return;
     }
@@ -195,7 +194,7 @@ async function initChuGL() {
     sampleRate = audioContext.sampleRate;
     calculateDisplayDigits(sampleRate);
 
-    Toast.info("WebChuGL is ready!");
+    Console.print("WebChuGL is ready!");
 
     onChuckReady();
 }
@@ -344,7 +343,7 @@ export function getChuckNow(): number {
  */
 export async function connectMic() {
     if (engineMode === "webchugl") {
-        Toast.info("Microphone is managed internally by WebChuGL");
+        Console.print("Microphone is managed internally by WebChuGL");
         return;
     }
 

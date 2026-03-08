@@ -16,7 +16,7 @@ import {
 } from "@/utils/fileLoader";
 import Editor from "@/components/editor/monaco/editor";
 import Console from "../outputPanel/console";
-import Toast from "@/components/toast";
+
 import ProjectFile from "./projectFile";
 
 export default class ProjectSystem {
@@ -503,7 +503,7 @@ export default class ProjectSystem {
                 if (!newName) { fileEntry.remove(); return; }
                 const finalName = newName.includes(".") ? newName : newName + ".ck";
                 if (ProjectSystem.projectFiles.has(finalName)) {
-                    Toast.error(`${finalName} already exists`);
+                    Console.print(`${finalName} already exists`);
                     fileEntry.remove();
                     return;
                 }
@@ -513,7 +513,7 @@ export default class ProjectSystem {
             } else {
                 if (!newName || newName === filename) { revert(); return; }
                 if (ProjectSystem.projectFiles.has(newName)) {
-                    Toast.error(`"${newName}" already exists`);
+                    Console.print(`"${newName}" already exists`);
                     revert();
                     return;
                 }
@@ -603,9 +603,9 @@ export default class ProjectSystem {
                     // If chuck is already running, create file
                     if (theChuck !== undefined) {
                         if (file.name.endsWith(".ck")) {
-                            Toast.info("loaded ChucK file: " + file.name);
+                            Console.print("loaded ChucK file: " + file.name);
                         } else {
-                            Toast.info("loaded file: " + file.name);
+                            Console.print("loaded file: " + file.name);
                         }
                         ProjectSystem.addNewFile(file.name, data);
                     }
@@ -619,7 +619,7 @@ export default class ProjectSystem {
 
                     // If chuck is already running, create file
                     if (theChuck !== undefined) {
-                        Toast.info("loaded file: " + file.name);
+                        Console.print("loaded file: " + file.name);
                         ProjectSystem.addNewFile(file.name, data);
                     }
                 };
@@ -713,9 +713,9 @@ export default class ProjectSystem {
                 reader.onload = (e) => {
                     const data = e.target!.result as string;
                     if (file.name.endsWith(".ck")) {
-                        Toast.info("loaded ChucK file: " + file.name);
+                        Console.print("loaded ChucK file: " + file.name);
                     } else {
-                        Toast.info("loaded file: " + file.name);
+                        Console.print("loaded file: " + file.name);
                     }
                     ProjectSystem.addNewFile(file.name, data as string);
                 };
@@ -725,7 +725,7 @@ export default class ProjectSystem {
                     const data = new Uint8Array(
                         e.target!.result as ArrayBuffer
                     );
-                    Toast.info("loaded file: " + file.name);
+                    Console.print("loaded file: " + file.name);
                     ProjectSystem.addNewFile(file.name, data as Uint8Array);
                 };
                 reader.readAsArrayBuffer(file);
@@ -786,7 +786,7 @@ export async function loadChuckFileFromURL(url: string) {
     const chuckFile: FileData = await fetchTextFile(url);
     ProjectSystem.removeBlankDefaultFile();
     ProjectSystem.addNewFile(chuckFile.name, chuckFile.data as string);
-    Toast.info(`loaded ChucK file: ${chuckFile.name}`);
+    Console.print(`loaded ChucK file: ${chuckFile.name}`);
 }
 
 /**
@@ -797,6 +797,6 @@ export async function loadDataFileFromURL(url: string) {
     const dataFile: FileData | null = await fetchDataFile(url);
     if (dataFile !== null) {
         ProjectSystem.addNewFile(dataFile.name, dataFile.data as Uint8Array);
-        Toast.info(`loaded file: ${dataFile.name}`);
+        Console.print(`loaded file: ${dataFile.name}`);
     }
 }

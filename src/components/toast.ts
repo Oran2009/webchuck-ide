@@ -1,8 +1,6 @@
 //-------------------------------------------------------------------
 // title: Toast
-// desc:  Notification component for WebChucK IDE.
-//        Displays IDE-level messages (errors, status) inline
-//        in the chuck bar's left side.
+// desc:  Tips & tricks rotation in the chuck bar.
 //
 // author: ben hoang
 // date:   February 2026
@@ -10,8 +8,6 @@
 
 import { getEngineMode } from "@/components/settings";
 import { loadChuckFileFromURL } from "@components/fileExplorer/projectSystem";
-
-type ToastVariant = "error" | "info";
 
 /** Map text prefixes → icons for tip display */
 const TIP_PREFIX_ICONS: [string, string][] = [
@@ -224,13 +220,9 @@ const LINKED_TIPS: LinkedTip[] = [
 
 export default class Toast {
     private static container: HTMLDivElement;
-    private static activeTimer: ReturnType<typeof setTimeout> | null = null;
-    private static activeEl: HTMLSpanElement | null = null;
     private static tipEl: HTMLSpanElement | null = null;
     private static tipsEnabled: boolean = true;
 
-    private static readonly DURATION_INFO = 3000;
-    private static readonly DURATION_ERROR = 5000;
     private static readonly TIP_INTERVAL = 12000;
 
     constructor() {
@@ -259,206 +251,6 @@ export default class Toast {
         Toast.startTips();
     }
 
-    /**
-     * Show an error toast (red text, 5s auto-dismiss)
-     */
-    static error(message: string): void {
-        Toast.show(message, "error", Toast.DURATION_ERROR);
-    }
-
-    /**
-     * Show an info toast (neutral text, 3s auto-dismiss)
-     */
-    static info(message: string): void {
-        Toast.show(message, "info", Toast.DURATION_INFO);
-    }
-
-    /**
-     * Show a suggestion toast with a clickable action.
-     * Auto-dismisses after 8 seconds (longer to give time to read).
-     */
-    static suggestion(message: string, onClickAction: () => void): void {
-        if (!Toast.container) return;
-
-        Toast.hideTip();
-
-        if (Toast.activeTimer) {
-            clearTimeout(Toast.activeTimer);
-            Toast.activeTimer = null;
-        }
-        if (Toast.activeEl) {
-            Toast.activeEl.remove();
-            Toast.activeEl = null;
-        }
-
-        const el = document.createElement("span");
-        el.className = "toast truncate cursor-pointer hover:text-orange transition";
-        el.textContent = message;
-        el.setAttribute("role", "status");
-        el.addEventListener("click", () => {
-            onClickAction();
-            Toast.dismiss(el);
-        });
-
-        Toast.container.appendChild(el);
-        Toast.activeEl = el;
-
-        Toast.activeTimer = setTimeout(() => {
-            Toast.dismiss(el);
-        }, 8000);
-    }
-
-    // ---- Contextual encouragement ----
-
-    private static session = {
-        totalRuns: 0,
-        totalErrors: 0,
-        lastErrorTime: 0,
-        recentRunTimes: [] as number[],
-        firedMessages: new Set<string>(),
-        sessionStart: Date.now(),
-    };
-
-    /**
-     * Call when code runs successfully.
-     * Checks triggers and shows contextual message if appropriate.
-     */
-    static onRunSuccess(shredCount: number): void {
-        const now = Date.now();
-        const s = Toast.session;
-        s.totalRuns++;
-        s.recentRunTimes.push(now);
-        // Keep only runs in last 30 seconds
-        s.recentRunTimes = s.recentRunTimes.filter((t) => now - t < 30000);
-
-        // First successful run
-        if (s.totalRuns === 1) {
-            Toast.contextual(
-                "first-run",
-                "\u{1F389} You just made sound from code. Welcome to ChucK."
-            );
-            return;
-        }
-
-        // Error recovery: success right after a failure
-        if (s.lastErrorTime > 0 && now - s.lastErrorTime < 30000) {
-            Toast.contextual(
-                "error-recovery",
-                "\u{1F4AA} Fixed it! That's the ChucK way \u2014 iterate and listen."
-            );
-            s.lastErrorTime = 0;
-        }
-
-        // Rapid-fire: 3+ runs in 30 seconds
-        if (s.recentRunTimes.length >= 3) {
-            Toast.contextual(
-                "rapid-fire",
-                "\u26A1 You're on a roll \u2014 this is what live coding feels like."
-            );
-        }
-
-        // Shred milestones
-        if (shredCount >= 25) {
-            Toast.contextual(
-                "shreds-25",
-                "\u{1F525} 25 shreds?! You absolute legend."
-            );
-        } else if (shredCount >= 10) {
-            Toast.contextual(
-                "shreds-10",
-                "\u{1F525} 10 shreds running! This is an orchestra now."
-            );
-        } else if (shredCount >= 5) {
-            Toast.contextual(
-                "shreds-5",
-                "\u{1F525} 5 shreds! You're building a symphony."
-            );
-        }
-
-        // Late night (after midnight, before 5am)
-        const hour = new Date().getHours();
-        if (hour >= 0 && hour < 5) {
-            Toast.contextual(
-                "late-night",
-                "\u{1F319} Late night ChucKing? The best sounds happen after midnight."
-            );
-        }
-
-        // Long session (1+ hours)
-        if (now - s.sessionStart > 3600000) {
-            Toast.contextual(
-                "long-session",
-                "\u23F0 You've been ChucKing for over an hour. Hydrate."
-            );
-        }
-    }
-
-    /**
-     * Call when code fails to compile.
-     */
-    static onRunError(): void {
-        Toast.session.totalErrors++;
-        Toast.session.lastErrorTime = Date.now();
-    }
-
-    /**
-     * Show a contextual encouragement message (fires at most once per key per session).
-     */
-    private static contextual(key: string, message: string): void {
-        if (Toast.session.firedMessages.has(key)) return;
-        Toast.session.firedMessages.add(key);
-        Toast.show(message, "info", 4000);
-    }
-
-    private static show(message: string, variant: ToastVariant, duration: number): void {
-        if (!Toast.container) return;
-
-        // Hide tip while toast is active
-        Toast.hideTip();
-
-        // Clear any existing toast
-        if (Toast.activeTimer) {
-            clearTimeout(Toast.activeTimer);
-            Toast.activeTimer = null;
-        }
-        if (Toast.activeEl) {
-            Toast.activeEl.remove();
-            Toast.activeEl = null;
-        }
-
-        const el = document.createElement("span");
-        el.className =
-            variant === "error"
-                ? "toast text-red-600 dark:text-red-400 font-semibold truncate"
-                : "toast truncate";
-        el.textContent = message;
-        el.setAttribute("role", "status");
-
-        Toast.container.appendChild(el);
-        Toast.activeEl = el;
-
-        Toast.activeTimer = setTimeout(() => {
-            Toast.dismiss(el);
-        }, duration);
-    }
-
-    private static dismiss(el: HTMLElement): void {
-        el.classList.add("toast-dismissing");
-        el.addEventListener(
-            "animationend",
-            () => {
-                el.remove();
-                if (Toast.activeEl === el) {
-                    Toast.activeEl = null;
-                }
-                // Restore tip after toast clears
-                Toast.showTip();
-            },
-            { once: true }
-        );
-        Toast.activeTimer = null;
-    }
-
     // ---- Tips rotation ----
 
     private static pickRandomTip(): string | LinkedTip {
@@ -476,9 +268,7 @@ export default class Toast {
     private static startTips(): void {
         Toast.showTip();
         setInterval(() => {
-            if (!Toast.activeEl) {
-                Toast.rotateTip();
-            }
+            Toast.rotateTip();
         }, Toast.TIP_INTERVAL);
     }
 
@@ -530,10 +320,7 @@ export default class Toast {
                 "animationend",
                 () => {
                     oldTip.remove();
-                    // Only show new tip if no toast is active
-                    if (!Toast.activeEl) {
-                        Toast.showTip();
-                    }
+                    Toast.showTip();
                 },
                 { once: true }
             );
