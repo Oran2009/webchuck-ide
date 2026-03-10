@@ -14,6 +14,8 @@ import Console from "@/components/outputPanel/console";
 import { getActiveTheme, type IDETheme } from "@/utils/themes";
 import { engineMode } from "@/host";
 import FullscreenOverlay from "@/components/outputPanel/fullscreenOverlay";
+import { isPopOut, dockBackPanel } from "@/utils/popOut";
+import type { PanelId } from "@/utils/popOut";
 
 export default class LiveCodingMode {
     // DOM references
@@ -38,6 +40,8 @@ export default class LiveCodingMode {
     private static originalConsoleNextSibling: Node | null = null;
     private static originalVmMonitorParent: HTMLElement | null = null;
     private static originalVmMonitorNextSibling: Node | null = null;
+    private static wasConsoleHidden: boolean = false;
+    private static wasVmMonitorHidden: boolean = false;
 
     // Toast/tips state
     private static toastContainer: HTMLDivElement | null = null;
@@ -90,6 +94,16 @@ export default class LiveCodingMode {
             FullscreenOverlay.close();
         }
 
+        // Dock back any popped-out panels that live coding will reparent.
+        // Must happen before isOpen is set so dockBack's layout restore
+        // runs against the normal (non-live-coding) layout.
+        const bgPanelId: PanelId =
+            engineMode === "webchugl" ? "canvas" : "visualizer";
+        if (isPopOut(bgPanelId)) dockBackPanel(bgPanelId);
+        if (isPopOut("console")) dockBackPanel("console");
+        if (isPopOut("vmMonitor")) dockBackPanel("vmMonitor");
+        if (isPopOut("editor")) dockBackPanel("editor");
+
         LiveCodingMode.isOpen = true;
 
         // 1. Reparent background (canvas or visualizer)
@@ -120,6 +134,7 @@ export default class LiveCodingMode {
             document.querySelector<HTMLDivElement>("#consoleContainer")!;
         LiveCodingMode.originalConsoleParent = consoleContainer.parentElement;
         LiveCodingMode.originalConsoleNextSibling = consoleContainer.nextSibling;
+        LiveCodingMode.wasConsoleHidden = consoleContainer.classList.contains("hidden");
         LiveCodingMode.consoleMount.appendChild(consoleContainer);
         consoleContainer.classList.remove("hidden");
         // Clear inline bg so the transparent CSS takes over
@@ -134,6 +149,7 @@ export default class LiveCodingMode {
             document.querySelector<HTMLDivElement>("#vmMonitorContainer")!;
         LiveCodingMode.originalVmMonitorParent = vmMonitorContainer.parentElement;
         LiveCodingMode.originalVmMonitorNextSibling = vmMonitorContainer.nextSibling;
+        LiveCodingMode.wasVmMonitorHidden = vmMonitorContainer.classList.contains("hidden");
         LiveCodingMode.vmMonitorMount.appendChild(vmMonitorContainer);
         vmMonitorContainer.classList.remove("hidden");
 
@@ -212,6 +228,10 @@ export default class LiveCodingMode {
             } else {
                 LiveCodingMode.originalConsoleParent.appendChild(consoleContainer);
             }
+            // Restore hidden state
+            if (LiveCodingMode.wasConsoleHidden) {
+                consoleContainer.classList.add("hidden");
+            }
             // Restore inline bg and console theme
             const consoleInner =
                 document.querySelector<HTMLDivElement>("#console");
@@ -233,6 +253,10 @@ export default class LiveCodingMode {
                 );
             } else {
                 LiveCodingMode.originalVmMonitorParent.appendChild(vmMonitorContainer);
+            }
+            // Restore hidden state
+            if (LiveCodingMode.wasVmMonitorHidden) {
+                vmMonitorContainer.classList.add("hidden");
             }
         }
 
@@ -336,6 +360,17 @@ export default class LiveCodingMode {
     static onThemeChange(theme: IDETheme) {
         if (!LiveCodingMode.isOpen || !LiveCodingMode.lcEditor) return;
         LiveCodingMode.defineTransparentTheme(theme);
+        LiveCodingMode.lcEditor.updateOptions({ theme: "liveCoding" });
+    }
+
+    /**
+     * Re-apply the transparent theme to the live coding editor.
+     * Called after Editor.recreateEditor() which sets the Monaco
+     * theme globally and overrides our transparent background.
+     */
+    static reapplyTheme() {
+        if (!LiveCodingMode.isOpen || !LiveCodingMode.lcEditor) return;
+        LiveCodingMode.defineTransparentTheme(getActiveTheme());
         LiveCodingMode.lcEditor.updateOptions({ theme: "liveCoding" });
     }
 

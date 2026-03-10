@@ -794,7 +794,7 @@ kbd {
 
 /* File toggle icon colors driven by aria-expanded */
 #fileToggle[aria-expanded="true"] {
-    @apply text-orange;
+    color: var(--ide-accent, #FF8833);
 }
 #fileToggle[aria-expanded="false"] {
     @apply text-dark-5 hover:text-dark-8 dark:hover:text-dark-c;

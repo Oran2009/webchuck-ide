@@ -283,8 +283,9 @@ function cloneStyles(targetDoc: Document): Promise<void> {
  * Pop a panel out into a separate browser window.
  */
 export function popOut(panelId: PanelId): void {
-    // Block pop-out if panel is reparented into live coding mode
-    if (LiveCodingMode.active && (panelId === "canvas" || panelId === "visualizer")) {
+    // Block all pop-outs during live coding mode — panels are
+    // reparented into the overlay and popping them out would conflict.
+    if (LiveCodingMode.active) {
         return;
     }
 
@@ -544,6 +545,11 @@ function dockBack(panelId: PanelId, closeWindow: boolean): void {
         // DOM elements and event listeners bind to the main document.
         if (panelId === "editor") {
             Editor.recreateEditor();
+            // recreateEditor sets the Monaco theme globally, which
+            // overrides the live coding editor's transparent theme.
+            if (LiveCodingMode.active) {
+                LiveCodingMode.reapplyTheme();
+            }
         }
     });
 }
@@ -557,6 +563,14 @@ function dockBack(panelId: PanelId, closeWindow: boolean): void {
  */
 export function isPopOut(panelId: PanelId): boolean {
     return popOuts.has(panelId);
+}
+
+/**
+ * Dock a single panel back from its pop-out window.
+ * No-op if the panel is not currently popped out.
+ */
+export function dockBackPanel(panelId: PanelId): void {
+    dockBack(panelId, true);
 }
 
 /**
