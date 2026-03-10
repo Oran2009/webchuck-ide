@@ -204,14 +204,13 @@ async function initChuGL() {
  * Called when all shreds are removed so stale GPU state (e.g. bloom)
  * doesn't leak into the next program.
  */
-export async function resetChuGL() {
+export function resetChuGL() {
     if (engineMode !== "webchugl") return;
 
     // Only reset if frames were actually rendered (i.e. graphics state exists)
     if (theChuck.rawRuntime.frameCount() === 0) return;
 
-    const ChuGL = (await import("webchugl")).default;
-    ChuGL.reset();
+    theChuck.rawRuntime.reset();
 }
 
 /**
@@ -408,14 +407,16 @@ export async function runJsCode(code: string, filename: string = "<js>") {
         get(target: any, prop: string) {
             if (prop === "runCode") {
                 return async (code: string) => {
-                    const id: number = await target.runCode(code);
+                    const result = await target.runCode(code);
+                    const id: number = typeof result === "object" ? result.shredId : result;
                     VmMonitor.addShredRow(id);
                     return id;
                 };
             }
             if (prop === "runFile") {
                 return async (path: string) => {
-                    const id: number = await target.runFile(path);
+                    const result = await target.runFile(path);
+                    const id: number = typeof result === "object" ? result.shredId : result;
                     VmMonitor.addShredRow(id);
                     return id;
                 };

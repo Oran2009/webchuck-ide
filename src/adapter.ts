@@ -164,8 +164,9 @@ export class WebChuGLAdapter implements ChucKAdapter {
         this.ck = ck;
     }
 
-    runCode(code: string): Promise<number> {
-        return this.ck.runCode(code);
+    async runCode(code: string): Promise<number> {
+        const result = await this.ck.runCode(code);
+        return result.shredId;
     }
     replaceCode(
         code: string
@@ -217,8 +218,9 @@ export class WebChuGLAdapter implements ChucKAdapter {
     loadFile(url: string): Promise<string> {
         return this.ck.loadFile(url);
     }
-    runFile(path: string): Promise<number> {
-        return this.ck.runFile(path);
+    async runFile(path: string): Promise<number> {
+        const result = await this.ck.runFile(path);
+        return result.shredId;
     }
 
     connect(destination: AudioNode): void {
