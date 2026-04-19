@@ -19,6 +19,7 @@ import FindInProject from "@/components/fileExplorer/findInProject";
 import Examples from "@/components/examples/examples";
 import MoreExamples from "@/components/examples/moreExamples";
 import Settings from "@/components/settings";
+import ShareModal from "@/components/navbar/shareModal";
 import GUI from "@/components/inputPanel/gui/gui";
 import BottomSheet from "@/components/mobile/bottomSheet";
 
@@ -27,8 +28,8 @@ import { initAppSplitters } from "@utils/appLayout";
 import { initTheme } from "@utils/theme";
 import { initExportWebChuck } from "@/services/export/exportWebchuck";
 import { initExportChuck } from "@/services/export/exportChuck";
-import { parseURLParams as initParseURLParams } from "./services/urlParamParser";
-import { initShareCode } from "./services/shareCode";
+import { initProjectStartup } from "@/services/startup";
+import { initNotificationBanner } from "@/services/notificationBanner";
 
 class Main {
     public static navBar: NavBar;
@@ -46,6 +47,7 @@ class Main {
     public static settings: Settings;
     public static GUI: GUI;
     public static bottomSheet: BottomSheet;
+    public static shareModal: ShareModal;
 
     constructor() {
         initTheme(); // Set color scheme
@@ -70,6 +72,7 @@ class Main {
         Main.settings = new Settings();
         Main.GUI = new GUI();
         Main.bottomSheet = new BottomSheet();
+        Main.shareModal = new ShareModal();
     }
 
     init() {
@@ -88,8 +91,8 @@ class Main {
         // SERVICES
         initExportChuck();
         initExportWebChuck();
-        initShareCode();
-        initParseURLParams();
+        initProjectStartup();
+        initNotificationBanner();
 
         // Init WebChucK
         window.addEventListener("load", async () => {
