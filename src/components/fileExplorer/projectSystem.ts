@@ -311,6 +311,9 @@ export default class ProjectSystem {
 
     /**
      * Rename a file in the project
+     * @param oldName the name to be renamed
+     * @param newName the name to rename to
+     * TODO: Also rename the file in VFS (primarily data files)
      */
     static renameFile(oldName: string, newName: string) {
         if (!newName || newName === oldName) return;
@@ -320,6 +323,13 @@ export default class ProjectSystem {
         }
         const file = ProjectSystem.projectFiles.get(oldName);
         if (!file) return;
+
+        // Disallow renaming data files until renamed in VFS
+        if (!file.isPlaintextFile()) {
+            Console.print(`renaming data files is not yet supported`);
+            return;
+        }
+
         ProjectSystem.projectFiles.delete(oldName);
         file.rename(newName);
         ProjectSystem.projectFiles.set(newName, file);
@@ -387,13 +397,15 @@ export default class ProjectSystem {
         });
     }
 
-    /**
-     * Show a context menu for a file entry
-     */
     private static activeContextMenu: HTMLDivElement | null = null;
-
     private static contextMenuAbort: AbortController | null = null;
 
+    /**
+     * Show a context menu for a file entry, containing rename and delete buttons
+     * @param x the x position of the context menu
+     * @param y the y position of the context menu
+     * @param filename the name of the file that the context menu is referencing
+     */
     static showContextMenu(x: number, y: number, filename: string) {
         ProjectSystem.hideContextMenu();
 
@@ -450,6 +462,9 @@ export default class ProjectSystem {
         renameBtn.focus();
     }
 
+    /**
+     * Hide the shown context menu
+     */
     static hideContextMenu() {
         ProjectSystem.contextMenuAbort?.abort();
         ProjectSystem.contextMenuAbort = null;
@@ -502,8 +517,13 @@ export default class ProjectSystem {
             if (isNewFile) {
                 if (!newName) { fileEntry.remove(); return; }
                 const finalName = newName.includes(".") ? newName : newName + ".ck";
+                if (!isPlaintextFile(finalName)) {
+                    Console.print(`cannot create data file types — use upload instead`);
+                    fileEntry.remove();
+                    return;
+                }
                 if (ProjectSystem.projectFiles.has(finalName)) {
-                    Console.print(`${finalName} already exists`);
+                    Console.print(`"${finalName}" already exists`);
                     fileEntry.remove();
                     return;
                 }
@@ -512,6 +532,12 @@ export default class ProjectSystem {
                 ProjectSystem.addFileToExplorer(newFile);
             } else {
                 if (!newName || newName === filename) { revert(); return; }
+                // Enforce that renamed file stays plaintext
+                if (!isPlaintextFile(newName)) {
+                    Console.print(`cannot rename to a data file type`);
+                    revert();
+                    return;
+                }
                 if (ProjectSystem.projectFiles.has(newName)) {
                     Console.print(`"${newName}" already exists`);
                     revert();
@@ -531,6 +557,9 @@ export default class ProjectSystem {
         input.addEventListener("mousedown", (e) => e.stopPropagation());
     }
 
+    /**
+     * Creates a dummy file entry, used when adding a new file
+     */
     private static createTempEntry() {
         const fileEntry = document.createElement("div");
         fileEntry.className = "fileExplorerEntry";
@@ -547,6 +576,11 @@ export default class ProjectSystem {
         return { fileEntry, fileItem };
     }
 
+    /**
+     * Finds the file entry with the given filename
+     * @param filename filename to search for
+     * @returns the .fileExplorerEntry and .fileExplorerItem elements associated with the given filename
+     */
     private static findEntry(filename: string) {
         for (const entry of Array.from(ProjectSystem.fileExplorer.querySelectorAll(".fileExplorerEntry"))) {
             const item = entry.querySelector(".fileExplorerItem");

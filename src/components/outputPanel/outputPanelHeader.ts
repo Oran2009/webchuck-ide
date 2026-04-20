@@ -144,14 +144,6 @@ export default class OutputPanelHeader {
             }
         }
 
-        // Show console font size buttons only when console is visible
-        const consoleFontSize = document.getElementById("consoleFontSize");
-        const consoleInMain = OutputPanelHeader.consoleContainer.ownerDocument === document;
-        const consoleVisible = consoleInMain && !OutputPanelHeader.consoleContainer.classList.contains("hidden");
-        if (consoleFontSize) {
-            consoleFontSize.classList.toggle("hidden", !consoleVisible);
-        }
-
         // Show fullscreen button when visualizer or canvas is visible
         const visInMain = OutputPanelHeader.visualizerContainer.ownerDocument === document;
         const visVisible = visInMain && !OutputPanelHeader.visualizerContainer.classList.contains("hidden");
@@ -159,8 +151,7 @@ export default class OutputPanelHeader {
         const canvasVisible = canvasInMain && !OutputPanelHeader.canvasContainer.classList.contains("hidden");
         const fsVisible = visVisible || canvasVisible;
         OutputPanelHeader.fullscreenWrap.classList.toggle("hidden", !fsVisible);
-        // If font size buttons are hidden, fullscreen wrapper needs ml-auto to stay right-aligned
-        OutputPanelHeader.fullscreenWrap.classList.toggle("ml-auto", fsVisible && !consoleVisible);
+        OutputPanelHeader.fullscreenWrap.classList.toggle("ml-auto", fsVisible);
 
         if (collapsed) {
             requestAnimationFrame(() => Editor.resizeEditor());
