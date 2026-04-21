@@ -3,6 +3,31 @@
 @import "tailwindcss";
 @config "../../tailwind.config.js";
 
+/* Tailwind v4 preflight compat:
+   v4 dropped cursor:pointer on buttons and changed the default border
+   color from gray-200 to currentColor. Restore the v3 behavior so the
+   UI behaves the way the rest of the CSS assumes. */
+@layer base {
+    button:not(:disabled),
+    [role="button"]:not(:disabled) {
+        cursor: pointer;
+    }
+
+    *,
+    ::before,
+    ::after,
+    ::backdrop {
+        border-color: var(--ide-border, #e5e7eb);
+    }
+}
+
+/* Dialogs default to centered in the viewport when opened via
+   showModal(); the @apply w-full above was dropping the browser
+   default margin:auto. */
+dialog.modal {
+    margin: auto;
+}
+
 /* IDE Theme: CSS variable colors for structural elements.
    Light values are baked as var() fallbacks; dark overrides below.
    A full theme system can later replace both with runtime setProperty(). */
