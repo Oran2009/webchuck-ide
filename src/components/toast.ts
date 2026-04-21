@@ -17,7 +17,7 @@ const TIP_PREFIX_ICONS: [string, string][] = [
     ["Pro tip: ", "⚡ "],
     ["Reminder: ", "📌 "],
     ["Philosophy: ", "🎵 "],
-    ["Try this: ", "🔬 "],
+    ["Try this: ", "🔬 "]
 ];
 
 function applyTipIcon(el: HTMLSpanElement, tip: string): void {
@@ -180,7 +180,7 @@ const GENERAL_TIPS: string[] = [
     "Fun fact: White noise contains all frequencies at equal intensity",
     "Fun fact: The theremin, one of the earliest electronic instruments, was invented in 1920",
     "Did you know? Fourier proved any sound can be built from sine waves in 1822",
-    "Did you know? The first computer-generated music was played on a Ferranti Mark 1 in 1951",
+    "Did you know? The first computer-generated music was played on a Ferranti Mark 1 in 1951"
 ];
 
 // WebChuGL-specific tips
@@ -194,7 +194,7 @@ const WEBCHUGL_TIPS: string[] = [
     "Tip: GG.nextFrame() => now; advances to the next frame",
     "Tip: Use GMesh + Geometry + Material to create 3D objects",
     "Tip: GCube, GSphere, GCircle — built-in geometry generators",
-    "Fun fact: ChuGL was created by Andrew Zhu Aday and Ge Wang",
+    "Fun fact: ChuGL was created by Andrew Zhu Aday and Ge Wang"
 ];
 
 /** A tip that can optionally link to an example */
@@ -206,16 +206,16 @@ interface LinkedTip {
 const LINKED_TIPS: LinkedTip[] = [
     {
         text: "Try this: FM synthesis is just one oscillator modulating another",
-        exampleURL: "examples/fmGUI.ck",
+        exampleURL: "examples/fmGUI.ck"
     },
     {
         text: "Try this: Live-code a beat — add instruments one shred at a time",
-        exampleURL: "examples/otf/otf_01.ck",
+        exampleURL: "examples/otf/otf_01.ck"
     },
     {
         text: "Try this: Control parameters with GUI sliders",
-        exampleURL: "examples/helloSineGUI.ck",
-    },
+        exampleURL: "examples/helloSineGUI.ck"
+    }
 ];
 
 export default class Toast {

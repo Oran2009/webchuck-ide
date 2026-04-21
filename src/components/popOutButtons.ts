@@ -8,7 +8,7 @@ export default class PopOutButtons {
         // Right-click anywhere in file explorer or editor panels
         const panels: { el: string; panelId: PanelId }[] = [
             { el: "#fileExplorerPanel", panelId: "fileExplorer" },
-            { el: "#app-middle", panelId: "editor" },
+            { el: "#app-middle", panelId: "editor" }
         ];
 
         for (const { el, panelId } of panels) {
@@ -21,7 +21,7 @@ export default class PopOutButtons {
                         PopOutButtons.showContextMenu(
                             me.clientX,
                             me.clientY,
-                            panelId,
+                            panelId
                         );
                     }
                 });
@@ -32,7 +32,7 @@ export default class PopOutButtons {
             { el: "#consoleTab", panelId: "console" },
             { el: "#vmMonitorTab", panelId: "vmMonitor" },
             { el: "#visualizerTab", panelId: "visualizer" },
-            { el: "#canvasTab", panelId: "canvas" },
+            { el: "#canvasTab", panelId: "canvas" }
         ];
 
         for (const { el, panelId } of outputTabs) {
@@ -46,7 +46,7 @@ export default class PopOutButtons {
                         PopOutButtons.showContextMenu(
                             me.clientX,
                             me.clientY,
-                            panelId,
+                            panelId
                         );
                     }
                 });
@@ -57,7 +57,7 @@ export default class PopOutButtons {
             { el: "#consoleContainer", panelId: "console" },
             { el: "#vmMonitorContainer", panelId: "vmMonitor" },
             { el: "#visualizerContainer", panelId: "visualizer" },
-            { el: "#canvasContainer", panelId: "canvas" },
+            { el: "#canvasContainer", panelId: "canvas" }
         ];
 
         for (const { el, panelId } of outputContainers) {
@@ -70,7 +70,7 @@ export default class PopOutButtons {
                         PopOutButtons.showContextMenu(
                             me.clientX,
                             me.clientY,
-                            panelId,
+                            panelId
                         );
                     }
                 });
@@ -88,7 +88,7 @@ export default class PopOutButtons {
                     PopOutButtons.showContextMenu(
                         me.clientX,
                         me.clientY,
-                        id,
+                        id
                     );
                 }
             });

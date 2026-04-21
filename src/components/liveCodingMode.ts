@@ -321,8 +321,8 @@ export default class LiveCodingMode {
             renderLineHighlight: "none",
             scrollbar: {
                 vertical: "hidden",
-                horizontal: "hidden",
-            },
+                horizontal: "hidden"
+            }
         });
     }
 
@@ -342,15 +342,15 @@ export default class LiveCodingMode {
                 { token: "string", foreground: c.editorString.replace("#", "") },
                 { token: "number", foreground: c.editorNumber.replace("#", "") },
                 { token: "event", foreground: c.editorEvent.replace("#", "") },
-                { token: "library", foreground: c.editorLibrary.replace("#", "") },
+                { token: "library", foreground: c.editorLibrary.replace("#", "") }
             ],
             colors: {
                 "editor.background": "#00000000",
                 "editor.lineHighlightBackground": "#00000000",
                 "editorGutter.background": "#00000000",
                 "editor.selectionBackground": "#ffffff30",
-                "editorCursor.foreground": "#ffffff",
-            },
+                "editorCursor.foreground": "#ffffff"
+            }
         });
     }
 

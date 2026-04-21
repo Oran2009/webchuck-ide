@@ -116,7 +116,7 @@ export default class OutputPanelHeader {
             OutputPanelHeader.vmMonitorContainer,
             OutputPanelHeader.consoleContainer,
             OutputPanelHeader.visualizerContainer,
-            OutputPanelHeader.canvasContainer,
+            OutputPanelHeader.canvasContainer
         ];
 
         // Count only panels visible in the main document (skip popped-out)

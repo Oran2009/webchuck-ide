@@ -17,7 +17,7 @@ import {
     File,
     fetchDataFile,
     fetchTextFile,
-    isPlaintextFile,
+    isPlaintextFile
 } from "@/utils/fileLoader";
 import { engineMode } from "@/host";
 

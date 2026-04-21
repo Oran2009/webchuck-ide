@@ -12,7 +12,7 @@ import {
     File as FileData,
     fetchDataFile,
     fetchTextFile,
-    isPlaintextFile,
+    isPlaintextFile
 } from "@/utils/fileLoader";
 import Editor from "@/components/editor/monaco/editor";
 import Console from "../outputPanel/console";

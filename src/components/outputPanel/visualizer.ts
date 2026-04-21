@@ -59,7 +59,7 @@ export default class Visualizer {
         const visualizerDefaultOptions = {
             frameSize: 2048,
             drawWaveform: true,
-            drawSpecturm: true,
+            drawSpecturm: true
         };
         this.analyserNode = analyserNode;
         this.canvas = canvas;
@@ -74,7 +74,7 @@ export default class Visualizer {
     }
 
     drawWaveform_(width: number, height: number) {
-        this.analyserNode.getFloatTimeDomainData(this.waveformData);
+        this.analyserNode.getFloatTimeDomainData(this.waveformData as any);
         const size: number = this.waveformData.length;
         // Draw twice the width to make the waveform more visible
         const increment: number = (width * 2.0) / size;
@@ -102,7 +102,7 @@ export default class Visualizer {
     }
 
     drawSpectrum_(width: number, height: number) {
-        this.analyserNode.getFloatFrequencyData(this.frequencyData);
+        this.analyserNode.getFloatFrequencyData(this.frequencyData as any);
         // get min max of frequency data
         // We only visualize 0 to half of nyquist.
         const increment = width / (this.frequencyData.length / 2);

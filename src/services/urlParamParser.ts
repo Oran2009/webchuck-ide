@@ -1,5 +1,5 @@
 import ProjectSystem, {
-    loadChuckFileFromURL,
+    loadChuckFileFromURL
 } from "@/components/fileExplorer/projectSystem";
 import pako from "pako";
 

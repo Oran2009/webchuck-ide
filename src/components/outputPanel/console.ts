@@ -44,7 +44,7 @@ class RegexLinkProvider implements ILinkProvider {
             links.push({
                 range: { start: { x: startX, y }, end: { x: endX, y } },
                 text: match[0],
-                activate: (e, text) => this.handler(e, text),
+                activate: (e, text) => this.handler(e, text)
             });
         }
         callback(links.length > 0 ? links : undefined);
@@ -74,8 +74,8 @@ export default class Console {
                 foreground: Console.theme === "light" ? "#222222" : "#ffffff",
                 background: Console.theme === "light" ? "#ffffff" : "#222222",
                 selectionBackground:
-                    Console.theme === "light" ? "#cccccc55" : "#eeeeee55",
-            },
+                    Console.theme === "light" ? "#cccccc55" : "#eeeeee55"
+            }
         });
 
         Console.terminalElement =
@@ -150,7 +150,7 @@ export default class Console {
             Console.terminal.options.theme = {
                 background: "#222222",
                 foreground: "#ffffff",
-                selectionBackground: "#eeeeee55",
+                selectionBackground: "#eeeeee55"
             };
         }
     }
@@ -164,7 +164,7 @@ export default class Console {
             Console.terminal.options.theme = {
                 foreground: "#222222",
                 background: "#ffffff",
-                selectionBackground: "#cccccc55",
+                selectionBackground: "#cccccc55"
             };
         }
     }
@@ -178,7 +178,7 @@ export default class Console {
             Console.terminal.options.theme = {
                 background: bg,
                 foreground: fg,
-                selectionBackground: Console.theme === "light" ? "#cccccc55" : "#eeeeee55",
+                selectionBackground: Console.theme === "light" ? "#cccccc55" : "#eeeeee55"
             };
         }
     }
@@ -192,7 +192,7 @@ export default class Console {
             background: "transparent",
             foreground: "rgba(255, 255, 255, 0.85)",
             selectionBackground: "#ffffff30",
-            cursor: "#ffffff",
+            cursor: "#ffffff"
         };
     }
 

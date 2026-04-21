@@ -64,7 +64,7 @@ export default class GUI {
             text: theme.colors.text,
             textMuted: theme.colors.textMuted,
             accent: theme.colors.accent,
-            border: theme.colors.border,
+            border: theme.colors.border
         });
         GUI.canvas.style.position = "absolute";
 

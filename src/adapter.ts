@@ -66,11 +66,11 @@ export interface ChucKAdapter {
  * WebChucK adapter — thin pass-through to the Chuck instance.
  */
 export class WebChucKAdapter implements ChucKAdapter {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     private chuck: any;
     readonly engineMode: EngineMode = "webchuck";
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     constructor(chuck: any) {
         this.chuck = chuck;
     }

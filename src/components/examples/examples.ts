@@ -12,7 +12,7 @@ import NestedDropdown from "@/components/navbar/nestedDropdown";
 import InputPanelHeader from "@/components/inputPanel/inputPanelHeader";
 import {
     loadChuckFileFromURL,
-    loadDataFileFromURL,
+    loadDataFileFromURL
 } from "@components/fileExplorer/projectSystem";
 import { engineMode } from "@/host";
 

@@ -11,12 +11,12 @@ import { selectChuckSrc } from "@/host";
 
 const versionString = Object.freeze({
     stable: "stable",
-    dev: "dev",
+    dev: "dev"
 });
 
 const engineString = Object.freeze({
     webchuck: "webchuck",
-    webchugl: "webchugl",
+    webchugl: "webchugl"
 });
 
 export type EngineMode = "webchuck" | "webchugl";

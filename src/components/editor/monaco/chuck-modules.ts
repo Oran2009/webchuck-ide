@@ -142,7 +142,7 @@ const chuck_modules = [
     "NextFrameEvent",
     "Texture",
     "TextureSampler",
-    "Shader",
+    "Shader"
 ];
 
 const chuck_libraries = ["Object", "Event", "Shred", "Math", "Machine", "Std", "GG", "GWindow", "Color", "Gamepad"];

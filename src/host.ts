@@ -28,7 +28,7 @@ import { getEngineMode, type EngineMode } from "@/components/settings";
 import {
     type ChucKAdapter,
     WebChucKAdapter,
-    WebChuGLAdapter,
+    WebChuGLAdapter
 } from "@/adapter";
 
 // WebChucK source
@@ -111,7 +111,7 @@ async function initWebChucK() {
             // Check headers of an essential file to test uptime
             await fetch(whereIsChuck + "webchuck.js", {
                 method: "HEAD",
-                signal: controller.signal,
+                signal: controller.signal
             });
             clearTimeout(timeoutId);
         } catch (e) {
@@ -178,8 +178,8 @@ async function initChuGL() {
         chugins,
         serviceWorker: false, // COOP/COEP headers provided by server
         ...(storedRate && storedRate !== "default" && {
-            audioConfig: { sampleRate: Number(storedRate) },
-        }),
+            audioConfig: { sampleRate: Number(storedRate) }
+        })
     });
 
     if (!ck) {
@@ -386,8 +386,8 @@ export async function connectMic() {
             audio: {
                 echoCancellation: false,
                 autoGainControl: false,
-                noiseSuppression: false,
-            },
+                noiseSuppression: false
+            }
         })
         .then((stream) => {
             const adc = audioContext.createMediaStreamSource(stream);
@@ -435,7 +435,7 @@ export async function runJsCode(code: string, filename: string = "<js>") {
         warn: (...args: any[]) =>
             Console.print(`\x1b[33m[js] ${args.join(" ")}\x1b[0m`),
         error: (...args: any[]) =>
-            Console.print(`\x1b[31m[js] ${args.join(" ")}\x1b[0m`),
+            Console.print(`\x1b[31m[js] ${args.join(" ")}\x1b[0m`)
     };
 
     // Wrap raw runtime so shred operations update VmMonitor
@@ -482,7 +482,7 @@ export async function runJsCode(code: string, filename: string = "<js>") {
             }
             const val = target[prop];
             return typeof val === "function" ? val.bind(target) : val;
-        },
+        }
     });
 
     try {

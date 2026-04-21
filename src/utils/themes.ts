@@ -86,8 +86,8 @@ export const PRESET_THEMES: IDETheme[] = [
 
             waveformColor: "#333333",
             spectrumColor: "#FF8833",
-            spectrumFill: "#FFE5C4",
-        },
+            spectrumFill: "#FFE5C4"
+        }
     },
     {
         id: "miniaudicle-dark",
@@ -118,8 +118,8 @@ export const PRESET_THEMES: IDETheme[] = [
 
             waveformColor: "#eeeeee",
             spectrumColor: "#FF8833",
-            spectrumFill: "#D2691E",
-        },
+            spectrumFill: "#D2691E"
+        }
     },
     {
         id: "monokai",
@@ -150,8 +150,8 @@ export const PRESET_THEMES: IDETheme[] = [
 
             waveformColor: "#F8F8F2",
             spectrumColor: "#F92672",
-            spectrumFill: "#49483E",
-        },
+            spectrumFill: "#49483E"
+        }
     },
     {
         id: "nord",
@@ -182,8 +182,8 @@ export const PRESET_THEMES: IDETheme[] = [
 
             waveformColor: "#D8DEE9",
             spectrumColor: "#88C0D0",
-            spectrumFill: "#3B4252",
-        },
+            spectrumFill: "#3B4252"
+        }
     },
     {
         id: "ableton",
@@ -214,8 +214,8 @@ export const PRESET_THEMES: IDETheme[] = [
 
             waveformColor: "#00FF5E",
             spectrumColor: "#FF6B2B",
-            spectrumFill: "#2A2A2A",
-        },
+            spectrumFill: "#2A2A2A"
+        }
     },
     {
         id: "vinyl",
@@ -246,8 +246,8 @@ export const PRESET_THEMES: IDETheme[] = [
 
             waveformColor: "#D4C4B0",
             spectrumColor: "#D4A574",
-            spectrumFill: "#3A2F25",
-        },
+            spectrumFill: "#3A2F25"
+        }
     },
     {
         id: "tokyo-night",
@@ -278,8 +278,8 @@ export const PRESET_THEMES: IDETheme[] = [
 
             waveformColor: "#A9B1D6",
             spectrumColor: "#7AA2F7",
-            spectrumFill: "#24283B",
-        },
+            spectrumFill: "#24283B"
+        }
     },
     {
         id: "solarized-light",
@@ -310,8 +310,8 @@ export const PRESET_THEMES: IDETheme[] = [
 
             waveformColor: "#586E75",
             spectrumColor: "#CB4B16",
-            spectrumFill: "#EEE8D5",
-        },
+            spectrumFill: "#EEE8D5"
+        }
     },
     {
         id: "solarized-dark",
@@ -342,8 +342,8 @@ export const PRESET_THEMES: IDETheme[] = [
 
             waveformColor: "#93A1A1",
             spectrumColor: "#CB4B16",
-            spectrumFill: "#073642",
-        },
+            spectrumFill: "#073642"
+        }
     },
     {
         id: "dracula",
@@ -374,8 +374,8 @@ export const PRESET_THEMES: IDETheme[] = [
 
             waveformColor: "#F8F8F2",
             spectrumColor: "#BD93F9",
-            spectrumFill: "#44475A",
-        },
+            spectrumFill: "#44475A"
+        }
     },
     {
         id: "catppuccin-mocha",
@@ -406,8 +406,8 @@ export const PRESET_THEMES: IDETheme[] = [
 
             waveformColor: "#CDD6F4",
             spectrumColor: "#CBA6F7",
-            spectrumFill: "#313244",
-        },
+            spectrumFill: "#313244"
+        }
     },
     {
         id: "github-light",
@@ -438,9 +438,9 @@ export const PRESET_THEMES: IDETheme[] = [
 
             waveformColor: "#24292F",
             spectrumColor: "#0969DA",
-            spectrumFill: "#DDF4FF",
-        },
-    },
+            spectrumFill: "#DDF4FF"
+        }
+    }
 ];
 
 // ── Theme State ───────────────────────────────────────────
@@ -509,7 +509,7 @@ export function applyTheme(theme: IDETheme) {
         text: c.text,
         textMuted: c.textMuted,
         accent: c.accent,
-        border: c.border,
+        border: c.border
     });
 
     // 6. Persist

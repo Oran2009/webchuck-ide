@@ -87,7 +87,7 @@ async function exportWebchugl(title: string, mainFile: string) {
     const [swText, logoLight, logoDark] = await Promise.all([
         fetch("templates/webchugl/sw.js").then((r) => r.text()),
         fetch("templates/webchugl/assets/chugl_logo_light.png").then((r) => r.blob()),
-        fetch("templates/webchugl/assets/chugl_logo_dark.png").then((r) => r.blob()),
+        fetch("templates/webchugl/assets/chugl_logo_dark.png").then((r) => r.blob())
     ]);
 
     // 5. Package everything into the export zip

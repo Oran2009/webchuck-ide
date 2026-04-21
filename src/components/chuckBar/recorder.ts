@@ -24,7 +24,7 @@ export enum RecordState {
 const RecordButtonIcon = {
     record: `<svg viewBox="13 13 24 24" fill="none" class="w-6 h-6"><circle cx="25" cy="25" r="10" fill="#FF6868"/></svg>`,
     stop: `<svg viewBox="15 15 20 20" fill="none" class="w-6 h-6"><path d="M17 19C17 17.8954 17.8954 17 19 17H31C32.1046 17 33 17.8954 33 19V31C33 32.1046 32.1046 33 31 33H19C17.8954 33 17 32.1046 17 31V19Z" fill="white"/></svg>`,
-    armed: `<svg viewBox="3 3 44 44" fill="none" class="w-6 h-6"><circle cx="25" cy="25" r="20" fill="white"/><circle cx="25" cy="25" r="7" fill="#FF6868"/></svg>`,
+    armed: `<svg viewBox="3 3 44 44" fill="none" class="w-6 h-6"><circle cx="25" cy="25" r="20" fill="white"/><circle cx="25" cy="25" r="7" fill="#FF6868"/></svg>`
 };
 
 export default class Recorder {
@@ -75,7 +75,7 @@ export default class Recorder {
             try {
                 // Convert buffer to wav blob
                 const blob = new Blob(Recorder.buffer, {
-                    type: Recorder.recorder.mimeType,
+                    type: Recorder.recorder.mimeType
                 });
                 const arrayBuffer = await blob.arrayBuffer();
                 const audioBuffer =
@@ -206,7 +206,7 @@ async function convertAudioBufferToWavBlob(
 
         worker.postMessage({
             pcmArrays,
-            config: { sampleRate: audioBuffer.sampleRate },
+            config: { sampleRate: audioBuffer.sampleRate }
         });
     });
 }

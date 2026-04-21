@@ -5,7 +5,7 @@ import { engineMode } from "@/host";
 import {
     fetchTextFile,
     fetchDataFile,
-    isPlaintextFile,
+    isPlaintextFile
 } from "@/utils/fileLoader";
 
 interface WelcomeExample {
@@ -26,7 +26,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         description: "Your first sound — a simple sine wave",
         blurb: "The simplest ChucK program: one line to make sound. This is where everyone starts.",
         filename: "helloSine.ck",
-        load: () => loadChuckFileFromURL("examples/helloSine.ck"),
+        load: () => loadChuckFileFromURL("examples/helloSine.ck")
     },
     {
         title: "Play a Beat",
@@ -37,7 +37,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         load: () => {
             loadChuckFileFromURL("examples/slammin/slammin.ck");
             loadDataFileFromURL("examples/slammin/were_slammin.wav");
-        },
+        }
     },
     {
         title: "FM Synthesis GUI",
@@ -48,7 +48,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         load: () => {
             loadChuckFileFromURL("examples/fmGUI.ck");
             InputPanelHeader.setNotificationPing(0, true);
-        },
+        }
     },
     {
         title: "On-the-Fly",
@@ -59,7 +59,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         load: () => {
             loadChuckFileFromURL("examples/otf/otf_01.ck");
             loadDataFileFromURL("examples/otf/data/kick.wav");
-        },
+        }
     },
     {
         title: "OTF: Hi-Hat",
@@ -70,7 +70,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         load: () => {
             loadChuckFileFromURL("examples/otf/otf_02.ck");
             loadDataFileFromURL("examples/otf/data/hihat.wav");
-        },
+        }
     },
     {
         title: "OTF: Open Hi-Hat",
@@ -81,7 +81,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         load: () => {
             loadChuckFileFromURL("examples/otf/otf_03.ck");
             loadDataFileFromURL("examples/otf/data/hihat-open.wav");
-        },
+        }
     },
     {
         title: "OTF: Snare",
@@ -92,7 +92,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         load: () => {
             loadChuckFileFromURL("examples/otf/otf_04.ck");
             loadDataFileFromURL("examples/otf/data/snare-hop.wav");
-        },
+        }
     },
     {
         title: "OTF: Synth Bass",
@@ -102,7 +102,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         filename: "otf_05.ck",
         load: () => {
             loadChuckFileFromURL("examples/otf/otf_05.ck");
-        },
+        }
     },
     {
         title: "OTF: Melody",
@@ -112,7 +112,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         filename: "otf_06.ck",
         load: () => {
             loadChuckFileFromURL("examples/otf/otf_06.ck");
-        },
+        }
     },
     {
         title: "OTF: Snare Roll",
@@ -123,7 +123,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         load: () => {
             loadChuckFileFromURL("examples/otf/otf_07.ck");
             loadDataFileFromURL("examples/otf/data/snare.wav");
-        },
+        }
     },
     {
         title: "Harmonic Series Arp",
@@ -131,7 +131,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         description: "Arpeggiate through the harmonic series",
         blurb: "Hear the natural overtone series — the building blocks of all musical timbre.",
         filename: "harmonicSeriesArp.ck",
-        load: () => loadChuckFileFromURL("examples/harmonicSeriesArp.ck"),
+        load: () => loadChuckFileFromURL("examples/harmonicSeriesArp.ck")
     },
     {
         title: "Hello Sine GUI",
@@ -142,7 +142,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         load: () => {
             loadChuckFileFromURL("examples/helloSineGUI.ck");
             InputPanelHeader.setNotificationPing(0, true);
-        },
+        }
     },
     {
         title: "Mouse PWM HID",
@@ -153,7 +153,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         load: () => {
             loadChuckFileFromURL("examples/mouseHID.ck");
             InputPanelHeader.setNotificationPing(1, true);
-        },
+        }
     },
     {
         title: "Keyboard Organ HID",
@@ -164,7 +164,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         load: () => {
             loadChuckFileFromURL("examples/keyboardHID.ck");
             InputPanelHeader.setNotificationPing(1, true);
-        },
+        }
     },
     {
         title: "Gyro Demo",
@@ -176,7 +176,7 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
             loadChuckFileFromURL("examples/gyro/gyroDemo.ck");
             loadDataFileFromURL("examples/gyro/gyroLoop.wav");
             InputPanelHeader.setNotificationPing(2, true);
-        },
+        }
     },
     {
         title: "Accel Demo",
@@ -187,8 +187,8 @@ const WEBCHUCK_EXAMPLES: WelcomeExample[] = [
         load: () => {
             loadChuckFileFromURL("examples/accelDemo.ck");
             InputPanelHeader.setNotificationPing(2, true);
-        },
-    },
+        }
+    }
 ];
 
 const WEBCHUGL_EXAMPLES: WelcomeExample[] = [
@@ -198,7 +198,7 @@ const WEBCHUGL_EXAMPLES: WelcomeExample[] = [
         description: "3D primitives in a scene",
         blurb: "The 'Hello World' of ChuGL — cubes, spheres, and tori in a 3D scene.",
         filename: "basicShapes.ck",
-        load: () => loadChuckFileFromURL("examples/chugl/basicShapes.ck"),
+        load: () => loadChuckFileFromURL("examples/chugl/basicShapes.ck")
     },
     {
         title: "Circles",
@@ -206,7 +206,7 @@ const WEBCHUGL_EXAMPLES: WelcomeExample[] = [
         description: "Animated colorful circles",
         blurb: "Mesmerizing animated circles — audio-driven visuals at their simplest.",
         filename: "circles.ck",
-        load: () => loadChuckFileFromURL("examples/chugl/circles.ck"),
+        load: () => loadChuckFileFromURL("examples/chugl/circles.ck")
     },
     {
         title: "Solar System",
@@ -214,7 +214,7 @@ const WEBCHUGL_EXAMPLES: WelcomeExample[] = [
         description: "Orbital scene graph hierarchy",
         blurb: "Planets orbiting a star — learn scene graph hierarchies through space.",
         filename: "solarSystem.ck",
-        load: () => loadChuckFileFromURL("examples/chugl/solarSystem.ck"),
+        load: () => loadChuckFileFromURL("examples/chugl/solarSystem.ck")
     },
     {
         title: "Lissajous",
@@ -222,7 +222,7 @@ const WEBCHUGL_EXAMPLES: WelcomeExample[] = [
         description: "Audio-visual oscilloscope",
         blurb: "Turn sound into art — watch oscillators trace beautiful Lissajous curves in real time.",
         filename: "lissajous.ck",
-        load: () => loadChuckFileFromURL("examples/chugl/lissajous.ck"),
+        load: () => loadChuckFileFromURL("examples/chugl/lissajous.ck")
     },
     {
         title: "JS Freq Control",
@@ -233,7 +233,7 @@ const WEBCHUGL_EXAMPLES: WelcomeExample[] = [
         load: () => {
             loadChuckFileFromURL("examples/chugl/jsFreqControl.ck");
             loadChuckFileFromURL("examples/chugl/jsFreqControl.js");
-        },
+        }
     },
     {
         title: "JS Scene Builder",
@@ -243,8 +243,8 @@ const WEBCHUGL_EXAMPLES: WelcomeExample[] = [
         filename: "jsSceneBuilder.js",
         load: () => {
             loadChuckFileFromURL("examples/chugl/jsSceneBuilder.js");
-        },
-    },
+        }
+    }
 ];
 
 // ---- More Examples JSON integration ----
@@ -291,7 +291,7 @@ const FOLDER_ICONS: Record<string, string> = {
     stereo: "\uD83D\uDD0A",
     education: "\uD83D\uDCDA",
     rendergraph: "\uD83D\uDDBC\uFE0F",
-    sequencers: "\uD83C\uDFB9",
+    sequencers: "\uD83C\uDFB9"
 };
 
 /** Extract the first // desc: line from a ChucK code comment header */
@@ -356,7 +356,7 @@ function flattenMoreExamples(json: MoreExamplesJSON): WelcomeExample[] {
                             });
                         }
                     }
-                },
+                }
             });
         }
     }
@@ -415,7 +415,7 @@ function buildCard(
         "text-left p-3 rounded-lg border border-gray-200 dark:border-dark-5",
         "hover:border-orange dark:hover:border-orange hover:shadow-sm",
         "transition cursor-pointer bg-transparent",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-orange",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-orange"
     ].join(" ");
     card.innerHTML = `
         <div class="font-semibold text-orange text-sm">${ex.icon} ${ex.title}</div>
@@ -454,7 +454,7 @@ export default class WelcomeTab {
         overlay.id = "welcomeOverlay";
         overlay.className = [
             "absolute inset-0 z-10 flex flex-col items-center justify-center",
-            "overflow-auto p-6",
+            "overflow-auto p-6"
         ].join(" ");
         overlay.style.top = "2.5rem"; // below editor header
         overlay.style.backgroundColor = "var(--ide-editor-bg, #FEFEFF)";
@@ -483,7 +483,7 @@ export default class WelcomeTab {
             "text-left p-4 rounded-lg border-2 border-orange",
             "hover:shadow-md transition cursor-pointer bg-transparent",
             "max-w-md w-full mb-4",
-            "focus:outline-none focus-visible:ring-2 focus-visible:ring-orange",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-orange"
         ].join(" ");
         featuredCard.innerHTML = `
             <div class="text-xs font-semibold text-dark-5 dark:text-dark-a uppercase tracking-wide mb-1">Example of the Day</div>
@@ -516,7 +516,7 @@ export default class WelcomeTab {
             "text-left p-3 rounded-lg border border-gray-200 dark:border-dark-5",
             "hover:border-orange dark:hover:border-orange hover:shadow-sm",
             "transition cursor-pointer bg-transparent",
-            "focus:outline-none focus-visible:ring-2 focus-visible:ring-orange",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-orange"
         ].join(" ");
         surpriseCard.innerHTML = `
             <div class="font-semibold text-orange text-sm">\uD83C\uDFB2 Surprise Me</div>
@@ -538,7 +538,7 @@ export default class WelcomeTab {
             "mb-6 text-sm text-dark-5 dark:text-dark-a",
             "hover:text-orange transition cursor-pointer",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-orange",
-            "bg-transparent border-none underline underline-offset-2",
+            "bg-transparent border-none underline underline-offset-2"
         ].join(" ");
         blank.textContent = "or start with a blank file";
         blank.addEventListener("click", () => WelcomeTab.dismiss());

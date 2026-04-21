@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import path from "path";
 import fs from "fs";
+import tailwindcss from "@tailwindcss/vite";
 
 // ------------------------------------------------------------------
 // Monaco cross-window focus patch
@@ -89,7 +90,7 @@ const monacoFocusPatchVite = {
 
 export default defineConfig({
     base: "./",
-    plugins: [monacoFocusPatchVite],
+    plugins: [tailwindcss(), monacoFocusPatchVite],
     optimizeDeps: {
         esbuildOptions: {
             plugins: [monacoFocusPatchEsbuild],

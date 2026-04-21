@@ -20,7 +20,7 @@ import {
     setAppColumnWidths,
     toggleLeft,
     deactivateSplitter,
-    activateSplitter,
+    activateSplitter
 } from "@/utils/appLayout";
 
 //-----------------------------------------------------------
@@ -135,38 +135,38 @@ const PANEL_CONFIGS: Record<PanelId, PanelConfig> = {
         elementId: "fileExplorerPanel",
         title: "File Explorer",
         defaultWidth: 300,
-        defaultHeight: 600,
+        defaultHeight: 600
     },
     editor: {
         elementId: "app-middle",
         title: "Editor",
         defaultWidth: 800,
-        defaultHeight: 600,
+        defaultHeight: 600
     },
     console: {
         elementId: "consoleContainer",
         title: "Console",
         defaultWidth: 600,
-        defaultHeight: 400,
+        defaultHeight: 400
     },
     vmMonitor: {
         elementId: "vmMonitorContainer",
         title: "VM Monitor",
         defaultWidth: 500,
-        defaultHeight: 400,
+        defaultHeight: 400
     },
     visualizer: {
         elementId: "visualizerContainer",
         title: "Visualizer",
         defaultWidth: 600,
-        defaultHeight: 400,
+        defaultHeight: 400
     },
     canvas: {
         elementId: "canvasContainer",
         title: "Canvas",
         defaultWidth: 800,
-        defaultHeight: 600,
-    },
+        defaultHeight: 600
+    }
 };
 
 //-----------------------------------------------------------
@@ -177,14 +177,14 @@ const OUTPUT_PANEL_IDS: PanelId[] = [
     "console",
     "vmMonitor",
     "visualizer",
-    "canvas",
+    "canvas"
 ];
 
 const OUTPUT_TAB_MAP: Record<string, string> = {
     console: "consoleTab",
     vmMonitor: "vmMonitorTab",
     visualizer: "visualizerTab",
-    canvas: "canvasTab",
+    canvas: "canvasTab"
 };
 
 function isOutputPanel(panelId: PanelId): boolean {
@@ -421,7 +421,7 @@ export function popOut(panelId: PanelId): void {
         wasLeftPanelOpen,
         wasHidden,
         onBeforeUnload,
-        heartbeat,
+        heartbeat
     });
 
     // Collapse the panel in the main window to reclaim space.
@@ -620,7 +620,7 @@ function collapsePanel(panelId: PanelId): void {
             setAppColumnWidths([
                 widths[0] + halfMiddle,
                 0,
-                widths[2] + halfMiddle,
+                widths[2] + halfMiddle
             ]);
 
             appMiddle?.classList.add("hidden");

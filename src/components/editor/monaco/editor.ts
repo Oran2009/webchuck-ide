@@ -48,7 +48,7 @@ export default class Editor {
             // Params
             language: "chuck",
             minimap: {
-                enabled: false,
+                enabled: false
             },
             model: editorConfig,
             theme:
@@ -60,7 +60,7 @@ export default class Editor {
             find: { addExtraSpaceOnTop: false },
             fontSize: parseInt(localStorage.getItem("editorFontSize") || "14"),
             cursorBlinking: "smooth",
-            stickyScroll: { enabled: false },
+            stickyScroll: { enabled: false }
         });
 
         // Apply saved theme to Monaco (initTheme runs before Editor is created)
@@ -194,7 +194,7 @@ export default class Editor {
             find: { addExtraSpaceOnTop: false },
             fontSize: fontSize,
             cursorBlinking: "smooth",
-            stickyScroll: { enabled: false },
+            stickyScroll: { enabled: false }
         });
 
         // Apply current theme
@@ -268,7 +268,7 @@ export default class Editor {
      */
     static setTheme(dark: boolean) {
         Editor.editor?.updateOptions({
-            theme: dark ? "miniAudicleDark" : "miniAudicleLight",
+            theme: dark ? "miniAudicleDark" : "miniAudicleLight"
         });
     }
 
@@ -289,11 +289,11 @@ export default class Editor {
                 { token: "string", foreground: c.editorString.replace("#", "") },
                 { token: "number", foreground: c.editorNumber.replace("#", "") },
                 { token: "event", foreground: c.editorEvent.replace("#", "") },
-                { token: "library", foreground: c.editorLibrary.replace("#", "") },
+                { token: "library", foreground: c.editorLibrary.replace("#", "") }
             ],
             colors: {
-                "editor.background": c.editorBg,
-            },
+                "editor.background": c.editorBg
+            }
         });
         Editor.editor?.updateOptions({ theme: themeName });
     }
@@ -367,11 +367,11 @@ export default class Editor {
             keybindings: [
                 monaco.KeyMod.CtrlCmd |
                     monaco.KeyMod.Shift |
-                    monaco.KeyCode.KeyF,
+                    monaco.KeyCode.KeyF
             ],
             run: () => {
                 FindInProject.toggle();
-            },
+            }
         });
 
         Editor.editor.addAction({
@@ -380,11 +380,11 @@ export default class Editor {
             keybindings: [
                 monaco.KeyMod.CtrlCmd |
                     monaco.KeyMod.Shift |
-                    monaco.KeyCode.KeyP,
+                    monaco.KeyCode.KeyP
             ],
             run: () => {
                 Editor.openCommandPalette();
-            },
+            }
         });
     }
 
@@ -485,7 +485,7 @@ export default class Editor {
         Editor.vimModule?.dispose();
         Editor.editor.updateOptions({
             cursorStyle: "line",
-            cursorBlinking: "smooth",
+            cursorBlinking: "smooth"
         });
         Editor.vimToggle.innerText = "Vim Mode: Off";
         Editor.vimStatus?.setAttribute("style", "display: none !important");

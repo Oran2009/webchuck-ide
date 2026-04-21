@@ -33,7 +33,7 @@ export default class Dropdown {
                 currentDropdown.close();
             }
             this.toggle();
-            // eslint-disable-next-line @typescript-eslint/no-this-alias
+             
             currentDropdown = this;
         });
 
@@ -86,7 +86,7 @@ export default class Dropdown {
                 this.button.setAttribute("aria-expanded", "true");
                 this.dropdown.classList.remove("hidden");
                 this.positionDropdown();
-                // eslint-disable-next-line @typescript-eslint/no-this-alias
+                 
                 currentDropdown = this;
             }
         });

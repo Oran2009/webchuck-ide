@@ -14,7 +14,7 @@ import {
     initThemeSystem,
     isFollowingSystem,
     setFollowSystem,
-    type IDETheme,
+    type IDETheme
 } from "@/utils/themes";
 
 // Header color constants (used by editorPanelHeader, outputPanelHeader, etc.)
