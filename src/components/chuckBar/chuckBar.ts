@@ -3,18 +3,25 @@
 // desc:  Button interface for communicating with ChucK VM.
 //
 //        Left:
-//        Start VM, Mic On, Compile and Play, Replace Shred,
-//        Remove Shred
+//        Start VM, Compile and Play, Replace Shred,
+//        Remove Shred, Record
 //
-//        Right:
-//        ChucK Time
-//        Share Button
+//        Right (connect group):
+//        Connect Mic, Connect Webcam, Connect MIDI
 //
 // author: terry feng
 // date:   August 2023
 //--------------------------------------------------------------------
 
-import { theChuck, startChuck, connectMic, engineMode, runJsCode } from "@/host";
+import {
+    theChuck,
+    startChuck,
+    connectMic,
+    requestWebcam,
+    connectMidi,
+    engineMode,
+    runJsCode
+} from "@/host";
 import Editor from "@/components/editor/monaco/editor";
 import ProjectSystem from "@/components/fileExplorer/projectSystem";
 import VmMonitor from "@/components/vmMonitor";
@@ -31,6 +38,8 @@ function getEngineLabel(): string {
 export default class ChuckBar {
     public static webchuckButton: HTMLButtonElement;
     public static micButton: HTMLButtonElement;
+    public static webcamButton: HTMLButtonElement;
+    public static midiButton: HTMLButtonElement;
     public static playButton: HTMLButtonElement;
     public static replaceButton: HTMLButtonElement;
     public static removeButton: HTMLButtonElement;
@@ -44,6 +53,10 @@ export default class ChuckBar {
             document.querySelector<HTMLButtonElement>("#webchuckButton")!;
         ChuckBar.micButton =
             document.querySelector<HTMLButtonElement>("#micButton")!;
+        ChuckBar.webcamButton =
+            document.querySelector<HTMLButtonElement>("#webcamButton")!;
+        ChuckBar.midiButton =
+            document.querySelector<HTMLButtonElement>("#midiButton")!;
         ChuckBar.playButton =
             document.querySelector<HTMLButtonElement>("#playButton")!;
         ChuckBar.replaceButton =
@@ -56,6 +69,8 @@ export default class ChuckBar {
         // Add tooltips
         ChuckBar.webchuckButton.title = `Start ${getEngineLabel()} [${metaKey} + .]`;
         ChuckBar.micButton.title = `Connect Microphone`;
+        ChuckBar.webcamButton.title = `Connect Webcam`;
+        ChuckBar.midiButton.title = `Connect MIDI`;
         ChuckBar.playButton.title = `Run [${metaKey} + Enter]`;
         ChuckBar.replaceButton.title = `Replace [${metaKey} + \\]`;
         ChuckBar.removeButton.title = `Remove [${metaKey} + ⌫]`;
@@ -65,13 +80,13 @@ export default class ChuckBar {
         ChuckBar.webchuckButton.addEventListener("click", async () => {
             await ChuckBar.startWebchuck();
         });
-        ChuckBar.micButton.addEventListener("click", async () => {
-            connectMic();
-            ChuckBar.micButton.disabled = true;
-        });
-        // Mic is not needed in WebChuGL mode
-        if (engineMode === "webchugl") {
-            ChuckBar.micButton.style.display = "none";
+        ChuckBar.micButton.addEventListener("click", () => connectMic());
+        ChuckBar.webcamButton.addEventListener("click", () => requestWebcam());
+        ChuckBar.midiButton.addEventListener("click", () => connectMidi());
+        // Webcam and MIDI are WebChuGL-only.
+        if (engineMode !== "webchugl") {
+            ChuckBar.webcamButton.style.display = "none";
+            ChuckBar.midiButton.style.display = "none";
         }
         ChuckBar.playButton.addEventListener("click", async () => {
             ChuckBar.runEditorCode();
@@ -163,6 +178,8 @@ export default class ChuckBar {
 
         // Enable the ChuckBar buttons
         ChuckBar.micButton.disabled = false;
+        ChuckBar.webcamButton.disabled = false;
+        ChuckBar.midiButton.disabled = false;
         ChuckBar.playButton.disabled = false;
         ChuckBar.replaceButton.disabled = false;
         ChuckBar.removeButton.disabled = false;

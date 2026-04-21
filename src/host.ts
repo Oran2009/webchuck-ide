@@ -333,12 +333,49 @@ export function getChuckNow(): number {
 }
 
 /**
- * Connect microphone input to theChuck
- * In WebChuGL mode, mic is managed internally — this is a no-op.
+ * Request webcam access for WebChuGL. Delegates to the raw ChuGL
+ * runtime's requestWebcam(), which prompts the browser permission
+ * dialog and wires the stream into ChuGL's internal webcam device.
+ * No-op in WebChucK mode.
+ */
+export async function requestWebcam() {
+    if (engineMode !== "webchugl") return;
+    try {
+        await theChuck.rawRuntime.requestWebcam();
+        Console.print("Webcam connected");
+    } catch (err) {
+        Console.print(`\x1b[31mwebcam: ${(err as Error).message}\x1b[0m`);
+    }
+}
+
+/**
+ * Request MIDI access for WebChuGL. Delegates to the raw ChuGL
+ * runtime's requestMidi(), which prompts browser Web MIDI permission
+ * and initializes ChucK MIDI I/O.
+ * No-op in WebChucK mode.
+ */
+export async function connectMidi() {
+    if (engineMode !== "webchugl") return;
+    try {
+        await theChuck.rawRuntime.requestMidi();
+        Console.print("MIDI connected");
+    } catch (err) {
+        Console.print(`\x1b[31mMIDI: ${(err as Error).message}\x1b[0m`);
+    }
+}
+
+/**
+ * Connect microphone input to theChuck.
+ * In WebChuGL mode, delegates to the runtime's requestMicrophone().
  */
 export async function connectMic() {
     if (engineMode === "webchugl") {
-        Console.print("Microphone is managed internally by WebChuGL");
+        try {
+            await theChuck.rawRuntime.requestMicrophone();
+            Console.print("Microphone connected");
+        } catch (err) {
+            Console.print(`\x1b[31mmicrophone: ${(err as Error).message}\x1b[0m`);
+        }
         return;
     }
 
@@ -355,6 +392,10 @@ export async function connectMic() {
         .then((stream) => {
             const adc = audioContext.createMediaStreamSource(stream);
             adc.connect(theChuck as any);
+            Console.print("Microphone connected");
+        })
+        .catch((err: Error) => {
+            Console.print(`\x1b[31mmicrophone: ${err.message}\x1b[0m`);
         });
 }
 
